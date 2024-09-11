@@ -19,137 +19,150 @@ create database Gestione_Concessionario;
 -- _______________
 
 
--- Tables Section
--- _____________ 
+CREATE TABLE APPUNTAMENTO (
+    ID_APPUNTAMENTO INT(7) NOT NULL,
+    data DATE NOT NULL,
+    ora TIME NOT NULL,
+    Tipologia VARCHAR(50) NOT NULL,
+    durata INT(3),
+    Numero_Telaio CHAR(17) NOT NULL,
+    ID_CLIENTE INT(7) NOT NULL,
+    ID_DIPENDENTE INT(7) NOT NULL,
+    CONSTRAINT ID_APPUNTAMENTO_ID PRIMARY KEY (ID_APPUNTAMENTO)
+);
 
-create table APPUNTAMENTO (
-     ID_APPUNTAMENTO numeric(7) not null,
-     data date not null,
-     ora date not null,
-     Tipologia varchar(50) not null,
-     durata numeric(3),
-     Numero_Telaio char(17) not null,
-     ID_CLIENTE numeric(7) not null,
-     ID_DIPENDENTE numeric(7) not null,
-     constraint ID_APPUNTAMENTO_ID primary key (ID_APPUNTAMENTO));
+CREATE TABLE AUTO (
+    Numero_Telaio CHAR(17) NOT NULL,
+    Immatricolazione CHAR,
+    data DATE,
+    targa CHAR(7),
+    ID_Configurazione INT(7) NOT NULL,
+    CONSTRAINT ID_AUTO_ID PRIMARY KEY (Numero_Telaio)
+);
 
-create table AUTO (
-     Numero_Telaio char(17) not null,
-     Immatricolazione char,
-     data date,
-     targa char(7),
-     ID_Configurazione numeric(7) not null,
-     constraint ID_AUTO_ID primary key (Numero_Telaio));
+CREATE TABLE CLIENTE (
+    ID_CLIENTE INT(7) NOT NULL,
+    nome VARCHAR(50) NOT NULL,
+    cognome VARCHAR(50) NOT NULL,
+    telefono INT(20) NOT NULL,
+    e_mail VARCHAR(50) NOT NULL,
+    CONSTRAINT ID_CLIENTE_ID PRIMARY KEY (ID_CLIENTE)
+);
 
-create table CLIENTE (
-     ID_CLIENTE numeric(7) not null,
-     nome varchar(50) not null,
-     cognome varchar(50) not null,
-     telefono numeric(20) not null,
-     e_mail varchar(50) not null,
-     constraint ID_CLIENTE_ID primary key (ID_CLIENTE));
+CREATE TABLE CONFIGURAZIONE (
+    ID_Configurazione INT(7) NOT NULL,
+    Motore VARCHAR(50) NOT NULL,
+    alimentazione VARCHAR(50) NOT NULL,
+    cc INT(4) NOT NULL,
+    horse_power INT(4) NOT NULL,
+    ID_MODELLO INT(7) NOT NULL,
+    CONSTRAINT ID_CONFIGURAZIONE_ID PRIMARY KEY (ID_Configurazione)
+);
 
-create table CONFIGURAZIONE (
-     ID_Configurazione numeric(7) not null,
-     Motore varchar(50) not null,
-     alimentazione varchar(50) not null,
-     cc numeric(4) not null,
-     horse_power numeric(4) not null,
-     ID_MODELLO numeric(7) not null,
-     constraint ID_CONFIGURAZIONE_ID primary key (ID_Configurazione));
+CREATE TABLE CONTRATTO (
+    prezzo DECIMAL(7 , 2 ) NOT NULL,
+    ID_Contratto INT(7) NOT NULL,
+    ID_Vendita INT(7) NOT NULL,
+    Tipologia VARCHAR(50) NOT NULL,
+    Nome_banca VARCHAR(50),
+    codice_finanziamento INT(7),
+    Intestatario VARCHAR(50),
+    metodo_di_pagamento VARCHAR(50),
+    CONSTRAINT ID_CONTRATTO_ID PRIMARY KEY (ID_Contratto),
+    CONSTRAINT SID_CONTR_VENDI_ID UNIQUE (ID_Vendita)
+);
 
-create table CONTRATTO (
-     prezzo numeric(7,2) not null,
-     ID_Contratto numeric(7) not null,
-     ID_Vendita numeric(7) not null,
-     Tipologia varchar(50) not null,
-     Nome_banca varchar(50),
-     codice_finanziamento numeric(7),
-     Intestatario varchar(50),
-     metodo_di_pagamento varchar(50),
-     constraint ID_CONTRATTO_ID primary key (ID_Contratto),
-     constraint SID_CONTR_VENDI_ID unique (ID_Vendita));
+CREATE TABLE DIPENDENTE (
+    ID_DIPENDENTE INT(7) NOT NULL,
+    ID_MARCHIO INT(7) NOT NULL,
+    nome VARCHAR(50) NOT NULL,
+    cognome VARCHAR(50) NOT NULL,
+    telefono INT(20) NOT NULL,
+    e_mail VARCHAR(50) NOT NULL,
+    CONSTRAINT ID_DIPENDENTE_ID PRIMARY KEY (ID_DIPENDENTE),
+    CONSTRAINT SID_DIPEN_MARCH_ID UNIQUE (ID_MARCHIO)
+);
 
-create table DIPENDENTE (
-     ID_DIPENDENTE numeric(7) not null,
-     ID_MARCHIO numeric(7) not null,
-     nome varchar(50) not null,
-     cognome varchar(50) not null,
-     telefono numeric(20) not null,
-     e_mail varchar(50) not null,
-     constraint ID_DIPENDENTE_ID primary key (ID_DIPENDENTE),
-     constraint SID_DIPEN_MARCH_ID unique (ID_MARCHIO));
+CREATE TABLE GARANZIA (
+    scadenza DATE NOT NULL,
+    copertura INT(4) NOT NULL,
+    ID_Garanzia INT(7) NOT NULL,
+    Numero_Telaio CHAR(17) NOT NULL,
+    CONSTRAINT ID_GARANZIA_ID PRIMARY KEY (ID_Garanzia),
+    CONSTRAINT SID_GARAN_AUTO_ID UNIQUE (Numero_Telaio)
+);
 
-create table GARANZIA (
-     scadenza date not null,
-     copertura numeric(4) not null,
-     ID_Garanzia numeric(7) not null,
-     Numero_Telaio char(17) not null,
-     constraint ID_GARANZIA_ID primary key (ID_Garanzia),
-     constraint SID_GARAN_AUTO_ID unique (Numero_Telaio));
+CREATE TABLE MARCHIO (
+    ID_MARCHIO INT(7) NOT NULL,
+    Nome VARCHAR(50) NOT NULL,
+    CONSTRAINT ID_MARCHIO_ID PRIMARY KEY (ID_MARCHIO)
+);
 
-create table MARCHIO (
-     ID_MARCHIO numeric(7) not null,
-     Nome varchar(50) not null,
-     constraint ID_MARCHIO_ID primary key (ID_MARCHIO));
+CREATE TABLE MODELLO (
+    ID_MODELLO INT(7) NOT NULL,
+    Descrizione VARCHAR(150) NOT NULL,
+    Anno INT(4) NOT NULL,
+    ID_TIPOLOGIA INT(7) NOT NULL,
+    ID_MARCHIO INT(7) NOT NULL,
+    CONSTRAINT ID_MODELLO_ID PRIMARY KEY (ID_MODELLO)
+);
 
-create table MODELLO (
-     ID_MODELLO numeric(7) not null,
-     Descrizione varchar(150) not null,
-     Anno numeric(4) not null,
-     ID_TIPOLOGIA numeric(7) not null,
-     ID_MARCHIO numeric(7) not null,
-     constraint ID_MODELLO_ID primary key (ID_MODELLO));
+CREATE TABLE OFFERTA (
+    ID_OFFERTA INT(7) NOT NULL,
+    Percentuale INT(3) NOT NULL,
+    data_inizio DATE NOT NULL,
+    data_fine DATE NOT NULL,
+    ID_MARCHIO INT(7) NOT NULL,
+    ID_DIPENDENTE INT(7) NOT NULL,
+    CONSTRAINT ID_OFFERTA_ID PRIMARY KEY (ID_OFFERTA)
+);
 
-create table OFFERTA (
-     ID_OFFERTA numeric(7) not null,
-     Percentuale numeric(3) not null,
-     data_inizio date not null,
-     data_fine date not null,
-     ID_MARCHIO numeric(7) not null,
-     ID_DIPENDENTE numeric(7) not null,
-     constraint ID_OFFERTA_ID primary key (ID_OFFERTA));
+CREATE TABLE OPTIONAL (
+    ID_Optional INT(7) NOT NULL,
+    descrizione VARCHAR(50) NOT NULL,
+    prezzo DECIMAL(5 , 2 ) NOT NULL,
+    CONSTRAINT ID_OPTIONAL_ID PRIMARY KEY (ID_Optional)
+);
 
-create table OPTIONAL (
-     ID_Optional numeric(7) not null,
-     descrizione varchar(50) not null,
-     prezzo numeric(5,2) not null,
-     constraint ID_OPTIONAL_ID primary key (ID_Optional));
+CREATE TABLE Personalizzazione (
+    Numero_Telaio CHAR(17) NOT NULL,
+    ID_Optional INT(7) NOT NULL,
+    CONSTRAINT ID_Personalizzazione_ID PRIMARY KEY (Numero_Telaio , ID_Optional)
+);
 
-create table Personalizzazione (
-     Numero_Telaio char(17) not null,
-     ID_Optional numeric(7) not null,
-     constraint ID_Personalizzazione_ID primary key (Numero_Telaio, ID_Optional));
+CREATE TABLE SCONTO (
+    ID_SCONTO INT(7) NOT NULL,
+    Percentuale INT(3) NOT NULL,
+    data_inizio DATE NOT NULL,
+    data_fine DATE NOT NULL,
+    Numero_Telaio CHAR(17) NOT NULL,
+    ID_DIPENDENTE INT(7) NOT NULL,
+    CONSTRAINT ID_SCONTO_ID PRIMARY KEY (ID_SCONTO)
+);
 
-create table SCONTO (
-     ID_SCONTO numeric(7) not null,
-     Percentuale numeric(3) not null,
-     data_inizio date not null,
-     data_fine date not null,
-     Numero_Telaio char(17) not null,
-     ID_DIPENDENTE numeric(7) not null,
-     constraint ID_SCONTO_ID primary key (ID_SCONTO));
+CREATE TABLE Supporto (
+    ID_MODELLO INT(7) NOT NULL,
+    ID_Optional INT(7) NOT NULL,
+    CONSTRAINT ID_Supporto_ID PRIMARY KEY (ID_MODELLO , ID_Optional)
+);
 
-create table Supporto (
-     ID_MODELLO numeric(7) not null,
-     ID_Optional numeric(7) not null,
-     constraint ID_Supporto_ID primary key (ID_MODELLO, ID_Optional));
+CREATE TABLE TIPOLOGIA (
+    ID_TIPOLOGIA INT(7) NOT NULL,
+    nome VARCHAR(50) NOT NULL,
+    caratteristiche VARCHAR(100) NOT NULL,
+    CONSTRAINT ID_TIPOLOGIA_ID PRIMARY KEY (ID_TIPOLOGIA)
+);
 
-create table TIPOLOGIA (
-     ID_TIPOLOGIA numeric(7) not null,
-     nome varchar(50) not null,
-     caratteristiche varchar(100) not null,
-     constraint ID_TIPOLOGIA_ID primary key (ID_TIPOLOGIA));
-
-create table VENDITA (
-     ID_Vendita numeric(7) not null,
-     Numero_Telaio char(17) not null,
-     data date not null,
-     ora date not null,
-     ID_DIPENDENTE numeric(7) not null,
-     ID_CLIENTE numeric(7) not null,
-     constraint ID_VENDITA_ID primary key (ID_Vendita),
-     constraint SID_VENDI_AUTO_ID unique (Numero_Telaio));
+CREATE TABLE VENDITA (
+    ID_Vendita INT(7) NOT NULL,
+    Numero_Telaio CHAR(17) NOT NULL,
+    data DATE NOT NULL,
+    ora TIME NOT NULL,
+    ID_DIPENDENTE INT(7) NOT NULL,
+    ID_CLIENTE INT(7) NOT NULL,
+    CONSTRAINT ID_VENDITA_ID PRIMARY KEY (ID_Vendita),
+    CONSTRAINT SID_VENDI_AUTO_ID UNIQUE (Numero_Telaio)
+);
 
 
 -- Constraints Section
@@ -236,9 +249,87 @@ alter table VENDITA add constraint SID_VENDI_AUTO_FK
      foreign key (Numero_Telaio)
      references AUTO (Numero_Telaio);
 
+
 alter table VENDITA add constraint REF_VENDI_CLIEN_FK
      foreign key (ID_CLIENTE)
      references CLIENTE (ID_CLIENTE);
+     
+     
+-- triggers
+-- _________________________
+-- Trigger to ensure correct associations between MARCHIO, MODELLO, and DIPENDENTE tables
+-- This trigger is activated before inserting a new row in the MARCHIO table.
+-- It checks if at least one row in the MODELLO or DIPENDENTE table is associated with the MARCHIO being inserted.
+
+DELIMITER $$
+
+CREATE TRIGGER check_modello_dipendente_marchio
+BEFORE INSERT ON MARCHIO
+FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM MODELLO WHERE MODELLO.ID_MARCHIO = NEW.ID_MARCHIO)
+    AND NOT EXISTS (SELECT 1 FROM DIPENDENTE WHERE DIPENDENTE.ID_MARCHIO = NEW.ID_MARCHIO) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Errore: Il marchio deve avere almeno un modello o un dipendente associato.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- Trigger to ensure correct associations between OPTIONAL, and Personalizzazione tables
+-- This trigger is activated before inserting a new row in the OPTIONAL table.
+-- It checks if at least one row in the Personalizzazione table is associated with the OPTIONAL being inserted.
+
+DELIMITER $$
+
+CREATE TRIGGER check_optional_personalizzazione
+BEFORE INSERT ON OPTIONAL
+FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Personalizzazione WHERE Personalizzazione.ID_Optional = NEW.ID_Optional) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Errore: optional deve essere associato a una personalizzazione.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- Trigger to ensure correct associations between TIPOLOGIA, and MODELLO tables
+-- This trigger is activated before inserting a new row in the TIPOLOGIA table.
+-- It checks if at least one row in the MODELLO table is associated with the TIPOLOGIA being inserted.
+
+DELIMITER $$
+
+CREATE TRIGGER check_tipologia_modello
+BEFORE INSERT ON TIPOLOGIA
+FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM MODELLO WHERE MODELLO.ID_TIPOLOGIA = NEW.ID_TIPOLOGIA) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Errore: La tipologia deve essere associata a un modello.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- Trigger to ensure correct associations between VENDITA, and CONTRATTO tables
+-- This trigger is activated before inserting a new row in the VENDITA table.
+-- It checks if at least one row in the CONTRATTO table is associated with the VENDITA being inserted.
+
+
+DELIMITER $$
+
+CREATE TRIGGER check_vendita_contratto
+BEFORE INSERT ON VENDITA
+FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM CONTRATTO WHERE CONTRATTO.ID_Vendita = NEW.ID_Vendita) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Errore: La vendita deve essere associata a un contratto.';
+    END IF;
+END$$
+
+DELIMITER ;
 
 
 -- Index Section
