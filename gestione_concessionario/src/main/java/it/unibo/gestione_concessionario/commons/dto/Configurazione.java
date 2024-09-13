@@ -2,7 +2,7 @@ package it.unibo.gestione_concessionario.commons.dto;
 
 public record Configurazione(
     int idConfigurazione,
-    Modello modello,
+    String modello,
     String  motore,
     String alimentazione,
     int cc,
