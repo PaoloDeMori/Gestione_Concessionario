@@ -26,7 +26,7 @@ public class ModelDipendente {
         this.iD = iD;
     }
 
-   /*  List<Auto> visualizzaAuto() {
+    List<Auto> visualizzaAutoDelDipendente() {
         PreparedStatement ps;
         List<Auto> auto = new ArrayList<>();
         final String vediAuto = "SELECT A.Numero_Telaio, A.prezzo, A.Immatricolazione, A.data, A.targa, M.Descrizione AS Modello, C.Motore, C.alimentazione "
@@ -43,8 +43,8 @@ public class ModelDipendente {
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 LocalDate data = set.getDate(4).toLocalDate();
-                auto.add(new Auto(set.getString(1),set.getInt(2), Optional.of(set.getString(3)), Optional.of(set.getString(5)),
-                        Optional.of(data), set.getString(6), set.getString(7),set.getString(8)));
+                auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(5)),
+                        Optional.of(data), set.getString(6), set.getString(7), set.getString(8)));
             }
             for (var a : auto) {
                 System.out.println(a.toString());
@@ -53,7 +53,7 @@ public class ModelDipendente {
         } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
-    }*/
+    }
 
     List<Appuntamento> visualizzaAppuntamenti() {
         PreparedStatement ps;
@@ -71,7 +71,7 @@ public class ModelDipendente {
             ps.setInt(1, iD);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                LocalDate data = set.getDate(2)!=null ? set.getDate(2).toLocalDate():null;
+                LocalDate data = set.getDate(2) != null ? set.getDate(2).toLocalDate() : null;
                 LocalTime ora = set.getDate(3) != null ? set.getTime(2).toLocalTime() : null;
                 LocalTime durata = set.getDate(5) != null ? set.getTime(2).toLocalTime() : null;
                 String nome_cliente = set.getString(7) + " " + set.getString(8);
@@ -89,23 +89,23 @@ public class ModelDipendente {
 
     }
 
-     public boolean aggiungiSconto(Sconto sconto){
+    public boolean aggiungiSconto(Sconto sconto) {
         PreparedStatement ps;
-        final String aggiungiScon = "INSERT INTO SCONTO (Percentuale, data_inizio, data_fine, Numero_Telaio, ID_DIPENDENTE) " + 
-                                     "VALUES (?,?,?,?,?);";
+        final String aggiungiScon = "INSERT INTO SCONTO (Percentuale, data_inizio, data_fine, Numero_Telaio, ID_DIPENDENTE) "
+                +
+                "VALUES (?,?,?,?,?);";
         try {
-        ps = connection.prepareStatement(aggiungiScon);
-        ps.setInt(1, sconto.percentuale());
-        ps.setDate(2, sconto.dataInizio() != null ? Date.valueOf(sconto.dataInizio()) : null);
-        ps.setDate(3, sconto.dataFine() != null ? Date.valueOf(sconto.dataFine()) : null);
-        ps.setString(4, sconto.nuremo_telaio());
-        ps.setInt(5, iD);
-        ps.executeUpdate();
-        ps.close();
-        connection.commit();
-        return true;
-        }
-        catch(SQLException e){
+            ps = connection.prepareStatement(aggiungiScon);
+            ps.setInt(1, sconto.percentuale());
+            ps.setDate(2, sconto.dataInizio() != null ? Date.valueOf(sconto.dataInizio()) : null);
+            ps.setDate(3, sconto.dataFine() != null ? Date.valueOf(sconto.dataFine()) : null);
+            ps.setString(4, sconto.nuremo_telaio());
+            ps.setInt(5, iD);
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
@@ -115,7 +115,7 @@ public class ModelDipendente {
         }
     }
 
-    public void end(){
+    public void end() {
         try {
             connection.close();
         } catch (SQLException e) {
@@ -126,7 +126,10 @@ public class ModelDipendente {
         ModelDipendente model = new ModelDipendente(ConnectionFactory.build("gestione_concessionario_prova",
                 "jdbc:mysql://localhost:3306/", "root", "cadmio"), 13);
         model.visualizzaAppuntamenti();
-        model.aggiungiSconto(new Sconto(95,LocalDate.now(),LocalDate.of(2025, 11,11),"1HGBH41JXMN109186"));
+        System.out.println("______________________________________________________________________________");
+        model.visualizzaAutoDelDipendente();
+        // model.aggiungiSconto(new Sconto(80,LocalDate.now(),LocalDate.of(2025,
+        // 12,11),"1HGBH41JXMN109186"));
         model.end();
     }
 }

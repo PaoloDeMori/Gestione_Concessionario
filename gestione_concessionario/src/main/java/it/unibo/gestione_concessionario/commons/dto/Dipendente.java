@@ -5,8 +5,7 @@ public record Dipendente(
     String nome,
     String cognome,
     String telefono,
-    String eMail,
-    Marchio marchio
+    String eMail
 ) {
 
 }

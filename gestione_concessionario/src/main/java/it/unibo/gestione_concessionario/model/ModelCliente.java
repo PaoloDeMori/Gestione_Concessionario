@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
+
 
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
+import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Garanzia;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
@@ -30,9 +30,9 @@ public class ModelCliente {
         this.iD = iD;
     }
 
-    /*public boolean fissaAppuntamento(Appuntamento appuntamento) {
+    public boolean fissaAppuntamento(Appuntamento appuntamento) {
         PreparedStatement ps = null;
-        final String fissaAppuntamento = "INSERT INTO APPUNTAMENTO (ID_APPUNTAMENTO, data, ora, Tipologia, durata, Numero_Telaio, ID_CLIENTE, ID_DIPENDENTE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        final String fissaAppuntamento = "INSERT INTO APPUNTAMENTO (ID_APPUNTAMENTO, data, ora, Tipologia, durata, Numero_Telaio, ID_DIPENDENTE, ID_CLIENTE,) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(fissaAppuntamento);
             ps.setInt(1, appuntamento.idAppuntamento());
@@ -40,26 +40,30 @@ public class ModelCliente {
             ps.setTime(3, java.sql.Time.valueOf(appuntamento.ora()));
             ps.setString(4, appuntamento.tipologia());
             ps.setTime(5, java.sql.Time.valueOf(appuntamento.durata()));
-            ps.setString(6, appuntamento.getNumeroTelaio());
-            ps.setInt(7, appuntamento.getIdCliente());
-            ps.setInt(8, appuntamento.getIdDipendente());
+            ps.setString(6, appuntamento.numero_telaio());
+            ps.setString(7, appuntamento.nome_dipendente());
+            ps.setString(8, appuntamento.nome_cliente());
             
             ps.executeUpdate();
+            ps.close();
+            connection.commit();
             return true;
-        } catch (SQLException e) {
-            e.printStackTrace(); // You can log this error or handle it appropriately
-            return false;
-        } finally {
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        }         catch(SQLException e){
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
             }
+            return false;
         }
-    }*/
+    }
 
+    public void end(){
+        try {
+            connection.close();
+        } catch (SQLException e) {
+        }
+    }
     List<Marchio> visualizzaMarchi() {
         PreparedStatement ps;
         List<Marchio> marchi = new ArrayList<>();
@@ -157,10 +161,10 @@ public class ModelCliente {
         }
     }
 
-    /*List<Auto> visualizzaAutoxMarchioxTipologia(Marchio marchio ,Tipologia tipologia){
+    List<Auto> visualizzaAutoxMarchioxTipologia(Marchio marchio ,Tipologia tipologia){
         PreparedStatement ps;
         List<Auto> auto = new ArrayList<>();
-        final String vediAuto = "SELECT A.Numero_Telaio, A.Immatricolazione, A.data, A.targa, M.Descrizione AS Modello, T.nome AS Tipologia " +
+        final String vediAuto = "SELECT A.Numero_Telaio, A.prezzo , A.Immatricolazione, A.targa, A.data, M.Descrizione AS Modello, T.nome AS Tipologia " +
                                 "FROM AUTO A "+
                                 "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione "+
                                 "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO "+
@@ -174,10 +178,72 @@ public class ModelCliente {
             ps.setString(2, tipologia.nome());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                auto.add(new Auto(set.getString(1), set.getString(2), set.getString(3), set.getString(4), set.getString(5), set.getString(6)));
-    }*/
-
+                auto.add(new Auto(set.getString(1),set.getDouble(2),set.getBoolean(3), Optional.of(set.getString(4)), Optional.of(set.getDate(5).toLocalDate()),"","",""));
+    }
+            for (var a : auto) {
+                System.out.println(a.toString());
+            }
+            ps.close();
+            return auto;
+        }
+        catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+    }
     
+    Dipendente visualizzaDipendente(Marchio marchio){
+        PreparedStatement ps;
+        Dipendente dipendente=null;
+        final String vediDipendente = "SELECT D.ID_DIPENDENTE, D.nome, D.cognome, D.telefono, D.e_mail, M.Nome AS Marchio "+
+                                        "FROM DIPENDENTE D "+
+                                        "JOIN MARCHIO M ON D.ID_MARCHIO = M.ID_MARCHIO "+
+                                        "WHERE M.ID_MARCHIO = ?;";
+        try {
+            ps = connection.prepareStatement(vediDipendente);
+            ps.setInt(1, marchio.idMarchio());
+            ResultSet set = ps.executeQuery();
+            while (set.next()) {
+                dipendente = new Dipendente(set.getInt(1), set.getString(2), set.getString(3), set.getString(4), set.getString(5));
+            }
+            System.out.println(dipendente.toString());
+            ps.close();
+            return dipendente;
+        }
+        catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+    }
+        List<Auto> visualizzaAutoScontate(Marchio marchio){
+            PreparedStatement ps;
+            List<Auto> auto = new ArrayList<>();
+            final String vediAuto ="SELECT A.Numero_Telaio,  A.prezzo , A.Immatricolazione, A.targa, A.data, M.Descrizione AS Modello, S.Percentuale, S.data_inizio, S.data_fine " +
+                                    "FROM AUTO A "+
+                                    "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione "+
+                                    "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO " +
+                                    "JOIN MARCHIO MR ON M.ID_MARCHIO = MR.ID_MARCHIO " +
+                                    "JOIN SCONTO S ON A.Numero_Telaio = S.Numero_Telaio " +
+                                    "WHERE MR.ID_MARCHIO = ? " +
+                                    "AND CURRENT_DATE BETWEEN S.data_inizio AND S.data_fine;";       
+        try{
+            ps = connection.prepareStatement(vediAuto);
+            ps.setInt(1, marchio.idMarchio());
+            ResultSet set = ps.executeQuery();
+            while (set.next()) {
+                auto.add(new Auto(set.getString(1),set.getDouble(2),set.getBoolean(3), Optional.of(set.getString(4)), Optional.of(set.getDate(5).toLocalDate()),"","",""));
+            }
+            for (var a : auto) {
+                System.out.println(a.toString());
+            }
+            ps.close();
+            return auto;
+        }
+        catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+    }
+
+
+
     public static void main(String[] args) {
         ModelCliente model = new ModelCliente(ConnectionFactory.build("gestione_concessionario_prova",
                 "jdbc:mysql://localhost:3306/", "root", "Strong.2024.Password"), 13);
@@ -186,5 +252,7 @@ public class ModelCliente {
         model.visualizzaModello();
         System.out.println("----------------------");
         model.visualizzaGaranzia(new Auto("1HGBH41JXMN109186", 20000.00, true, Optional.of("AB123CD"), Optional.of(LocalDate.of(2024, 01, 10)),"","",""));
+        System.out.println("----------------------");
+        model.visualizzaDipendente(new Marchio(2,"Lamborghini"));
     }
 }
