@@ -26,7 +26,7 @@ public class ModelDipendente {
         this.iD = iD;
     }
 
-   /*  List<Auto> visualizzaAuto() {
+     List<Auto> visualizzaAuto() {
         PreparedStatement ps;
         List<Auto> auto = new ArrayList<>();
         final String vediAuto = "SELECT A.Numero_Telaio, A.prezzo, A.Immatricolazione, A.data, A.targa, M.Descrizione AS Modello, C.Motore, C.alimentazione "
@@ -43,7 +43,7 @@ public class ModelDipendente {
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 LocalDate data = set.getDate(4).toLocalDate();
-                auto.add(new Auto(set.getString(1),set.getInt(2), Optional.of(set.getString(3)), Optional.of(set.getString(5)),
+                auto.add(new Auto(set.getString(1),set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(5)),
                         Optional.of(data), set.getString(6), set.getString(7),set.getString(8)));
             }
             for (var a : auto) {
@@ -53,7 +53,7 @@ public class ModelDipendente {
         } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
-    }*/
+    }
 
     List<Appuntamento> visualizzaAppuntamenti() {
         PreparedStatement ps;
@@ -125,8 +125,8 @@ public class ModelDipendente {
     public static void main(String[] args) {
         ModelDipendente model = new ModelDipendente(ConnectionFactory.build("gestione_concessionario_prova",
                 "jdbc:mysql://localhost:3306/", "root", "cadmio"), 13);
-        model.visualizzaAppuntamenti();
-        model.aggiungiSconto(new Sconto(95,LocalDate.now(),LocalDate.of(2025, 11,11),"1HGBH41JXMN109186"));
+       // model.visualizzaAppuntamenti();
+        model.aggiungiSconto(new Sconto(80,LocalDate.now(),LocalDate.of(2025, 12,11),"1HGBH41JXMN109186"));
         model.end();
     }
 }
