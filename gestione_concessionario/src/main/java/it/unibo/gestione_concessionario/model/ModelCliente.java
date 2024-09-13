@@ -120,7 +120,7 @@ public class ModelCliente {
                                         "WHERE A.Numero_Telaio = ?;";   
         try {
             ps = connection.prepareStatement(vediOptional);
-            ps.setString(1, macchina.nuremo_telaio());
+            ps.setString(1, macchina.numero_telaio());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 optional.add(new Optionals(set.getInt(1), set.getString(2), set.getDouble(3)));
@@ -145,7 +145,7 @@ public class ModelCliente {
                                         "WHERE Numero_Telaio = ?;";
         try {
             ps = connection.prepareStatement(vediGaranzia);
-            ps.setString(1, macchina.nuremo_telaio());
+            ps.setString(1, macchina.numero_telaio());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 garanzia.add(new Garanzia(set.getInt(1), set.getString(2), set.getString(3)));

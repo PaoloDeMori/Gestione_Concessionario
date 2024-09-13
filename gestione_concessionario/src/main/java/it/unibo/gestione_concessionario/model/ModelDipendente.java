@@ -115,6 +115,32 @@ public class ModelDipendente {
         }
     }
 
+    public boolean aggiungiOfferta(Sconto sconto) {
+        PreparedStatement ps;
+        final String aggiungiOff = "INSERT INTO O (Percentuale, data_inizio, data_fine, Numero_Telaio, ID_DIPENDENTE) "
+                +
+                "VALUES (?,?,?,?,?);";
+        try {
+            ps = connection.prepareStatement(aggiungiOff);
+            ps.setInt(1, sconto.percentuale());
+            ps.setDate(2, sconto.dataInizio() != null ? Date.valueOf(sconto.dataInizio()) : null);
+            ps.setDate(3, sconto.dataFine() != null ? Date.valueOf(sconto.dataFine()) : null);
+            ps.setString(4, sconto.nuremo_telaio());
+            ps.setInt(5, iD);
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+    }
+
     public void end() {
         try {
             connection.close();
