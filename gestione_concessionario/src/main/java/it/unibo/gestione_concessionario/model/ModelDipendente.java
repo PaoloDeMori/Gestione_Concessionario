@@ -15,9 +15,12 @@ import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Configurazione;
+import it.unibo.gestione_concessionario.commons.dto.Contratto;
+import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.commons.dto.Offerta;
 import it.unibo.gestione_concessionario.commons.dto.Sconto;
+import it.unibo.gestione_concessionario.commons.dto.Vendita;
 
 public class ModelDipendente {
 
@@ -170,6 +173,84 @@ public class ModelDipendente {
         
     }
 
+    public boolean fissaTestDrive(Appuntamento appuntamento) {
+        PreparedStatement ps;
+        final String fissaTestDrive = "INSERT INTO APPUNTAMENTO (data, ora, Tipologia, durata, Numero_Telaio, ID_CLIENTE, ID_DIPENDENTE) " +
+                                      "VALUES (?,Test-Drive,?,?,?,?,?);";
+        try {
+            ps = connection.prepareStatement(fissaTestDrive);
+            ps.setDate(1, Date.valueOf(appuntamento.data()));
+            ps.setTime(2, java.sql.Time.valueOf(appuntamento.ora()));
+            ps.setTime(3, java.sql.Time.valueOf(appuntamento.durata()));
+            ps.setString(4, appuntamento.numero_telaio());
+            ps.setString(5, appuntamento.nome_dipendente());
+            ps.setString(6, appuntamento.nome_cliente());
+            ps.execute();
+            ps.close();
+            return true;
+        }
+        catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+    }
+
+    public boolean fissaConsulenza(Appuntamento appuntamento) {
+        PreparedStatement ps;
+        final String fissaTestDrive = "INSERT INTO APPUNTAMENTO (data, ora, Tipologia, durata, Numero_Telaio, ID_CLIENTE, ID_DIPENDENTE) " +
+                                      "VALUES (?,Consulenza,?,?,?,?,?);";
+        try {
+            ps = connection.prepareStatement(fissaTestDrive);
+            ps.setDate(1, Date.valueOf(appuntamento.data()));
+            ps.setTime(2, java.sql.Time.valueOf(appuntamento.ora()));
+            ps.setTime(3, java.sql.Time.valueOf(appuntamento.durata()));
+            ps.setString(4, appuntamento.numero_telaio());
+            ps.setString(5, appuntamento.nome_dipendente());
+            ps.setString(6, appuntamento.nome_cliente());
+            ps.execute();
+            ps.close();
+            return true;
+        }
+        catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+    }
+
+    public boolean agigungiDipendente(Dipendente dipendente) {
+        PreparedStatement ps;
+        final String aggiungiDip = "INSERT INTO DIPENDENTE (ID_MARCHIO, nome, cognome, telefono, e_mail) " +
+                                    "VALUES (?, ?, ?, ?, ?, ?); ";
+        try {
+            ps = connection.prepareStatement(aggiungiDip);
+            ps.setInt(1, dipendente.idmarchio());
+            ps.setString(2, dipendente.nome());
+            ps.setString(3, dipendente.cognome());
+            ps.setString(4, dipendente.telefono());
+            ps.setString(5, dipendente.eMail());
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+    }
+
+
     public void end() {
         try {
             connection.close();
@@ -183,11 +264,11 @@ public class ModelDipendente {
         try {
             ps = connection.prepareStatement(aggiungiConfigurazione);
             ps.setInt(1, configurazione.idConfigurazione());
-            ps.setString(2, configurazione.modello());
-            ps.setString(3, configurazione.motore());
-            ps.setString(4, configurazione.alimentazione());
-            ps.setInt(5, configurazione.cc());
-            ps.setInt(6, configurazione.horsePower());
+            ps.setString(2, configurazione.motore());
+            ps.setString(3, configurazione.alimentazione());
+            ps.setInt(4, configurazione.cc());
+            ps.setInt(5, configurazione.horsePower());
+            ps.setInt(6, configurazione.id_modello());
             ps.executeUpdate();
             ps.close();
             connection.commit();
@@ -228,6 +309,61 @@ public class ModelDipendente {
             return false;
         }
     }
+
+    public boolean inserisciVendita(Vendita vendita) {
+        PreparedStatement ps;
+        final String inserisciVendita = "INSERT INTO VENDITA (Numero_Telaio, ID_Contratto, data, ora, tipologia ,ID_DIPENDENTE, ID_CLIENTE) "+
+                                        "VALUES (?,?,?,?,?,?);";
+        try {
+            ps = connection.prepareStatement(inserisciVendita);
+            ps.setInt(1, vendita.idVendita());
+            ps.setInt(2, vendita.idContratto());
+            ps.setDate(3,Date.valueOf(vendita.data()));
+            ps.setTime(4,java.sql.Time.valueOf(vendita.ora()));
+            ps.setString(5,vendita.tipologia().get());
+            ps.setInt(6,vendita.id_dipendente());
+            ps.setInt(7,vendita.codCliente());
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        } catch (SQLException e) {  
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+    }
+
+    public boolean aggiungiContratto(Contratto contratto) {
+        PreparedStatement ps;
+        final String aggiungiContratto = "INSERT INTO CONTRATTO (ID_CONTRATTO,prezzo, Tipologia, Nome_banca, codice_finanziamento, Intestatario, metodo_di_pagamento) " +
+                                          "VALUES (?,?,?.?,?,?);";
+        try {
+            ps = connection.prepareStatement(aggiungiContratto);
+            ps.setInt(1, contratto.idContratto());
+            ps.setDouble(2, contratto.prezzo());
+            ps.setString(3, contratto.tipologia());
+            ps.setString(4, contratto.nomeBanca().get());
+            ps.setString(5, contratto.codiceFinanziamento().get());
+            ps.setString(6, contratto.intestatario().get());
+            ps.setString(7, contratto.metodoDiPagamento().get());
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+    }
+
 
     public static void main(String[] args) {
         ModelDipendente model = new ModelDipendente(ConnectionFactory.build("gestione_concessionario_prova",

@@ -1,7 +1,7 @@
 package it.unibo.gestione_concessionario.commons.dto;
 
 public record Dipendente(
-    int idDipendente,
+    int idmarchio,
     String nome,
     String cognome,
     String telefono,

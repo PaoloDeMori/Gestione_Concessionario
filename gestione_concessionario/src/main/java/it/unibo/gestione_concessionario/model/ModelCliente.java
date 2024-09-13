@@ -194,7 +194,7 @@ public class ModelCliente {
     Dipendente visualizzaDipendente(Marchio marchio){
         PreparedStatement ps;
         Dipendente dipendente=null;
-        final String vediDipendente = "SELECT D.ID_DIPENDENTE, D.nome, D.cognome, D.telefono, D.e_mail, M.Nome AS Marchio "+
+        final String vediDipendente = "SELECT  M.ID_MARCHIO , D.nome, D.cognome, D.telefono, D.e_mail, M.Nome  AS Marchio "+
                                         "FROM DIPENDENTE D "+
                                         "JOIN MARCHIO M ON D.ID_MARCHIO = M.ID_MARCHIO "+
                                         "WHERE M.ID_MARCHIO = ?;";
@@ -241,7 +241,6 @@ public class ModelCliente {
             throw new ProblemWithConnectionException(e);
         }
     }
-
 
 
     public static void main(String[] args) {

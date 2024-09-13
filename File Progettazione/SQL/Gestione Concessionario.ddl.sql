@@ -321,6 +321,28 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER check_responsabile_insert
+BEFORE INSERT ON DIPENDENTE
+FOR EACH ROW
+BEGIN
+    DECLARE is_responsabile BOOLEAN;
+
+    -- Check if the current user inserting the new dipendente is a responsabile
+    SELECT responsabile INTO is_responsabile 
+    FROM DIPENDENTE
+    WHERE ID_DIPENDENTE = NEW.ID_DIPENDENTE;
+
+    IF is_responsabile = FALSE THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Only a responsible employee can add a new employee.';
+    END IF;
+END$$
+
+DELIMITER ;
 -- Index Section
 -- _____________ 
 
