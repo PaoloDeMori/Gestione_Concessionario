@@ -18,6 +18,7 @@ public final class  ConnectionFactory {
                 throw new SQLException();
             }
             else{
+                connection.setAutoCommit(false);
                 return connection;
             }
         }
