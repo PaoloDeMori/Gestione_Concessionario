@@ -26,7 +26,7 @@ public class ModelDipendente {
         this.iD = iD;
     }
 
-    List<Auto> visualizzaAuto() {
+   /*  List<Auto> visualizzaAuto() {
         PreparedStatement ps;
         List<Auto> auto = new ArrayList<>();
         final String vediAuto = "SELECT A.Numero_Telaio, A.Immatricolazione, A.data, A.targa, M.Descrizione AS Modello, C.Motore, C.alimentazione "
@@ -53,7 +53,7 @@ public class ModelDipendente {
         } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
-    }
+    }*/
 
     List<Appuntamento> visualizzaAppuntamenti() {
         PreparedStatement ps;
@@ -112,6 +112,6 @@ public class ModelDipendente {
     public static void main(String[] args) {
         ModelDipendente model = new ModelDipendente(ConnectionFactory.build("gestione_concessionario_prova",
                 "jdbc:mysql://localhost:3306/", "root", "cadmio"), 13);
-        model.visualizzaAuto();
+        //model.visualizzaAuto();
     }
 }
