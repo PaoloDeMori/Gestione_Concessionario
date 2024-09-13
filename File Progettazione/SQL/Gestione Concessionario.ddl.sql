@@ -3,263 +3,260 @@
 -- *--------------------------------------------
 -- * DB-MAIN version: 11.0.2              
 -- * Generator date: Sep 14 2021              
--- * Generation date: Tue Sep 10 16:02:16 2024 
--- * LUN file: C:\Users\paolo\Desktop\Concessionario\File Progettazione\Schemi\Gestione Concessionario Logico Relazionale.lun 
--- * Schema: Gestione Concessionario/SQL4 
+-- * Generation date: Thu Sep 12 18:35:46 2024 
+-- * LUN file: C:\Users\paolo\Desktop\Concessionario\File Progettazione\SQL\Schemi\Gestione ConcessionarioLogico Relazionale.lun 
+-- * Schema: Gestione Concessionario/SQL1 
 -- ********************************************* 
 
 
 -- Database Section
 -- ________________ 
 
-create database Gestione_Concessionario;
+create database Gestione_Concessionario_prova;
 
 
 -- DBSpace Section
 -- _______________
 
 
-CREATE TABLE APPUNTAMENTO (
-    ID_APPUNTAMENTO INT(7) NOT NULL,
-    data DATE NOT NULL,
-    ora TIME NOT NULL,
-    Tipologia VARCHAR(50) NOT NULL,
-    durata INT(3),
-    Numero_Telaio CHAR(17) NOT NULL,
-    ID_CLIENTE INT(7) NOT NULL,
-    ID_DIPENDENTE INT(7) NOT NULL,
-    CONSTRAINT ID_APPUNTAMENTO_ID PRIMARY KEY (ID_APPUNTAMENTO)
-);
+-- Tables Section
+-- _____________ 
 
-CREATE TABLE AUTO (
-    Numero_Telaio CHAR(17) NOT NULL,
-    Immatricolazione CHAR,
-    data DATE,
-    targa CHAR(7),
-    ID_Configurazione INT(7) NOT NULL,
-    CONSTRAINT ID_AUTO_ID PRIMARY KEY (Numero_Telaio)
-);
+create table APPUNTAMENTO (
+     ID_APPUNTAMENTO INT(7) AUTO_INCREMENT,
+     data date not null,
+     ora TIME not null,
+     Tipologia varchar(15) not null,
+     durata TIME,
+     Numero_Telaio char(17) not null,
+     ID_CLIENTE INT(7) not null,
+     ID_DIPENDENTE INT(7) not null,
+     constraint ID_APPUNTAMENTO_ID primary key (ID_APPUNTAMENTO));
 
-CREATE TABLE CLIENTE (
-    ID_CLIENTE INT(7) NOT NULL,
-    nome VARCHAR(50) NOT NULL,
-    cognome VARCHAR(50) NOT NULL,
-    telefono INT(20) NOT NULL,
-    e_mail VARCHAR(50) NOT NULL,
-    CONSTRAINT ID_CLIENTE_ID PRIMARY KEY (ID_CLIENTE)
-);
+create table AUTO (
+     Numero_Telaio char(17) not null,
+     Prezzo INT(7) not null,
+     Immatricolazione BOOLEAN,
+     data DATE,
+     targa varchar(10),
+     ID_Configurazione INT(7) not null,
+     constraint ID_AUTO_ID primary key (Numero_Telaio));
 
-CREATE TABLE CONFIGURAZIONE (
-    ID_Configurazione INT(7) NOT NULL,
-    Motore VARCHAR(50) NOT NULL,
-    alimentazione VARCHAR(50) NOT NULL,
-    cc INT(4) NOT NULL,
-    horse_power INT(4) NOT NULL,
-    ID_MODELLO INT(7) NOT NULL,
-    CONSTRAINT ID_CONFIGURAZIONE_ID PRIMARY KEY (ID_Configurazione)
-);
+create table CLIENTE (
+     ID_CLIENTE INT(7) AUTO_INCREMENT,
+     nome varchar(25) not null,
+     cognome varchar(25) not null,
+     telefono varchar(20) not null,
+     e_mail varchar(50) not null,
+     constraint ID_CLIENTE_ID primary key (ID_CLIENTE));
 
-CREATE TABLE CONTRATTO (
-    prezzo DECIMAL(7 , 2 ) NOT NULL,
-    ID_Contratto INT(7) NOT NULL,
-    ID_Vendita INT(7) NOT NULL,
-    Tipologia VARCHAR(50) NOT NULL,
-    Nome_banca VARCHAR(50),
-    codice_finanziamento INT(7),
-    Intestatario VARCHAR(50),
-    metodo_di_pagamento VARCHAR(50),
-    CONSTRAINT ID_CONTRATTO_ID PRIMARY KEY (ID_Contratto),
-    CONSTRAINT SID_CONTR_VENDI_ID UNIQUE (ID_Vendita)
-);
+create table CONFIGURAZIONE (
+     ID_Configurazione INT(7) AUTO_INCREMENT,
+     Motore varchar(25) not null,
+     alimentazione varchar(25) not null,
+     cc INT(4) not null,
+     horse_power INT(4) not null,
+     ID_MODELLO INT(7) not null,
+     constraint ID_CONFIGURAZIONE_ID primary key (ID_Configurazione));
 
-CREATE TABLE DIPENDENTE (
-    ID_DIPENDENTE INT(7) NOT NULL,
-    ID_MARCHIO INT(7) NOT NULL,
-    nome VARCHAR(50) NOT NULL,
-    cognome VARCHAR(50) NOT NULL,
-    telefono INT(20) NOT NULL,
-    e_mail VARCHAR(50) NOT NULL,
-    CONSTRAINT ID_DIPENDENTE_ID PRIMARY KEY (ID_DIPENDENTE),
-    CONSTRAINT SID_DIPEN_MARCH_ID UNIQUE (ID_MARCHIO)
-);
+create table CONTRATTO (
+     prezzo INT(7) not null,
+     ID_Contratto INT(7) AUTO_INCREMENT,
+     Tipologia varchar(25) not null,
+     Nome_banca varchar(25),
+     codice_finanziamento varchar(25),
+     Intestatario varchar(25),
+     metodo_di_pagamento varchar(25),
+     constraint ID_CONTRATTO_ID primary key (ID_Contratto));
 
-CREATE TABLE GARANZIA (
-    scadenza DATE NOT NULL,
-    copertura INT(4) NOT NULL,
-    ID_Garanzia INT(7) NOT NULL,
-    Numero_Telaio CHAR(17) NOT NULL,
-    CONSTRAINT ID_GARANZIA_ID PRIMARY KEY (ID_Garanzia),
-    CONSTRAINT SID_GARAN_AUTO_ID UNIQUE (Numero_Telaio)
-);
+create table DIPENDENTE (
+     ID_DIPENDENTE INT(7) AUTO_INCREMENT,
+     ID_MARCHIO INT(7) not null,
+     nome varchar(25) not null,
+     cognome varchar(25) not null,
+     teleofno varchar(20) not null,
+     e_mail varchar(50) not null,
+     constraint ID_DIPENDENTE_ID primary key (ID_DIPENDENTE),
+     constraint SID_DIPEN_MARCH_ID unique (ID_MARCHIO));
 
-CREATE TABLE MARCHIO (
-    ID_MARCHIO INT(7) NOT NULL,
-    Nome VARCHAR(50) NOT NULL,
-    CONSTRAINT ID_MARCHIO_ID PRIMARY KEY (ID_MARCHIO)
-);
+create table GARANZIA (
+     scadenza date not null,
+     copertura INT(4) not null,
+     ID_Garanzia INT(7) AUTO_INCREMENT,
+     Numero_Telaio char(17) not null,
+     constraint ID_GARANZIA_ID primary key (ID_Garanzia),
+     constraint SID_GARAN_AUTO_ID unique (Numero_Telaio));
 
-CREATE TABLE MODELLO (
-    ID_MODELLO INT(7) NOT NULL,
-    Descrizione VARCHAR(150) NOT NULL,
-    Anno INT(4) NOT NULL,
-    ID_TIPOLOGIA INT(7) NOT NULL,
-    ID_MARCHIO INT(7) NOT NULL,
-    CONSTRAINT ID_MODELLO_ID PRIMARY KEY (ID_MODELLO)
-);
+create table MARCHIO (
+     ID_MARCHIO INT(7) AUTO_INCREMENT,
+     Nome varchar(25) not null,
+     constraint ID_MARCHIO_ID primary key (ID_MARCHIO));
 
-CREATE TABLE OFFERTA (
-    ID_OFFERTA INT(7) NOT NULL,
-    Percentuale INT(3) NOT NULL,
-    data_inizio DATE NOT NULL,
-    data_fine DATE NOT NULL,
-    ID_MARCHIO INT(7) NOT NULL,
-    ID_DIPENDENTE INT(7) NOT NULL,
-    CONSTRAINT ID_OFFERTA_ID PRIMARY KEY (ID_OFFERTA)
-);
+create table MODELLO (
+     ID_MODELLO INT(7) AUTO_INCREMENT,
+     Descrizione varchar(100) not null,
+     Anno INT(4) not null,
+     ID_TIPOLOGIA INT(7) not null,
+     ID_MARCHIO INT(7) not null,
+     constraint ID_MODELLO_ID primary key (ID_MODELLO));
 
-CREATE TABLE OPTIONAL (
-    ID_Optional INT(7) NOT NULL,
-    descrizione VARCHAR(50) NOT NULL,
-    prezzo DECIMAL(5 , 2 ) NOT NULL,
-    CONSTRAINT ID_OPTIONAL_ID PRIMARY KEY (ID_Optional)
-);
+create table OFFERTA (
+     ID_OFFERTA INT(7) AUTO_INCREMENT,
+     Percentuale INT(3) not null,
+     data_inizio date not null,
+     data_fine date not null,
+     ID_MARCHIO INT(7) not null,
+     ID_DIPENDENTE INT(7) not null,
+     constraint ID_OFFERTA_ID primary key (ID_OFFERTA));
 
-CREATE TABLE Personalizzazione (
-    Numero_Telaio CHAR(17) NOT NULL,
-    ID_Optional INT(7) NOT NULL,
-    CONSTRAINT ID_Personalizzazione_ID PRIMARY KEY (Numero_Telaio , ID_Optional)
-);
+create table OPTIONAL (
+     ID_Optional INT(7) AUTO_INCREMENT,
+     descrizione varchar(100) not null,
+     prezzo INT(5) not null,
+     constraint ID_OPTIONAL_ID primary key (ID_Optional));
 
-CREATE TABLE SCONTO (
-    ID_SCONTO INT(7) NOT NULL,
-    Percentuale INT(3) NOT NULL,
-    data_inizio DATE NOT NULL,
-    data_fine DATE NOT NULL,
-    Numero_Telaio CHAR(17) NOT NULL,
-    ID_DIPENDENTE INT(7) NOT NULL,
-    CONSTRAINT ID_SCONTO_ID PRIMARY KEY (ID_SCONTO)
-);
+create table Personalizzazione (
+     Numero_Telaio char(17) not null,
+     ID_Optional INT(7) not null,
+     constraint ID_Personalizzazione_ID primary key (Numero_Telaio, ID_Optional));
 
-CREATE TABLE Supporto (
-    ID_MODELLO INT(7) NOT NULL,
-    ID_Optional INT(7) NOT NULL,
-    CONSTRAINT ID_Supporto_ID PRIMARY KEY (ID_MODELLO , ID_Optional)
-);
+create table SCONTO (
+     ID_SCONTO INT(7) AUTO_INCREMENT,
+     Percentuale INT(3) not null,
+     data_inizio date not null,
+     data_fine date not null,
+     Numero_Telaio char(17) not null,
+     ID_DIPENDENTE INT(7) not null,
+     constraint ID_SCONTO_ID primary key (ID_SCONTO));
 
-CREATE TABLE TIPOLOGIA (
-    ID_TIPOLOGIA INT(7) NOT NULL,
-    nome VARCHAR(50) NOT NULL,
-    caratteristiche VARCHAR(100) NOT NULL,
-    CONSTRAINT ID_TIPOLOGIA_ID PRIMARY KEY (ID_TIPOLOGIA)
-);
+create table Supporto (
+     ID_MODELLO INT(7) not null,
+     ID_Optional INT(7) not null,
+     constraint ID_Supporto_ID primary key (ID_MODELLO, ID_Optional));
 
-CREATE TABLE VENDITA (
-    ID_Vendita INT(7) NOT NULL,
-    Numero_Telaio CHAR(17) NOT NULL,
-    data DATE NOT NULL,
-    ora TIME NOT NULL,
-    ID_DIPENDENTE INT(7) NOT NULL,
-    ID_CLIENTE INT(7) NOT NULL,
-    CONSTRAINT ID_VENDITA_ID PRIMARY KEY (ID_Vendita),
-    CONSTRAINT SID_VENDI_AUTO_ID UNIQUE (Numero_Telaio)
-);
+create table TIPOLOGIA (
+     ID_TIPOLOGIA INT(7) AUTO_INCREMENT,
+     nome varchar(25) not null,
+     caratteristiche varchar(100) not null,
+     constraint ID_TIPOLOGIA_ID primary key (ID_TIPOLOGIA));
+
+create table VENDITA (
+     ID_Vendita INT(7) AUTO_INCREMENT,
+     Numero_Telaio char(17) not null,
+     ID_Contratto INT(7) not null,
+     data date not null,
+     ora TIME not null,
+     ID_DIPENDENTE INT(7) not null,
+     ID_CLIENTE INT(7) not null,
+     constraint ID_VENDITA_ID primary key (ID_Vendita),
+     constraint SID_VENDI_AUTO_ID unique (Numero_Telaio),
+     constraint SID_VENDI_CONTR_ID unique (ID_Contratto));
 
 
 -- Constraints Section
--- ___________________
+-- ___________________ 
 
 alter table APPUNTAMENTO add constraint REF_APPUN_AUTO_FK
      foreign key (Numero_Telaio)
-     references AUTO (Numero_Telaio);
+     references AUTO (Numero_Telaio)
+     ON DELETE CASCADE; -- removes the meetings if the car doesn't exist
 
 alter table APPUNTAMENTO add constraint REF_APPUN_CLIEN_FK
      foreign key (ID_CLIENTE)
-     references CLIENTE (ID_CLIENTE);
+     references CLIENTE(ID_CLIENTE)
+     ON DELETE CASCADE; -- removes the meetings if the client is removed
 
 alter table APPUNTAMENTO add constraint REF_APPUN_DIPEN_FK
      foreign key (ID_DIPENDENTE)
-     references DIPENDENTE (ID_DIPENDENTE);
+     references DIPENDENTE(ID_DIPENDENTE)
+     ON DELETE CASCADE; -- removes the meeting if the seller doesn't exist anymore 
 
 alter table AUTO add constraint REF_AUTO_CONFI_FK
      foreign key (ID_Configurazione)
-     references CONFIGURAZIONE (ID_Configurazione);
+     references CONFIGURAZIONE(ID_Configurazione)
+     ON DELETE RESTRICT; -- it's impossible to remove a row from configurazione if it is used by a car
 
 alter table CONFIGURAZIONE add constraint REF_CONFI_MODEL_FK
      foreign key (ID_MODELLO)
-     references MODELLO (ID_MODELLO);
-
-alter table CONTRATTO add constraint SID_CONTR_VENDI_FK
-     foreign key (ID_Vendita)
-     references VENDITA (ID_Vendita);
+     references MODELLO(ID_MODELLO)
+     ON DELETE RESTRICT; -- it's impossible to remove a row from modello table if it used by a row in configurazione table
 
 alter table DIPENDENTE add constraint SID_DIPEN_MARCH_FK
      foreign key (ID_MARCHIO)
-     references MARCHIO (ID_MARCHIO);
+     references MARCHIO(ID_MARCHIO);
 
 alter table GARANZIA add constraint SID_GARAN_AUTO_FK
      foreign key (Numero_Telaio)
-     references AUTO (Numero_Telaio);
+     references AUTO(Numero_Telaio)
+     ON DELETE CASCADE; -- removes the GARANZIA row if the row in AUTO table is removed
 
-alter table MODELLO add constraint EQU_MODEL_TIPOL_FK
+alter table MODELLO add constraint REF_MODEL_TIPOL_FK
      foreign key (ID_TIPOLOGIA)
-     references TIPOLOGIA (ID_TIPOLOGIA);
+     references TIPOLOGIA(ID_TIPOLOGIA)
+     ON DELETE RESTRICT; -- It's impossible to remove a row in TIPOLOGIA if it is used by a row in MODELLO
 
 alter table MODELLO add constraint EQU_MODEL_MARCH_FK
      foreign key (ID_MARCHIO)
-     references MARCHIO (ID_MARCHIO);
+     references MARCHIO(ID_MARCHIO)
+     ON DELETE RESTRICT; -- it's impossible to remove a row in MARCHIO if it is used by a row in MODELLO
 
 alter table OFFERTA add constraint REF_OFFER_MARCH_FK
      foreign key (ID_MARCHIO)
-     references MARCHIO (ID_MARCHIO);
+     references MARCHIO(ID_MARCHIO)
+     ON DELETE CASCADE; -- removes the row in offerta if the related row in MARCHIO is removed
 
 alter table OFFERTA add constraint REF_OFFER_DIPEN_FK
      foreign key (ID_DIPENDENTE)
-     references DIPENDENTE (ID_DIPENDENTE);
-
+     references DIPENDENTE(ID_DIPENDENTE)
+     ON DELETE CASCADE; -- removes the offerta if the dipendente is deleted
 
 alter table Personalizzazione add constraint EQU_Perso_OPTIO_FK
      foreign key (ID_Optional)
-     references OPTIONAL (ID_Optional);
+     references OPTIONAL(ID_Optional);
 
 alter table Personalizzazione add constraint REF_Perso_AUTO
      foreign key (Numero_Telaio)
-     references AUTO (Numero_Telaio);
+     references AUTO(Numero_Telaio);
 
 alter table SCONTO add constraint REF_SCONT_AUTO_FK
      foreign key (Numero_Telaio)
-     references AUTO (Numero_Telaio);
+     references AUTO(Numero_Telaio)
+      ON DELETE CASCADE;
 
 alter table SCONTO add constraint REF_SCONT_DIPEN_FK
      foreign key (ID_DIPENDENTE)
-     references DIPENDENTE (ID_DIPENDENTE);
+     references DIPENDENTE(ID_DIPENDENTE)
+      ON DELETE CASCADE;
 
 alter table Supporto add constraint REF_Suppo_OPTIO_FK
      foreign key (ID_Optional)
-     references OPTIONAL (ID_Optional);
+     references OPTIONAL(ID_Optional);
 
 alter table Supporto add constraint REF_Suppo_MODEL
      foreign key (ID_MODELLO)
-     references MODELLO (ID_MODELLO);
+     references MODELLO(ID_MODELLO);
 
 alter table VENDITA add constraint REF_VENDI_DIPEN_FK
      foreign key (ID_DIPENDENTE)
-     references DIPENDENTE (ID_DIPENDENTE);
+     references DIPENDENTE(ID_DIPENDENTE);
 
 alter table VENDITA add constraint SID_VENDI_AUTO_FK
      foreign key (Numero_Telaio)
-     references AUTO (Numero_Telaio);
-
+     references AUTO(Numero_Telaio);
 
 alter table VENDITA add constraint REF_VENDI_CLIEN_FK
      foreign key (ID_CLIENTE)
-     references CLIENTE (ID_CLIENTE);
-     
-     
--- triggers
--- _________________________
--- Trigger to ensure correct associations between MARCHIO, MODELLO, and DIPENDENTE tables
+     references CLIENTE(ID_CLIENTE);
+
+alter table VENDITA add constraint SID_VENDI_CONTR_FK
+     foreign key (ID_Contratto)
+     references CONTRATTO(ID_Contratto);
+
+
+-- Triggers
+-- Trigger to ensure correct associations between MARCHIO and MODELLO tables
 -- This trigger is activated before inserting a new row in the MARCHIO table.
--- It checks if at least one row in the MODELLO or DIPENDENTE table is associated with the MARCHIO being inserted.
+-- It checks if at least one row in the MODELLO table is associated with the MARCHIO being inserted.
 
 DELIMITER $$
 
@@ -267,8 +264,7 @@ CREATE TRIGGER check_modello_dipendente_marchio
 BEFORE INSERT ON MARCHIO
 FOR EACH ROW
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM MODELLO WHERE MODELLO.ID_MARCHIO = NEW.ID_MARCHIO)
-    AND NOT EXISTS (SELECT 1 FROM DIPENDENTE WHERE DIPENDENTE.ID_MARCHIO = NEW.ID_MARCHIO) THEN
+    IF NOT EXISTS (SELECT 1 FROM MODELLO WHERE MODELLO.ID_MARCHIO = NEW.ID_MARCHIO) THEN
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Errore: Il marchio deve avere almeno un modello o un dipendente associato.';
     END IF;
@@ -279,7 +275,6 @@ DELIMITER ;
 -- Trigger to ensure correct associations between OPTIONAL, and Personalizzazione tables
 -- This trigger is activated before inserting a new row in the OPTIONAL table.
 -- It checks if at least one row in the Personalizzazione table is associated with the OPTIONAL being inserted.
-
 DELIMITER $$
 
 CREATE TRIGGER check_optional_personalizzazione
@@ -294,46 +289,11 @@ END$$
 
 DELIMITER ;
 
--- Trigger to ensure correct associations between TIPOLOGIA, and MODELLO tables
--- This trigger is activated before inserting a new row in the TIPOLOGIA table.
--- It checks if at least one row in the MODELLO table is associated with the TIPOLOGIA being inserted.
-
-DELIMITER $$
-
-CREATE TRIGGER check_tipologia_modello
-BEFORE INSERT ON TIPOLOGIA
-FOR EACH ROW
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM MODELLO WHERE MODELLO.ID_TIPOLOGIA = NEW.ID_TIPOLOGIA) THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Errore: La tipologia deve essere associata a un modello.';
-    END IF;
-END$$
-
-DELIMITER ;
-
--- Trigger to ensure correct associations between VENDITA, and CONTRATTO tables
--- This trigger is activated before inserting a new row in the VENDITA table.
--- It checks if at least one row in the CONTRATTO table is associated with the VENDITA being inserted.
-
-
-DELIMITER $$
-
-CREATE TRIGGER check_vendita_contratto
-BEFORE INSERT ON VENDITA
-FOR EACH ROW
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM CONTRATTO WHERE CONTRATTO.ID_Vendita = NEW.ID_Vendita) THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Errore: La vendita deve essere associata a un contratto.';
-    END IF;
-END$$
-
-DELIMITER ;
+-- __________________________________________________________________________
 
 
 -- Index Section
--- _____________
+-- _____________ 
 
 create unique index ID_APPUNTAMENTO_IND
      on APPUNTAMENTO (ID_APPUNTAMENTO);
@@ -365,9 +325,6 @@ create index REF_CONFI_MODEL_IND
 create unique index ID_CONTRATTO_IND
      on CONTRATTO (ID_Contratto);
 
-create unique index SID_CONTR_VENDI_IND
-     on CONTRATTO (ID_Vendita);
-
 create unique index ID_DIPENDENTE_IND
      on DIPENDENTE (ID_DIPENDENTE);
 
@@ -386,7 +343,7 @@ create unique index ID_MARCHIO_IND
 create unique index ID_MODELLO_IND
      on MODELLO (ID_MODELLO);
 
-create index EQU_MODEL_TIPOL_IND
+create index REF_MODEL_TIPOL_IND
      on MODELLO (ID_TIPOLOGIA);
 
 create index EQU_MODEL_MARCH_IND
@@ -439,3 +396,7 @@ create unique index SID_VENDI_AUTO_IND
 
 create index REF_VENDI_CLIEN_IND
      on VENDITA (ID_CLIENTE);
+
+create unique index SID_VENDI_CONTR_IND
+     on VENDITA (ID_Contratto);
+
