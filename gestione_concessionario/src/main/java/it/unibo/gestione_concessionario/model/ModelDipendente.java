@@ -15,6 +15,7 @@ import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Configurazione;
+import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.commons.dto.Offerta;
 import it.unibo.gestione_concessionario.commons.dto.Sconto;
 
@@ -141,6 +142,32 @@ public class ModelDipendente {
             }
             return false;
         }
+    }
+
+    public boolean aggiungiModello(Modello modello){
+        PreparedStatement ps;
+        final String aggiungiMod = "INSERT INTO MODELLO (Descrizione, Anno, ID_TIPOLOGIA, ID_MARCHIO) "+
+                                    "VALUES (?, ?, ?, ?, ?);";
+        try {
+            ps = connection.prepareStatement(aggiungiMod);
+            ps.setString(1, modello.descrizione());
+            ps.setInt(2, modello.anno());
+            ps.setString(3, modello.tipologia());
+            ps.setString(4, modello.marchio());
+            ps.setInt(5, iD);
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+        
     }
 
     public void end() {
