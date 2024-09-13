@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
+import it.unibo.gestione_concessionario.commons.dto.Sconto;
 
 public class ModelDipendente {
 
@@ -29,7 +29,7 @@ public class ModelDipendente {
     List<Auto> visualizzaAuto() {
         PreparedStatement ps;
         List<Auto> auto = new ArrayList<>();
-        final String vediAuto = "SELECT A.Numero_Telaio, A.Immatricolazione, A.data, A.targa, M.Descrizione AS Modello, C.Motore, C.alimentazione "
+        final String vediAuto = "SELECT A.Numero_Telaio, A.prezzo, A.Immatricolazione, A.data, A.targa, M.Descrizione AS Modello, C.Motore, C.alimentazione "
                 +
                 "FROM AUTO A " +
                 "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
@@ -42,9 +42,9 @@ public class ModelDipendente {
             ps.setInt(1, iD);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                auto.add(new Auto(set.getString(1), set.getInt(2), Optional.of(set.getString(3)),
-                        Optional.of(set.getString(4)), Optional.empty(), set.getString(5), set.getString(6),
-                        set.getString(7)));
+                LocalDate data = set.getDate(4).toLocalDate();
+                auto.add(new Auto(set.getString(1),set.getInt(2), Optional.of(set.getString(3)), Optional.of(set.getString(5)),
+                        Optional.of(data), set.getString(6), set.getString(7),set.getString(8)));
             }
             for (var a : auto) {
                 System.out.println(a.toString());
@@ -71,17 +71,12 @@ public class ModelDipendente {
             ps.setInt(1, iD);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                LocalDate data = Optional.ofNullable(set.getDate(2))
-                        .map(date -> date.toInstant()
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate())
-                        .orElse(null);
-                LocalTime ora = Optional.ofNullable(set.getDate(3) != null ? set.getTime(2).toLocalTime() : null).get();
-                LocalTime durata = Optional.ofNullable(set.getDate(5) != null ? set.getTime(2).toLocalTime() : null)
-                        .get();
+                LocalDate data = set.getDate(2)!=null ? set.getDate(2).toLocalDate():null;
+                LocalTime ora = set.getDate(3) != null ? set.getTime(2).toLocalTime() : null;
+                LocalTime durata = set.getDate(5) != null ? set.getTime(2).toLocalTime() : null;
                 String nome_cliente = set.getString(7) + " " + set.getString(8);
                 String nome_dipendente = set.getString(9) + " " + set.getString(10);
-                app.add(new Appuntamento(set.getInt(1), data, ora, set.getString(4), Optional.of(durata),
+                app.add(new Appuntamento(set.getInt(1), data, ora, set.getString(4), durata,
                         set.getString(6), nome_cliente, nome_dipendente));
             }
             for (var a : app) {
@@ -94,24 +89,44 @@ public class ModelDipendente {
 
     }
 
-   /*  public boolean aggiungiSconto(int Percentual, LocalDate inizio, LocalDate fine, String numero_telaio,int ID_DIPENDENTE){
+     public boolean aggiungiSconto(Sconto sconto){
         PreparedStatement ps;
         final String aggiungiScon = "INSERT INTO SCONTO (Percentuale, data_inizio, data_fine, Numero_Telaio, ID_DIPENDENTE) " + 
                                      "VALUES (?,?,?,?,?);";
         try {
         ps = connection.prepareStatement(aggiungiScon);
-        ps.setInt(1, Percentual);
-        ps.setDate(2, inizio != null ? Date.valueOf(inizio) : null);
-        ps.setDate(3, fine != null ? Date.valueOf(fine) : null);
-        ps.setString(4, numero_telaio);
-        ps.setInt(5, ID_DIPENDENTE);
-
+        ps.setInt(1, sconto.percentuale());
+        ps.setDate(2, sconto.dataInizio() != null ? Date.valueOf(sconto.dataInizio()) : null);
+        ps.setDate(3, sconto.dataFine() != null ? Date.valueOf(sconto.dataFine()) : null);
+        ps.setString(4, sconto.nuremo_telaio());
+        ps.setInt(5, iD);
+        ps.executeUpdate();
+        ps.close();
+        connection.commit();
+        return true;
         }
-    }*/
+        catch(SQLException e){
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+    }
+
+    public void end(){
+        try {
+            connection.close();
+        } catch (SQLException e) {
+        }
+    }
 
     public static void main(String[] args) {
         ModelDipendente model = new ModelDipendente(ConnectionFactory.build("gestione_concessionario_prova",
                 "jdbc:mysql://localhost:3306/", "root", "cadmio"), 13);
-        model.visualizzaAuto();
+        model.visualizzaAppuntamenti();
+        model.aggiungiSconto(new Sconto(95,LocalDate.now(),LocalDate.of(2025, 11,11),"1HGBH41JXMN109186"));
+        model.end();
     }
 }
