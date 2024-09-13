@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
+import it.unibo.gestione_concessionario.commons.dto.Configurazione;
 import it.unibo.gestione_concessionario.commons.dto.Offerta;
 import it.unibo.gestione_concessionario.commons.dto.Sconto;
 
@@ -146,6 +147,58 @@ public class ModelDipendente {
         try {
             connection.close();
         } catch (SQLException e) {
+        }
+    }
+    public boolean aggiungiConfigurazione(Configurazione configurazione) {
+        PreparedStatement ps;
+        final String aggiungiConfigurazione = "INSERT INTO CONFIGURAZIONE (ID_Configurazione, Motore, alimentazione, cc, horse_power, ID_MODELLO) " + 
+                                                "VALUES (?, ?, ?, ?, ?, ?);";
+        try {
+            ps = connection.prepareStatement(aggiungiConfigurazione);
+            ps.setInt(1, configurazione.idConfigurazione());
+            ps.setString(2, configurazione.modello());
+            ps.setString(3, configurazione.motore());
+            ps.setString(4, configurazione.alimentazione());
+            ps.setInt(5, configurazione.cc());
+            ps.setInt(6, configurazione.horsePower());
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+    }
+    public boolean aggiungiAuto(Auto auto) {
+        PreparedStatement ps;
+        final String aggiungiAuto = "INSERT INTO AUTO (Numero_Telaio, Immatricolazione, data, targa, ID_Configurazione) " +
+                                     "VALUES (?, ?, ?, ?, ?);" ;
+        try {
+            ps = connection.prepareStatement(aggiungiAuto);
+            ps.setString(1, auto.numero_telaio());
+            ps.setDouble(2, auto.prezzo());
+            ps.setBoolean(3,auto.immatricolazione() );
+            ps.setString(4,auto.targa().get());
+            ps.setDate(5,Date.valueOf(auto.data().get()));
+            ps.setString(6,auto.descrizioneModello());
+            ps.setString(7,auto.motore());
+            ps.setString(8,auto.alimentazione());
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
         }
     }
 
