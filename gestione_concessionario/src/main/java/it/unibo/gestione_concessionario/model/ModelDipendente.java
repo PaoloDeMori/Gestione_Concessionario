@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
+import it.unibo.gestione_concessionario.commons.dto.Offerta;
 import it.unibo.gestione_concessionario.commons.dto.Sconto;
 
 public class ModelDipendente {
@@ -115,17 +116,17 @@ public class ModelDipendente {
         }
     }
 
-    public boolean aggiungiOfferta(Sconto sconto) {
+    public boolean aggiungiOfferta(Offerta offerta) {
         PreparedStatement ps;
-        final String aggiungiOff = "INSERT INTO O (Percentuale, data_inizio, data_fine, Numero_Telaio, ID_DIPENDENTE) "
+        final String aggiungiOff = "INSERT INTO OFFERTA (Percentuale, data_inizio, data_fine, ID_MARCHIO, ID_DIPENDENTE) "
                 +
                 "VALUES (?,?,?,?,?);";
         try {
             ps = connection.prepareStatement(aggiungiOff);
-            ps.setInt(1, sconto.percentuale());
-            ps.setDate(2, sconto.dataInizio() != null ? Date.valueOf(sconto.dataInizio()) : null);
-            ps.setDate(3, sconto.dataFine() != null ? Date.valueOf(sconto.dataFine()) : null);
-            ps.setString(4, sconto.nuremo_telaio());
+            ps.setInt(1, offerta.percentuale());
+            ps.setDate(2, offerta.dataInizio() != null ? Date.valueOf(offerta.dataInizio()) : null);
+            ps.setDate(3, offerta.dataFine() != null ? Date.valueOf(offerta.dataFine()) : null);
+            ps.setInt(4, offerta.ID_marchio());
             ps.setInt(5, iD);
             ps.executeUpdate();
             ps.close();
@@ -156,6 +157,7 @@ public class ModelDipendente {
         model.visualizzaAutoDelDipendente();
         // model.aggiungiSconto(new Sconto(80,LocalDate.now(),LocalDate.of(2025,
         // 12,11),"1HGBH41JXMN109186"));
+        model.aggiungiOfferta(new Offerta(1, 50,LocalDate.now() , LocalDate.of(2025, 12,11), 1, 13));
         model.end();
     }
 }
