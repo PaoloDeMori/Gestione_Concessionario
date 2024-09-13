@@ -81,7 +81,7 @@ create table DIPENDENTE (
 
 create table GARANZIA (
      scadenza date not null,
-     copertura INT(4) not null,
+     copertura varchar(100) not null,
      ID_Garanzia INT(7) AUTO_INCREMENT,
      Numero_Telaio char(17) not null,
      constraint ID_GARANZIA_ID primary key (ID_Garanzia),
