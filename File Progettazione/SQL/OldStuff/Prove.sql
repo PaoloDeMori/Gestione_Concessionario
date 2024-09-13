@@ -103,4 +103,46 @@ INSERT INTO CONFIGURAZIONE (Motore, alimentazione, cc, horse_power, ID_MODELLO) 
 ('Motore V8', 'Benzina', 4000, 420, 9),
 ('Motore V6', 'Diesel', 3000, 310, 9);
 
+INSERT INTO APPUNTAMENTO (ID_APPUNTAMENTO, data, ora, Tipologia, durata, Numero_Telaio, ID_CLIENTE, ID_DIPENDENTE)
+VALUES 
+(1, '2024-10-05', '18:31:00', 'Test-Drive', '00:30:00', '1HGBH41JXMN109186', 2, 11);
 
+INSERT INTO GARANZIA (scadenza, copertura, Numero_Telaio)
+VALUES 
+('2026-12-31', 'Furto', '1HGBH41JXMN109186'),
+('2025-11-30', 'Incendio', '2HGBH41JXMN109187'),
+('2027-01-15', 'kasko', '3HGBH41JXMN109188'),
+('2026-09-10', 'grandine', '4HGBH41JXMN109189'),
+('2025-08-25', 'furto e incendio', '5HGBH41JXMN109190');
+BEGIN;
+DROP TRIGGER check_optional_personalizzazione;
+INSERT INTO OPTIONAL (descrizione, prezzo)
+VALUES 
+('Tetto panoramico', 1200),
+('Sistema audio premium', 1500),
+('Sedili riscaldati', 800),
+('Navigatore satellitare', 1000),
+('Vernice metallizzata', 500);
+
+INSERT INTO Personalizzazione (Numero_Telaio, ID_Optional)
+VALUES 
+('1HGBH41JXMN109186', 1),  -- Tetto panoramico for this car
+('2HGBH41JXMN109187', 2),  -- Sistema audio premium for this car
+('3HGBH41JXMN109188', 3),  -- Sedili riscaldati for this car
+('4HGBH41JXMN109189', 4),  -- Navigatore satellitare for this car
+('5HGBH41JXMN109190', 5);  -- Vernice metallizzata for this car
+
+DELIMITER $$
+
+CREATE TRIGGER check_optional_personalizzazione
+BEFORE INSERT ON OPTIONAL
+FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Personalizzazione WHERE Personalizzazione.ID_Optional = NEW.ID_Optional) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Errore: optional deve essere associato a una personalizzazione.';
+    END IF;
+END$$
+
+DELIMITER ;
+COMMIT;

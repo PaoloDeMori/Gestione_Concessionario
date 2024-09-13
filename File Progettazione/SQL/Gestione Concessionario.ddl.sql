@@ -81,7 +81,7 @@ create table DIPENDENTE (
 
 create table GARANZIA (
      scadenza date not null,
-     copertura INT(4) not null,
+     copertura varchar(100) not null,
      ID_Garanzia INT(7) AUTO_INCREMENT,
      Numero_Telaio char(17) not null,
      constraint ID_GARANZIA_ID primary key (ID_Garanzia),
@@ -291,7 +291,33 @@ DELIMITER ;
 
 -- __________________________________________________________________________
 
+DELIMITER $$
 
+CREATE TRIGGER check_employee_appointment
+BEFORE INSERT ON APPUNTAMENTO
+FOR EACH ROW
+BEGIN
+    -- Check if the tipologia is valid
+    IF NEW.Tipologia NOT IN ('Test-Drive', 'Consulenza') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Invalid appointment type. Only "Test-Drive" and "Consulenza" are allowed.';
+    END IF;
+
+    -- Check if the employee has another appointment in the same time range
+    IF EXISTS (
+        SELECT 1 
+        FROM APPUNTAMENTO 
+        WHERE ID_DIPENDENTE = NEW.ID_DIPENDENTE 
+          AND data = NEW.data 
+          AND (NEW.ora BETWEEN ora AND ADDTIME(ora, durata)
+          OR ADDTIME(NEW.ora, NEW.durata) BETWEEN ora AND ADDTIME(ora, durata))
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'The employee already has an appointment scheduled during this time.';
+    END IF;
+END$$
+
+DELIMITER ;
 -- Index Section
 -- _____________ 
 
