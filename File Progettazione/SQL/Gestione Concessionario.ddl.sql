@@ -48,6 +48,7 @@ create table CLIENTE (
      cognome varchar(25) not null,
      telefono varchar(20) not null,
      e_mail varchar(50) not null,
+     password varchar(25) not null,
      constraint ID_CLIENTE_ID primary key (ID_CLIENTE));
 
 create table CONFIGURAZIONE (
@@ -74,8 +75,10 @@ create table DIPENDENTE (
      ID_MARCHIO INT(7) not null,
      nome varchar(25) not null,
      cognome varchar(25) not null,
-     teleofno varchar(20) not null,
+     telefono varchar(20) not null,
+     responsabile boolean not null,
      e_mail varchar(50) not null,
+     password varchar(25) not null,
      constraint ID_DIPENDENTE_ID primary key (ID_DIPENDENTE),
      constraint SID_DIPEN_MARCH_ID unique (ID_MARCHIO));
 
