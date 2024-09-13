@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
+import it.unibo.gestione_concessionario.commons.dto.Offerta;
 import it.unibo.gestione_concessionario.commons.dto.Sconto;
 
 public class ModelDipendente {
@@ -115,6 +116,32 @@ public class ModelDipendente {
         }
     }
 
+    public boolean aggiungiOfferta(Offerta offerta) {
+        PreparedStatement ps;
+        final String aggiungiOff = "INSERT INTO OFFERTA (Percentuale, data_inizio, data_fine, ID_MARCHIO, ID_DIPENDENTE) "
+                +
+                "VALUES (?,?,?,?,?);";
+        try {
+            ps = connection.prepareStatement(aggiungiOff);
+            ps.setInt(1, offerta.percentuale());
+            ps.setDate(2, offerta.dataInizio() != null ? Date.valueOf(offerta.dataInizio()) : null);
+            ps.setDate(3, offerta.dataFine() != null ? Date.valueOf(offerta.dataFine()) : null);
+            ps.setInt(4, offerta.ID_marchio());
+            ps.setInt(5, iD);
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+    }
+
     public void end() {
         try {
             connection.close();
@@ -130,6 +157,7 @@ public class ModelDipendente {
         model.visualizzaAutoDelDipendente();
         // model.aggiungiSconto(new Sconto(80,LocalDate.now(),LocalDate.of(2025,
         // 12,11),"1HGBH41JXMN109186"));
+        model.aggiungiOfferta(new Offerta(1, 50,LocalDate.now() , LocalDate.of(2025, 12,11), 1, 13));
         model.end();
     }
 }

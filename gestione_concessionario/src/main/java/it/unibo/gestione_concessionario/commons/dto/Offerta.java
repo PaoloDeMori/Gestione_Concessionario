@@ -2,11 +2,11 @@ package it.unibo.gestione_concessionario.commons.dto;
 import java.time.LocalDate;
 public record Offerta(
     int idOfferta,
-    double percentuale,
+    int percentuale,
     LocalDate dataInizio,
     LocalDate dataFine,
-    Marchio marchio,
-    Dipendente dipendente
+    int ID_marchio,
+    int ID_Dipendente
 ) {
 
 }
