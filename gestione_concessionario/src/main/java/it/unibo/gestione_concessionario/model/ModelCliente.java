@@ -116,7 +116,7 @@ public class ModelCliente implements Model {
         }
     }
 
-    List<Modello> visualizzaModello() {
+    public List<Modello> visualizzaModello() {
         PreparedStatement ps;
         List<Modello> modello = new ArrayList<>();
         final String vediModello = "SELECT m.ID_MODELLO, m.Descrizione, m.Anno,T.nome, ma.nome " +

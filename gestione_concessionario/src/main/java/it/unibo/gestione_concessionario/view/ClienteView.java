@@ -3,11 +3,11 @@ package it.unibo.gestione_concessionario.view;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.panels.MarchiPanel;
+import it.unibo.gestione_concessionario.view.panels.ModelliPanel;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -20,10 +20,13 @@ public class ClienteView extends JFrame implements View {
     private CardLayout cardLayout;
     private JPanel cardPanel;
     Controller controller;
+    private MarchiPanel marchiPanel = new MarchiPanel();
+    private ModelliPanel modelliPanel = new ModelliPanel();
 
     public ClienteView(Controller controller) {
-        this.controller=controller;
+        this.controller = controller;
         this.initialize();
+
     }
 
     private void initialize() {
@@ -50,8 +53,11 @@ public class ClienteView extends JFrame implements View {
         menu.add(profileItem);
         menu.add(settingsItem);
 
-        CustomButton button = new CustomButton("Visualizza Marchi");
-        menuBar.add(button);
+        CustomButton marchiButton = new CustomButton("Visualizza Marchi");
+        menuBar.add(marchiButton);
+
+        CustomButton modelliButton = new CustomButton("Visualizza Modelli");
+        menuBar.add(modelliButton);
 
         // Aggiungi il menu al menu bar
         menuBar.add(menu);
@@ -73,8 +79,14 @@ public class ClienteView extends JFrame implements View {
         JPanel settingsPanel = new JPanel();
         settingsPanel.add(new javax.swing.JLabel("Settings Content"));
 
+        // Imposta inizialmente i dati del MarchiPanel
+        marchiPanel.setMarchi(controller.allMarchi());
+        marchiPanel.revalidate();
+        marchiPanel.repaint();
+
         // Aggiungi i pannelli al CardLayout
-        cardPanel.add(new MarchiPanel(controller.allMarchi()), "Home");
+        cardPanel.add(modelliPanel, "Modelli");
+        cardPanel.add(marchiPanel, "Marchi");
         cardPanel.add(profilePanel, "Profile");
         cardPanel.add(settingsPanel, "Settings");
 
@@ -82,13 +94,36 @@ public class ClienteView extends JFrame implements View {
         this.add(cardPanel, BorderLayout.CENTER);
 
         // Imposta la visualizzazione iniziale su "Home"
-        cardLayout.show(cardPanel, "Home");
+        cardLayout.show(cardPanel, "Marchi");
 
         // Aggiungi gli ActionListener per gestire i cambi di pannello
-        button.addActionListener(new ActionListener() {
+        marchiButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(new MarchiPanel(controller.allMarchi()), "Home");
+                // Update MarchiPanel data
+                marchiPanel.setMarchi(controller.allMarchi());
+                // Switch to the 'Marchi' panel
+                cardLayout.show(cardPanel, "Marchi");
+            }
+        });
+
+        // Aggiungi gli ActionListener per gestire i cambi di pannello
+        modelliButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Update MarchiPanel data
+                modelliPanel.setModelli(controller.allModelli());
+                modelliPanel.revalidate();
+                modelliPanel.repaint();
+                // Switch to the 'Marchi' panel
+                cardLayout.show(cardPanel, "Modelli");
+            }
+        });
+
+        homeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Home");
             }
         });
 
