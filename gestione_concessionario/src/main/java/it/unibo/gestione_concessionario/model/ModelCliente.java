@@ -1,4 +1,5 @@
 package it.unibo.gestione_concessionario.model;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -8,7 +9,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.time.LocalDate;
-
 
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
@@ -21,7 +21,7 @@ import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.commons.dto.Optionals;
 import it.unibo.gestione_concessionario.commons.dto.Tipologia;
 
-public class ModelCliente implements Model{
+public class ModelCliente implements Model {
 
     private Connection connection;
     private int iD;
@@ -29,12 +29,11 @@ public class ModelCliente implements Model{
     public ModelCliente() {
     }
 
-    
-    public void init(Connection connection){
+    public void init(Connection connection) {
         this.connection = connection;
     }
 
-    public void stop(){
+    public void stop() {
         try {
             connection.close();
         } catch (SQLException e) {
@@ -52,12 +51,12 @@ public class ModelCliente implements Model{
             ps.setString(3, cliente.telefono());
             ps.setString(4, cliente.eMail());
             ps.setString(5, cliente.password());
-            
+
             ps.executeUpdate();
             ps.close();
             connection.commit();
             return true;
-        }         catch(SQLException e){
+        } catch (SQLException e) {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
@@ -65,7 +64,7 @@ public class ModelCliente implements Model{
             }
             return false;
         }
-        
+
     }
 
     public boolean fissaAppuntamento(Appuntamento appuntamento) {
@@ -81,12 +80,12 @@ public class ModelCliente implements Model{
             ps.setString(6, appuntamento.numero_telaio());
             ps.setString(7, appuntamento.nome_dipendente());
             ps.setString(8, appuntamento.nome_cliente());
-            
+
             ps.executeUpdate();
             ps.close();
             connection.commit();
             return true;
-        }         catch(SQLException e){
+        } catch (SQLException e) {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
@@ -96,12 +95,11 @@ public class ModelCliente implements Model{
         }
     }
 
-
-    List<Marchio> visualizzaMarchi() {
+    public List<Marchio> visualizzaMarchi() {
         PreparedStatement ps;
         List<Marchio> marchi = new ArrayList<>();
-        final String vediMarchi = "SELECT ID_MARCHIO, Nome " + 
-                        "FROM MARCHIO;";
+        final String vediMarchi = "SELECT ID_MARCHIO, Nome " +
+                "FROM MARCHIO;";
         try {
             ps = connection.prepareStatement(vediMarchi);
             ResultSet set = ps.executeQuery();
@@ -122,14 +120,15 @@ public class ModelCliente implements Model{
         PreparedStatement ps;
         List<Modello> modello = new ArrayList<>();
         final String vediModello = "SELECT m.ID_MODELLO, m.Descrizione, m.Anno,T.nome, ma.nome " +
-                                    "FROM MODELLO m " +
-                                    "JOIN TIPOLOGIA T ON T.ID_TIPOLOGIA=m.ID_TIPOLOGIA "+
-                                    "JOIN MARCHIO ma ON ma.ID_MARCHIO=m.ID_MARCHIO;" ;
+                "FROM MODELLO m " +
+                "JOIN TIPOLOGIA T ON T.ID_TIPOLOGIA=m.ID_TIPOLOGIA " +
+                "JOIN MARCHIO ma ON ma.ID_MARCHIO=m.ID_MARCHIO;";
         try {
             ps = connection.prepareStatement(vediModello);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                modello.add(new Modello(set.getInt(1), set.getString(2), set.getInt(3), set.getString(4), set.getString(5)));
+                modello.add(new Modello(set.getInt(1), set.getString(2), set.getInt(3), set.getString(4),
+                        set.getString(5)));
             }
             for (var m : modello) {
                 System.out.println(m.toString());
@@ -141,16 +140,16 @@ public class ModelCliente implements Model{
         }
     }
 
-    List<Optionals>visualizzaOptional(Auto macchina){
+    List<Optionals> visualizzaOptional(Auto macchina) {
         PreparedStatement ps;
         List<Optionals> optional = new ArrayList<>();
-        final String vediOptional = "SELECT O.ID_Optional, O.descrizione, O.prezzo "+
-                                        "FROM AUTO A "+
-                                        "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione "+
-                                        "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO "+
-                                        "JOIN Supporto S ON M.ID_MODELLO = S.ID_MODELLO "+
-                                        "JOIN OPTIONAL O ON S.ID_Optional = O.ID_Optional "+
-                                        "WHERE A.Numero_Telaio = ?;";   
+        final String vediOptional = "SELECT O.ID_Optional, O.descrizione, O.prezzo " +
+                "FROM AUTO A " +
+                "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
+                "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO " +
+                "JOIN Supporto S ON M.ID_MODELLO = S.ID_MODELLO " +
+                "JOIN OPTIONAL O ON S.ID_Optional = O.ID_Optional " +
+                "WHERE A.Numero_Telaio = ?;";
         try {
             ps = connection.prepareStatement(vediOptional);
             ps.setString(1, macchina.numero_telaio());
@@ -163,19 +162,18 @@ public class ModelCliente implements Model{
             }
             ps.close();
             return optional;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
 
     }
 
-    List<Garanzia> visualizzaGaranzia(Auto macchina){
+    List<Garanzia> visualizzaGaranzia(Auto macchina) {
         PreparedStatement ps;
         List<Garanzia> garanzia = new ArrayList<>();
-        final String vediGaranzia = "SELECT ID_Garanzia, scadenza, copertura "+
-                                        "FROM GARANZIA "+
-                                        "WHERE Numero_Telaio = ?;";
+        final String vediGaranzia = "SELECT ID_Garanzia, scadenza, copertura " +
+                "FROM GARANZIA " +
+                "WHERE Numero_Telaio = ?;";
         try {
             ps = connection.prepareStatement(vediGaranzia);
             ps.setString(1, macchina.numero_telaio());
@@ -188,106 +186,109 @@ public class ModelCliente implements Model{
             }
             ps.close();
             return garanzia;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
     }
 
-    List<Auto> visualizzaAutoxMarchioxTipologia(Marchio marchio ,Tipologia tipologia){
+    List<Auto> visualizzaAutoxMarchioxTipologia(Marchio marchio, Tipologia tipologia) {
         PreparedStatement ps;
         List<Auto> auto = new ArrayList<>();
-        final String vediAuto = "SELECT A.Numero_Telaio, A.prezzo , A.Immatricolazione, A.targa, A.data, M.Descrizione AS Modello, T.nome AS Tipologia " +
-                                "FROM AUTO A "+
-                                "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione "+
-                                "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO "+
-                                "JOIN TIPOLOGIA T ON M.ID_TIPOLOGIA = T.ID_TIPOLOGIA "+
-                                "WHERE M.ID_MARCHIO = ? " +
-                                "AND T.nome = ?;"; 
-                                
+        final String vediAuto = "SELECT A.Numero_Telaio, A.prezzo , A.Immatricolazione, A.targa, A.data, M.Descrizione AS Modello, T.nome AS Tipologia "
+                +
+                "FROM AUTO A " +
+                "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
+                "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO " +
+                "JOIN TIPOLOGIA T ON M.ID_TIPOLOGIA = T.ID_TIPOLOGIA " +
+                "WHERE M.ID_MARCHIO = ? " +
+                "AND T.nome = ?;";
+
         try {
             ps = connection.prepareStatement(vediAuto);
             ps.setInt(1, marchio.idMarchio());
             ps.setString(2, tipologia.nome());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                auto.add(new Auto(set.getString(1),set.getDouble(2),set.getBoolean(3), Optional.of(set.getString(4)), Optional.of(set.getDate(5).toLocalDate()),"","",""));
-    }
+                auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(4)),
+                        Optional.of(set.getDate(5).toLocalDate()), "", "", ""));
+            }
             for (var a : auto) {
                 System.out.println(a.toString());
             }
             ps.close();
             return auto;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
     }
-    
-    Dipendente visualizzaDipendente(Marchio marchio){
+
+    Dipendente visualizzaDipendente(Marchio marchio) {
         PreparedStatement ps;
         Dipendente dipendente = null;
-        final String vediDipendente = "SELECT  M.ID_MARCHIO , D.nome, D.cognome, D.telefono, D.e_mail, M.Nome  AS Marchio "+
-                                        "FROM DIPENDENTE D "+
-                                        "JOIN MARCHIO M ON D.ID_MARCHIO = M.ID_MARCHIO "+
-                                        "WHERE M.ID_MARCHIO = ?;";
+        final String vediDipendente = "SELECT  M.ID_MARCHIO , D.nome, D.cognome, D.telefono, D.e_mail, M.Nome  AS Marchio "
+                +
+                "FROM DIPENDENTE D " +
+                "JOIN MARCHIO M ON D.ID_MARCHIO = M.ID_MARCHIO " +
+                "WHERE M.ID_MARCHIO = ?;";
         try {
             ps = connection.prepareStatement(vediDipendente);
             ps.setInt(1, marchio.idMarchio());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                dipendente = new Dipendente(set.getInt(1), set.getString(2), set.getString(3), set.getString(4), set.getString(5));
+                dipendente = new Dipendente(set.getInt(1), set.getString(2), set.getString(3), set.getString(4),
+                        set.getString(5));
             }
             System.out.println(dipendente.toString());
             ps.close();
             return dipendente;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
     }
-        List<Auto> visualizzaAutoScontate(Marchio marchio){
-            PreparedStatement ps;
-            List<Auto> auto = new ArrayList<>();
-            final String vediAuto ="SELECT A.Numero_Telaio,  A.prezzo , A.Immatricolazione, A.targa, A.data, M.Descrizione AS Modello, S.Percentuale, S.data_inizio, S.data_fine " +
-                                    "FROM AUTO A "+
-                                    "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione "+
-                                    "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO " +
-                                    "JOIN MARCHIO MR ON M.ID_MARCHIO = MR.ID_MARCHIO " +
-                                    "JOIN SCONTO S ON A.Numero_Telaio = S.Numero_Telaio " +
-                                    "WHERE MR.ID_MARCHIO = ? " +
-                                    "AND CURRENT_DATE BETWEEN S.data_inizio AND S.data_fine;";       
-        try{
+
+    List<Auto> visualizzaAutoScontate(Marchio marchio) {
+        PreparedStatement ps;
+        List<Auto> auto = new ArrayList<>();
+        final String vediAuto = "SELECT A.Numero_Telaio,  A.prezzo , A.Immatricolazione, A.targa, A.data, M.Descrizione AS Modello, S.Percentuale, S.data_inizio, S.data_fine "
+                +
+                "FROM AUTO A " +
+                "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
+                "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO " +
+                "JOIN MARCHIO MR ON M.ID_MARCHIO = MR.ID_MARCHIO " +
+                "JOIN SCONTO S ON A.Numero_Telaio = S.Numero_Telaio " +
+                "WHERE MR.ID_MARCHIO = ? " +
+                "AND CURRENT_DATE BETWEEN S.data_inizio AND S.data_fine;";
+        try {
             ps = connection.prepareStatement(vediAuto);
             ps.setInt(1, marchio.idMarchio());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                auto.add(new Auto(set.getString(1),set.getDouble(2),set.getBoolean(3), Optional.of(set.getString(4)), Optional.of(set.getDate(5).toLocalDate()),"","",""));
+                auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(4)),
+                        Optional.of(set.getDate(5).toLocalDate()), "", "", ""));
             }
             for (var a : auto) {
                 System.out.println(a.toString());
             }
             ps.close();
             return auto;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
     }
 
-    public boolean checkLoginCliente(String email, String password){
+    public boolean checkLoginCliente(String email, String password) {
         PreparedStatement ps = null;
         final String login = "SELECT c.ID_CLIENTE " +
-                             "FROM CLIENTE c " + 
-                             "WHERE c.e_mail = ? " +
-                             "AND c.password = ?;";
+                "FROM CLIENTE c " +
+                "WHERE c.e_mail = ? " +
+                "AND c.password = ?;";
         try {
             ps = connection.prepareStatement(login);
             ps.setString(1, email);
             ps.setString(2, password);
             ResultSet set = ps.executeQuery();
-            if(set.next()){
-                iD=set.getInt(1);
+            if (set.next()) {
+                iD = set.getInt(1);
                 return true;
             }
             return false;
@@ -297,17 +298,17 @@ public class ModelCliente implements Model{
 
     }
 
-
     public static void main(String[] args) {
         ModelCliente model = new ModelCliente();
-                model.init(ConnectionFactory.build("gestione_concessionario_prova",
+        model.init(ConnectionFactory.build("gestione_concessionario_prova",
                 "jdbc:mysql://localhost:3306/", "root", "Strong.2024.Password"));
         model.visualizzaMarchi();
         System.out.println("----------------------");
         model.visualizzaModello();
         System.out.println("----------------------");
-        model.visualizzaGaranzia(new Auto("1HGBH41JXMN109186", 20000.00, true, Optional.of("AB123CD"), Optional.of(LocalDate.of(2024, 01, 10)),"","",""));
+        model.visualizzaGaranzia(new Auto("1HGBH41JXMN109186", 20000.00, true, Optional.of("AB123CD"),
+                Optional.of(LocalDate.of(2024, 01, 10)), "", "", ""));
         System.out.println("----------------------");
-        model.visualizzaDipendente(new Marchio(2,"Lamborghini"));
+        model.visualizzaDipendente(new Marchio(2, "Lamborghini"));
     }
 }

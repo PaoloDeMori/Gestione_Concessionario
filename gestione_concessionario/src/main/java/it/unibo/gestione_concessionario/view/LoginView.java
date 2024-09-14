@@ -170,6 +170,10 @@ public class LoginView implements View {
             if (!controller.checkLoginCliente(email, password)) {
                 error("Impossibile eseguire il Login","Errore di Login");
             }
+            else{
+                this.stop();
+                this.controller.startCliente();
+            }
         };
     }
 
