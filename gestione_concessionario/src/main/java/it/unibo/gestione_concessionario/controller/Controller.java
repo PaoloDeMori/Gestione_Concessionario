@@ -2,7 +2,6 @@ package it.unibo.gestione_concessionario.controller;
 
 
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
-import it.unibo.gestione_concessionario.model.Model;
 import it.unibo.gestione_concessionario.model.ModelCliente;
 import it.unibo.gestione_concessionario.model.ModelDipendente;
 import it.unibo.gestione_concessionario.view.ClienteView;

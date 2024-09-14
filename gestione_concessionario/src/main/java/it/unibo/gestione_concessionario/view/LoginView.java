@@ -1,6 +1,5 @@
 package it.unibo.gestione_concessionario.view;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -9,12 +8,9 @@ import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 import it.unibo.gestione_concessionario.controller.Controller;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Color;
 
 public class LoginView implements View {
 
@@ -23,7 +19,8 @@ public class LoginView implements View {
     private JLabel passwordLabel;
     private JTextField emailField;
     private JPasswordField passwordField;
-    private JButton loginButton;
+    private CustomButton loginButton;
+    private CustomButton createAccountButton;  // New button for account creation
     private Controller controller;
     private JPanel loginPanel;
 
@@ -47,11 +44,12 @@ public class LoginView implements View {
     private void initializeStartPanel() {
         JPanel panel = new JPanel();
 
-        JButton cliente = new JButton("Cliente");
-        JButton dipendente = new JButton("Dipendente");
+        CustomButton cliente = new CustomButton("Cliente");
+        CustomButton dipendente = new CustomButton("Dipendente");
 
-        cliente.addActionListener(e -> {showLoginPanel(false);
-            this.controller.initCliente();
+        cliente.addActionListener(e -> { 
+            showLoginPanel(false); 
+            this.controller.initCliente(); 
         });
         dipendente.addActionListener(e -> showLoginPanel(true));
 
@@ -67,9 +65,10 @@ public class LoginView implements View {
     private void showLoginPanel(boolean isEmployee) {
         loginFrame.getContentPane().removeAll(); // Properly clear the content pane
         
+        JPanel mainPanel = new JPanel();
         JPanel emailPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        loginPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        loginPanel = new JPanel(new GridLayout(2,1,20,20));
 
         emailLabel = new JLabel("Email:");
         passwordLabel = new JLabel("Password:");
@@ -77,8 +76,11 @@ public class LoginView implements View {
         emailField = new JTextField(25);
         passwordField = new JPasswordField(25);
 
-        loginButton = new JButton("Accedi");
+        loginButton = new CustomButton("Accedi");
         loginButton.addActionListener(isEmployee ? getEmployeeLoginListener() : getClientLoginListener());
+
+        createAccountButton = new CustomButton("Crea Account");  // New account creation button
+        createAccountButton.addActionListener(e -> showCreateAccountPanel()); // Open create account panel on click
 
         emailPanel.add(emailLabel);
         emailPanel.add(emailField);
@@ -88,9 +90,60 @@ public class LoginView implements View {
         loginPanel.add(emailPanel);
         loginPanel.add(passwordPanel);
         loginPanel.add(loginButton);
-
+        loginPanel.add(createAccountButton);  // Add the new button to the panel
+    
         loginFrame.add(loginPanel);
         refreshGui();
+    }
+
+    // Opens Account Creation Panel
+    private void showCreateAccountPanel() {
+        loginFrame.getContentPane().removeAll();  // Clear the content pane
+        loginFrame.setSize(700,350);
+        JPanel createAccountPanel = new JPanel(new GridLayout(5, 2, 10, 10));  // Layout for form fields
+
+        // Form fields for account creation
+        JLabel firstNameLabel = new JLabel("Nome:");
+        JTextField firstNameField = new JTextField(25);
+        JLabel lastNameLabel = new JLabel("Cognome:");
+        JTextField lastNameField = new JTextField(25);
+        JLabel emailLabel = new JLabel("Email:");
+        JTextField emailField = new JTextField(25);
+        JLabel passwordLabel = new JLabel("Password:");
+        JPasswordField passwordField = new JPasswordField(25);
+
+        CustomButton createAccountSubmitButton = new CustomButton("Crea Account");
+        createAccountSubmitButton.addActionListener(e -> {
+            // Collect data from form fields
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            String email = emailField.getText();
+            String password = new String(passwordField.getPassword());
+
+            // Call the controller to create the account
+            //controller.createAccountCliente(firstName, lastName, email, password);
+
+            // Show success message
+            JOptionPane.showMessageDialog(loginFrame, "Account creato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+
+            // Return to login screen
+            initializeStartPanel();
+        });
+
+        // Add components to the panel
+        createAccountPanel.add(firstNameLabel);
+        createAccountPanel.add(firstNameField);
+        createAccountPanel.add(lastNameLabel);
+        createAccountPanel.add(lastNameField);
+        createAccountPanel.add(emailLabel);
+        createAccountPanel.add(emailField);
+        createAccountPanel.add(passwordLabel);
+        createAccountPanel.add(passwordField);
+        createAccountPanel.add(new JLabel());  // Empty cell for layout alignment
+        createAccountPanel.add(createAccountSubmitButton);
+
+        loginFrame.add(createAccountPanel);
+        refreshGui();  // Refresh to show the new account creation form
     }
 
     // Client Login Action Listener
@@ -117,13 +170,11 @@ public class LoginView implements View {
 
     @Override
     public void start() {
-        // Optionally implement the start logic
         System.out.println("Application started");
     }
 
     @Override
     public void stop() {
-        // Optionally implement the stop logic
         System.out.println("Application stopped");
     }
 
@@ -142,7 +193,6 @@ public class LoginView implements View {
     }
 
     public static void main(String[] args) {
-        // For testing purposes
         LoginView lv = new LoginView(new Controller());
         lv.start();
     }
