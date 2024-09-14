@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
+import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Garanzia;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
@@ -41,6 +42,31 @@ public class ModelCliente implements Model{
         }
     }
 
+    public boolean creaCliente(Cliente cliente) {
+        PreparedStatement ps = null;
+        final String creaCliente = "INSERT INTO CLIENTE (nome, cognome, telefono, e_mail, password) VALUES ( ?, ?, ?, ?, ?)";
+        try {
+            ps = connection.prepareStatement(creaCliente);
+            ps.setString(1, cliente.nome());
+            ps.setString(2, cliente.cognome());
+            ps.setString(3, cliente.telefono());
+            ps.setString(4, cliente.eMail());
+            ps.setString(5, cliente.password());
+            
+            ps.executeUpdate();
+            ps.close();
+            connection.commit();
+            return true;
+        }         catch(SQLException e){
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return false;
+        }
+        
+    }
 
     public boolean fissaAppuntamento(Appuntamento appuntamento) {
         PreparedStatement ps = null;
@@ -200,7 +226,7 @@ public class ModelCliente implements Model{
     
     Dipendente visualizzaDipendente(Marchio marchio){
         PreparedStatement ps;
-        Dipendente dipendente=null;
+        Dipendente dipendente = null;
         final String vediDipendente = "SELECT  M.ID_MARCHIO , D.nome, D.cognome, D.telefono, D.e_mail, M.Nome  AS Marchio "+
                                         "FROM DIPENDENTE D "+
                                         "JOIN MARCHIO M ON D.ID_MARCHIO = M.ID_MARCHIO "+

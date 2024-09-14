@@ -1,14 +1,16 @@
-INSERT INTO CLIENTE (nome, cognome, telefono, e_mail) VALUES
-('Mario', 'Rossi', '1234567890', 'mario.rossi@example.com'),
-('Luigi', 'Bianchi', '1234567891', 'luigi.bianchi@example.com'),
-('Anna', 'Verdi', '1234567892', 'anna.verdi@example.com'),
-('Giuseppe', 'Neri', '1234567893', 'giuseppe.neri@example.com'),
-('Laura', 'Gialli', '1234567894', 'laura.gialli@example.com'),
-('Francesco', 'Blu', '1234567895', 'francesco.blu@example.com'),
-('Federica', 'Arancioni', '1234567896', 'federica.arancioni@example.com'),
-('Paolo', 'Grigi', '1234567897', 'paolo.grigi@example.com'),
-('Silvia', 'Rosa', '1234567898', 'silvia.rosa@example.com'),
-('Roberto', 'Viola', '1234567899', 'roberto.viola@example.com');
+INSERT INTO CLIENTE (nome, cognome, telefono, e_mail, password)
+VALUES
+('Marco', 'Lupi', '3216549870', 'marco.lupi@example.com', 'clientpass1'),
+('Giorgia', 'Grigi', '3216549871', 'giorgia.grigi@example.com', 'clientpass2'),
+('Antonio', 'Verdi', '3216549872', 'antonio.verdi@example.com', 'clientpass3'),
+('Serena', 'Blu', '3216549873', 'serena.blu@example.com', 'clientpass4'),
+('Giovanni', 'Arancioni', '3216549874', 'giovanni.arancioni@example.com', 'clientpass5'),
+('Lucia', 'Rosa', '3216549875', 'lucia.rosa@example.com', 'clientpass6'),
+('Matteo', 'Neri', '3216549876', 'matteo.neri@example.com', 'clientpass7'),
+('Chiara', 'Viola', '3216549877', 'chiara.viola@example.com', 'clientpass8'),
+('Roberto', 'Gialli', '3216549878', 'roberto.gialli@example.com', 'clientpass9'),
+('Simona', 'Marrone', '3216549879', 'simona.marrone@example.com', 'clientpass10');
+
 
 BEGIN;
 DROP TRIGGER check_modello_dipendente_marchio;
@@ -52,17 +54,19 @@ DELIMITER ;
 COMMIT;
 
 
-INSERT INTO DIPENDENTE (ID_MARCHIO, nome, cognome, teleofno, e_mail) VALUES
-(1, 'Alberto', 'Rossi', '0987654321', 'alberto.rossi@example.com'),
-(2, 'Giulia', 'Bianchi', '0987654322', 'giulia.bianchi@example.com'),
-(3, 'Marco', 'Verdi', '0987654323', 'marco.verdi@example.com'),
-(4, 'Claudia', 'Neri', '0987654324', 'claudia.neri@example.com'),
-(5, 'Stefano', 'Gialli', '0987654325', 'stefano.gialli@example.com'),
-(6, 'Francesca', 'Blu', '0987654326', 'francesca.blu@example.com'),
-(7, 'Antonio', 'Arancioni', '0987654327', 'antonio.arancioni@example.com'),
-(8, 'Elena', 'Grigi', '0987654328', 'elena.grigi@example.com'),
-(9, 'Matteo', 'Rosa', '0987654329', 'matteo.rosa@example.com'),
-(10, 'Silvia', 'Viola', '0987654330', 'silvia.viola@example.com');
+INSERT INTO DIPENDENTE (ID_MARCHIO, nome, cognome, telefono, responsabile, e_mail, password)
+VALUES
+(1, 'Mario', 'Rossi', '1234567890', TRUE, 'mario.rossi@example.com', 'password123'),
+(2, 'Luca', 'Bianchi', '1234567891', FALSE, 'luca.bianchi@example.com', 'password456'),
+(3, 'Anna', 'Verdi', '1234567892', FALSE, 'anna.verdi@example.com', 'password789'),
+(4, 'Giulia', 'Neri', '1234567893', FALSE, 'giulia.neri@example.com', 'password321'),
+(5, 'Paolo', 'Gialli', '1234567894', FALSE, 'paolo.gialli@example.com', 'password654'),
+(6, 'Francesco', 'Blu', '1234567895', FALSE, 'francesco.blu@example.com', 'password987'),
+(7, 'Stefano', 'Viola', '1234567896', FALSE, 'stefano.viola@example.com', 'password159'),
+(8, 'Claudia', 'Arancioni', '1234567897', FALSE, 'claudia.arancioni@example.com', 'password753'),
+(9, 'Federico', 'Rosa', '1234567898', TRUE, 'federico.rosa@example.com', 'password369'),
+(10, 'Elena', 'Marrone', '1234567899', FALSE, 'elena.marrone@example.com', 'password258');
+
 
 
 

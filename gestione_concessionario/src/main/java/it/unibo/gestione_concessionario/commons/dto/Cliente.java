@@ -4,5 +4,6 @@ public record Cliente(
     String nome,
     String cognome,
     String telefono,
-    String eMail
+    String eMail,
+    String password
 ) {}
