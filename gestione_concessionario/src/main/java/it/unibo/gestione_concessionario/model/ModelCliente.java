@@ -296,8 +296,25 @@ public class ModelCliente implements Model{
         }
 
     }
-
-
+public int visualizzaIDMarchio(Marchio marchio){
+    PreparedStatement ps;
+    int marchioID = 0;
+    final String vediDipendente = "SELECT ID_MARCHIO " +
+                                    "FROM MARCHIO " + 
+                                    "WHERE Nome = ?;";
+    try {
+        ps = connection.prepareStatement(vediDipendente);
+        ps.setString(1, marchio.nome());
+        ResultSet set = ps.executeQuery();
+        while (set.next()) {
+            marchioID = set.getInt(1);
+        }
+        ps.close();
+        return marchioID;
+    } catch (SQLException e) {
+        throw new ProblemWithConnectionException(e);
+    } 
+}
     public static void main(String[] args) {
         ModelCliente model = new ModelCliente();
                 model.init(ConnectionFactory.build("gestione_concessionario_prova",
@@ -310,4 +327,5 @@ public class ModelCliente implements Model{
         System.out.println("----------------------");
         model.visualizzaDipendente(new Marchio(2,"Lamborghini"));
     }
+
 }
