@@ -52,7 +52,6 @@ DELIMITER ;
 COMMIT;
 
 
-
 INSERT INTO DIPENDENTE (ID_MARCHIO, nome, cognome, teleofno, e_mail) VALUES
 (1, 'Alberto', 'Rossi', '0987654321', 'alberto.rossi@example.com'),
 (2, 'Giulia', 'Bianchi', '0987654322', 'giulia.bianchi@example.com'),

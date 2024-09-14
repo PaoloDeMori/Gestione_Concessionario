@@ -322,6 +322,7 @@ END$$
 
 DELIMITER ;
 
+
 DELIMITER $$
 
 CREATE TRIGGER check_responsabile_insert
