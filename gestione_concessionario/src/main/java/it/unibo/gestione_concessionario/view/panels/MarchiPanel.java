@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
 public class MarchiPanel extends JPanel {
 
     private JTable table;
-    private String[] columnNames = {"id","Nome"};
+    private String[] columnNames = {"Nome"};
     private Object[][] data;
     private CustomButton dipendenteButton;
 
@@ -50,8 +50,7 @@ public class MarchiPanel extends JPanel {
         // Crea i dati per la tabella
         data = new Object[marchi.size()][2];
         for (int i = 0; i < marchi.size(); i++) {
-            data[i][0] = marchi.get(i).idMarchio();
-            data[i][1] = marchi.get(i).nome();
+            data[i][0] = marchi.get(i).nome();
         }
 
         // Crea un modello di tabella personalizzato non modificabile con i dati aggiornati

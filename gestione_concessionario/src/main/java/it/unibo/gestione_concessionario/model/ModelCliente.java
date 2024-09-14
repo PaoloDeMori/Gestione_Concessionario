@@ -93,7 +93,7 @@ public class ModelCliente implements Model {
 
     public boolean fissaAppuntamento(Appuntamento appuntamento) {
         PreparedStatement ps = null;
-        final String fissaAppuntamento = "INSERT INTO APPUNTAMENTO (ID_APPUNTAMENTO, data, ora, Tipologia, durata, Numero_Telaio, ID_DIPENDENTE, ID_CLIENTE,) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        final String fissaAppuntamento = "INSERT INTO APPUNTAMENTO (ID_APPUNTAMENTO, data, ora, Tipologia, durata, Numero_Telaio, ID_DIPENDENTE, ID_CLIENTE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             ps = connection.prepareStatement(fissaAppuntamento);
             ps.setInt(1, appuntamento.idAppuntamento());

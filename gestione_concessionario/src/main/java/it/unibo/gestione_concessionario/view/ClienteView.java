@@ -12,7 +12,6 @@ import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.panels.MarchiPanel;
 import it.unibo.gestione_concessionario.view.panels.ModelliPanel;
-import it.unibo.gestione_concessionario.view.panels.OptionalsPanels;
 import it.unibo.gestione_concessionario.view.panels.SingoloDipendentePanel;
 
 import java.awt.BorderLayout;
@@ -29,7 +28,6 @@ public class ClienteView extends JFrame implements View {
     private MarchiPanel marchiPanel;
     private ModelliPanel modelliPanel = new ModelliPanel();
     private JPanel dipendente = new JPanel();
-    private OptionalsPanels optionalFromAutos = new OptionalsPanels();
 
     public ClienteView(Controller controller) {
         this.controller = controller;
@@ -114,7 +112,7 @@ public class ClienteView extends JFrame implements View {
         cardPanel.add(modelliPanel, "Modelli");
         cardPanel.add(marchiPanel, "Marchi");
         cardPanel.add(dipendente, "Dipendente");
-        cardPanel.add(optionalFromAutos, "Optional");
+        cardPanel.add(new JPanel(), "Optional");
 
         // Aggiungi il cardPanel al centro della finestra
         this.add(cardPanel, BorderLayout.CENTER);
