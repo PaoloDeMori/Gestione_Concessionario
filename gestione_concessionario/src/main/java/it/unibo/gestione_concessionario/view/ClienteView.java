@@ -15,7 +15,7 @@ public class ClienteView implements View {
     }
 
     @Override
-    public void error() {
+    public void error(String errore,String tipoDiErrore) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'error'");
     }

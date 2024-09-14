@@ -108,7 +108,7 @@ INSERT INTO CONFIGURAZIONE (Motore, alimentazione, cc, horse_power, ID_MODELLO) 
 
 INSERT INTO APPUNTAMENTO (ID_APPUNTAMENTO, data, ora, Tipologia, durata, Numero_Telaio, ID_CLIENTE, ID_DIPENDENTE)
 VALUES 
-(1, '2024-10-05', '18:31:00', 'Test-Drive', '00:30:00', '1HGBH41JXMN109186', 2, 11);
+(1, '2024-10-05', '18:31:00', 'Test-Drive', '00:30:00', '1HGBH41JXMN109186', 2, 1);
 
 INSERT INTO GARANZIA (scadenza, copertura, Numero_Telaio)
 VALUES 

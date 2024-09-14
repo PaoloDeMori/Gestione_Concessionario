@@ -6,6 +6,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
+
+import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.controller.Controller;
 
 import java.awt.FlowLayout;
@@ -65,7 +67,6 @@ public class LoginView implements View {
     private void showLoginPanel(boolean isEmployee) {
         loginFrame.getContentPane().removeAll(); // Properly clear the content pane
         
-        JPanel mainPanel = new JPanel();
         JPanel emailPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         loginPanel = new JPanel(new GridLayout(2,1,20,20));
@@ -99,14 +100,16 @@ public class LoginView implements View {
     // Opens Account Creation Panel
     private void showCreateAccountPanel() {
         loginFrame.getContentPane().removeAll();  // Clear the content pane
-        loginFrame.setSize(700,350);
-        JPanel createAccountPanel = new JPanel(new GridLayout(5, 2, 10, 10));  // Layout for form fields
+        loginFrame.setSize(700,450);
+        JPanel createAccountPanel = new JPanel(new GridLayout(6, 2, 10, 10));  // Layout for form fields
 
         // Form fields for account creation
         JLabel firstNameLabel = new JLabel("Nome:");
         JTextField firstNameField = new JTextField(25);
         JLabel lastNameLabel = new JLabel("Cognome:");
         JTextField lastNameField = new JTextField(25);
+        JLabel telefonoLabel = new JLabel("telefono:");
+        JTextField telefonoField = new JTextField(25);
         JLabel emailLabel = new JLabel("Email:");
         JTextField emailField = new JTextField(25);
         JLabel passwordLabel = new JLabel("Password:");
@@ -117,14 +120,25 @@ public class LoginView implements View {
             // Collect data from form fields
             String firstName = firstNameField.getText();
             String lastName = lastNameField.getText();
+            String telefono = telefonoField.getText();
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
 
             // Call the controller to create the account
-            //controller.createAccountCliente(firstName, lastName, email, password);
-
-            // Show success message
-            JOptionPane.showMessageDialog(loginFrame, "Account creato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+            if(controller.createCliente(new Cliente(firstName, lastName, telefono,email, password)))
+            {
+                JOptionPane.showMessageDialog(loginFrame, "Account creato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+                if(this.controller.checkLoginCliente(email, password)){
+                    this.stop();
+                    this.controller.startCliente();
+                }
+                else{
+                    this.showLoginPanel(false);
+                }
+            }
+            else{
+                error("Impossibile creare account", "errore creazione account");
+            }
 
             // Return to login screen
             initializeStartPanel();
@@ -135,6 +149,8 @@ public class LoginView implements View {
         createAccountPanel.add(firstNameField);
         createAccountPanel.add(lastNameLabel);
         createAccountPanel.add(lastNameField);
+        createAccountPanel.add(telefonoLabel);
+        createAccountPanel.add(telefonoField);
         createAccountPanel.add(emailLabel);
         createAccountPanel.add(emailField);
         createAccountPanel.add(passwordLabel);
@@ -152,7 +168,7 @@ public class LoginView implements View {
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
             if (!controller.checkLoginCliente(email, password)) {
-                error();
+                error("Impossibile eseguire il Login","Errore di Login");
             }
         };
     }
@@ -163,7 +179,7 @@ public class LoginView implements View {
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
             if (!controller.checkLoginDipendente(email, password)) {
-                error();
+                error("Impossibile eseguire il Login","Errore di Login");
             }
         };
     }
@@ -175,14 +191,15 @@ public class LoginView implements View {
 
     @Override
     public void stop() {
-        System.out.println("Application stopped");
+    loginFrame.removeAll();
+    loginFrame.setVisible(false);    
     }
 
     @Override
-    public void error() {
+    public void error(String errore,String tipoDiErrore) {
         JOptionPane.showMessageDialog(null, 
-                "Impossibile fare login", 
-                "Errore di Login", 
+                errore, 
+                tipoDiErrore, 
                 JOptionPane.ERROR_MESSAGE);
     }
 
