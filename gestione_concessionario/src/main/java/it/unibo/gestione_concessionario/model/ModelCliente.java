@@ -67,6 +67,30 @@ public class ModelCliente implements Model {
 
     }
 
+    public List<Optionals> visualizzaOptional(Modello modello){
+        PreparedStatement ps;
+        List<Optionals> optionals = new ArrayList<>();
+        final String vediDipendente = "SELECT O.ID_Optional, O.descrizione, O.prezzo "+
+                                       "FROM OPTIONAL O "+
+                                       "JOIN Supporto S ON O.ID_Optional = S.ID_Optional "+
+                                        "JOIN MODELLO M ON S.ID_MODELLO = M.ID_MODELLO "+
+                                        "WHERE M.ID_MODELLO = ? ;";
+        try {
+            ps = connection.prepareStatement(vediDipendente);
+            ps.setString(1, modello.descrizione());
+            ResultSet set = ps.executeQuery();
+            while (set.next()) {
+                optionals.add(new Optionals(set.getInt(1), set.getString(2), set.getDouble(3)));
+            }
+            ps.close();
+            return optionals;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+
+    }
+
+}
+
     public boolean fissaAppuntamento(Appuntamento appuntamento) {
         PreparedStatement ps = null;
         final String fissaAppuntamento = "INSERT INTO APPUNTAMENTO (ID_APPUNTAMENTO, data, ora, Tipologia, durata, Numero_Telaio, ID_DIPENDENTE, ID_CLIENTE,) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -140,7 +164,7 @@ public class ModelCliente implements Model {
         }
     }
 
-    List<Optionals> visualizzaOptional(Auto macchina) {
+    public List<Optionals> visualizzaOptional(Auto macchina) {
         PreparedStatement ps;
         List<Optionals> optional = new ArrayList<>();
         final String vediOptional = "SELECT O.ID_Optional, O.descrizione, O.prezzo " +
@@ -297,29 +321,27 @@ public class ModelCliente implements Model {
         }
 
     }
-<<<<<<< HEAD
-public int visualizzaIDMarchio(Marchio marchio){
-    PreparedStatement ps;
-    int marchioID = 0;
-    final String vediDipendente = "SELECT ID_MARCHIO " +
-                                    "FROM MARCHIO " + 
-                                    "WHERE Nome = ?;";
-    try {
-        ps = connection.prepareStatement(vediDipendente);
-        ps.setString(1, marchio.nome());
-        ResultSet set = ps.executeQuery();
-        while (set.next()) {
-            marchioID = set.getInt(1);
-        }
-        ps.close();
-        return marchioID;
-    } catch (SQLException e) {
-        throw new ProblemWithConnectionException(e);
-    } 
-}
-=======
 
->>>>>>> eada50bb8aee7a3999a17d02bfe735f854f78961
+    public int visualizzaIDMarchio(String nomeMarchio) {
+        PreparedStatement ps;
+        int marchioID = 0;
+        final String vediDipendente = "SELECT ID_MARCHIO " +
+                "FROM MARCHIO " +
+                "WHERE Nome = ?;";
+        try {
+            ps = connection.prepareStatement(vediDipendente);
+            ps.setString(1, nomeMarchio);
+            ResultSet set = ps.executeQuery();
+            while (set.next()) {
+                marchioID = set.getInt(1);
+            }
+            ps.close();
+            return marchioID;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+    }
+
     public static void main(String[] args) {
         ModelCliente model = new ModelCliente();
         model.init(ConnectionFactory.build("gestione_concessionario_prova",

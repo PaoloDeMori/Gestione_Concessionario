@@ -6,10 +6,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
+import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
+import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.panels.MarchiPanel;
 import it.unibo.gestione_concessionario.view.panels.ModelliPanel;
+import it.unibo.gestione_concessionario.view.panels.OptionalsPanels;
 import it.unibo.gestione_concessionario.view.panels.SingoloDipendentePanel;
 
 import java.awt.BorderLayout;
@@ -26,6 +29,7 @@ public class ClienteView extends JFrame implements View {
     private MarchiPanel marchiPanel;
     private ModelliPanel modelliPanel = new ModelliPanel();
     private JPanel dipendente = new JPanel();
+    private OptionalsPanels optionalFromAutos = new OptionalsPanels();
 
     public ClienteView(Controller controller) {
         this.controller = controller;
@@ -93,9 +97,9 @@ public class ClienteView extends JFrame implements View {
             public void actionPerformed(ActionEvent e) {
                 dipendente.removeAll();
                int rigaSelezionata = tabella.getSelectedRow();
-               if(rigaSelezionata>0){
-               id = (int)tabella.getValueAt(rigaSelezionata, 0);
-               nome = (String)tabella.getValueAt(rigaSelezionata, 1);
+               if(rigaSelezionata>=0){
+               nome = (String)tabella.getValueAt(rigaSelezionata, 0);
+               id = controller.idFromNameMarchio(nome);
                dipendente.add(new SingoloDipendentePanel(controller.dipendenteFromMarchio(new Marchio(id, nome))));
                cardLayout.show(cardPanel, "Dipendente");
                }
@@ -110,14 +114,14 @@ public class ClienteView extends JFrame implements View {
         cardPanel.add(modelliPanel, "Modelli");
         cardPanel.add(marchiPanel, "Marchi");
         cardPanel.add(dipendente, "Dipendente");
-        cardPanel.add(settingsPanel, "Settings");
+        cardPanel.add(optionalFromAutos, "Optional");
 
         // Aggiungi il cardPanel al centro della finestra
         this.add(cardPanel, BorderLayout.CENTER);
 
         // Imposta la visualizzazione iniziale su "Home"
         cardLayout.show(cardPanel, "Marchi");
-
+        
         // Aggiungi gli ActionListener per gestire i cambi di pannello
         marchiButton.addActionListener(new ActionListener() {
             @Override
