@@ -3,6 +3,7 @@ package it.unibo.gestione_concessionario.controller;
 
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Cliente;
+import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.model.ModelCliente;
@@ -57,7 +58,6 @@ public class Controller {
 
     public void startCliente(){
         this.view.start();
-
     }
 
     public void startDipendenteView(){
@@ -71,6 +71,10 @@ public class Controller {
     public List<Modello> allModelli(){
         return this.modelCliente.visualizzaModello();
 
+    }
+
+    public Dipendente dipendenteFromMarchio(Marchio marchio){
+     return   this.modelCliente.visualizzaDipendente(marchio);
     }
 
 

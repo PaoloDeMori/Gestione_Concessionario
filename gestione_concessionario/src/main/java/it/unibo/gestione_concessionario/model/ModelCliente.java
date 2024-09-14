@@ -222,7 +222,7 @@ public class ModelCliente implements Model {
         }
     }
 
-    Dipendente visualizzaDipendente(Marchio marchio) {
+    public Dipendente visualizzaDipendente(Marchio marchio) {
         PreparedStatement ps;
         Dipendente dipendente = null;
         final String vediDipendente = "SELECT  M.ID_MARCHIO , D.nome, D.cognome, D.telefono, D.e_mail, M.Nome  AS Marchio "

@@ -4,10 +4,13 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 
+import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.panels.MarchiPanel;
 import it.unibo.gestione_concessionario.view.panels.ModelliPanel;
+import it.unibo.gestione_concessionario.view.panels.SingoloDipendentePanel;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -20,11 +23,13 @@ public class ClienteView extends JFrame implements View {
     private CardLayout cardLayout;
     private JPanel cardPanel;
     Controller controller;
-    private MarchiPanel marchiPanel = new MarchiPanel();
+    private MarchiPanel marchiPanel;
     private ModelliPanel modelliPanel = new ModelliPanel();
+    private JPanel dipendente = new JPanel();
 
     public ClienteView(Controller controller) {
         this.controller = controller;
+        marchiPanel = new MarchiPanel();
         this.initialize();
 
     }
@@ -80,6 +85,23 @@ public class ClienteView extends JFrame implements View {
         settingsPanel.add(new javax.swing.JLabel("Settings Content"));
 
         // Imposta inizialmente i dati del MarchiPanel
+        marchiPanel.setButtonActionListener(new ActionListener() {
+            JTable tabella = marchiPanel.getTable();
+            int id;
+            String nome;
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dipendente.removeAll();
+               int rigaSelezionata = tabella.getSelectedRow();
+               if(rigaSelezionata>0){
+               id = (int)tabella.getValueAt(rigaSelezionata, 0);
+               nome = (String)tabella.getValueAt(rigaSelezionata, 1);
+               dipendente.add(new SingoloDipendentePanel(controller.dipendenteFromMarchio(new Marchio(id, nome))));
+               cardLayout.show(cardPanel, "Dipendente");
+               }
+            }
+            
+        });
         marchiPanel.setMarchi(controller.allMarchi());
         marchiPanel.revalidate();
         marchiPanel.repaint();
@@ -87,7 +109,7 @@ public class ClienteView extends JFrame implements View {
         // Aggiungi i pannelli al CardLayout
         cardPanel.add(modelliPanel, "Modelli");
         cardPanel.add(marchiPanel, "Marchi");
-        cardPanel.add(profilePanel, "Profile");
+        cardPanel.add(dipendente, "Dipendente");
         cardPanel.add(settingsPanel, "Settings");
 
         // Aggiungi il cardPanel al centro della finestra
