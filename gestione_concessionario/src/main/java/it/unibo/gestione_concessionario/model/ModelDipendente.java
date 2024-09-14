@@ -19,14 +19,46 @@ import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.commons.dto.Offerta;
 import it.unibo.gestione_concessionario.commons.dto.Sconto;
 
-public class ModelDipendente {
+public class ModelDipendente implements Model {
 
     private Connection connection;
     private int iD;
 
-    public ModelDipendente(Connection connection, int iD) {
+    public ModelDipendente() {
+    }
+
+    public void init(Connection connection) {
         this.connection = connection;
-        this.iD = iD;
+    }
+
+    public void stop() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+
+        }
+    }
+
+    public boolean checkLoginDipendente(String email, String password) {
+        PreparedStatement ps = null;
+        final String login = "SELECT d.ID_DIPENDENTE " +
+                             "FROM DIPENDENTE d " + 
+                             "WHERE d.e_mail = ? " +
+                             "AND d.password = ?;";
+        try {
+            ps = connection.prepareStatement(login);
+            ps.setString(1, email);
+            ps.setString(2, password);
+            ResultSet set = ps.executeQuery();
+            if (set.next()) {
+                iD=set.getInt(1);
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+
     }
 
     List<Auto> visualizzaAutoDelDipendente() {
@@ -144,10 +176,10 @@ public class ModelDipendente {
         }
     }
 
-    public boolean aggiungiModello(Modello modello){
+    public boolean aggiungiModello(Modello modello) {
         PreparedStatement ps;
-        final String aggiungiMod = "INSERT INTO MODELLO (Descrizione, Anno, ID_TIPOLOGIA, ID_MARCHIO) "+
-                                    "VALUES (?, ?, ?, ?, ?);";
+        final String aggiungiMod = "INSERT INTO MODELLO (Descrizione, Anno, ID_TIPOLOGIA, ID_MARCHIO) " +
+                "VALUES (?, ?, ?, ?, ?);";
         try {
             ps = connection.prepareStatement(aggiungiMod);
             ps.setString(1, modello.descrizione());
@@ -167,7 +199,7 @@ public class ModelDipendente {
             }
             return false;
         }
-        
+
     }
 
     public void end() {
@@ -176,10 +208,12 @@ public class ModelDipendente {
         } catch (SQLException e) {
         }
     }
+
     public boolean aggiungiConfigurazione(Configurazione configurazione) {
         PreparedStatement ps;
-        final String aggiungiConfigurazione = "INSERT INTO CONFIGURAZIONE (ID_Configurazione, Motore, alimentazione, cc, horse_power, ID_MODELLO) " + 
-                                                "VALUES (?, ?, ?, ?, ?, ?);";
+        final String aggiungiConfigurazione = "INSERT INTO CONFIGURAZIONE (ID_Configurazione, Motore, alimentazione, cc, horse_power, ID_MODELLO) "
+                +
+                "VALUES (?, ?, ?, ?, ?, ?);";
         try {
             ps = connection.prepareStatement(aggiungiConfigurazione);
             ps.setInt(1, configurazione.idConfigurazione());
@@ -201,20 +235,22 @@ public class ModelDipendente {
             return false;
         }
     }
+
     public boolean aggiungiAuto(Auto auto) {
         PreparedStatement ps;
-        final String aggiungiAuto = "INSERT INTO AUTO (Numero_Telaio, Immatricolazione, data, targa, ID_Configurazione) " +
-                                     "VALUES (?, ?, ?, ?, ?);" ;
+        final String aggiungiAuto = "INSERT INTO AUTO (Numero_Telaio, Immatricolazione, data, targa, ID_Configurazione) "
+                +
+                "VALUES (?, ?, ?, ?, ?);";
         try {
             ps = connection.prepareStatement(aggiungiAuto);
             ps.setString(1, auto.numero_telaio());
             ps.setDouble(2, auto.prezzo());
-            ps.setBoolean(3,auto.immatricolazione() );
-            ps.setString(4,auto.targa().get());
-            ps.setDate(5,Date.valueOf(auto.data().get()));
-            ps.setString(6,auto.descrizioneModello());
-            ps.setString(7,auto.motore());
-            ps.setString(8,auto.alimentazione());
+            ps.setBoolean(3, auto.immatricolazione());
+            ps.setString(4, auto.targa().get());
+            ps.setDate(5, Date.valueOf(auto.data().get()));
+            ps.setString(6, auto.descrizioneModello());
+            ps.setString(7, auto.motore());
+            ps.setString(8, auto.alimentazione());
             ps.executeUpdate();
             ps.close();
             connection.commit();
@@ -230,14 +266,15 @@ public class ModelDipendente {
     }
 
     public static void main(String[] args) {
-        ModelDipendente model = new ModelDipendente(ConnectionFactory.build("gestione_concessionario_prova",
-                "jdbc:mysql://localhost:3306/", "root", "cadmio"), 13);
+        ModelDipendente model = new ModelDipendente();
+        model.init(ConnectionFactory.build("gestione_concessionario_prova",
+                "jdbc:mysql://localhost:3306/", "root", "cadmio"));
         model.visualizzaAppuntamenti();
         System.out.println("______________________________________________________________________________");
         model.visualizzaAutoDelDipendente();
         // model.aggiungiSconto(new Sconto(80,LocalDate.now(),LocalDate.of(2025,
         // 12,11),"1HGBH41JXMN109186"));
-        model.aggiungiOfferta(new Offerta(1, 50,LocalDate.now() , LocalDate.of(2025, 12,11), 1, 13));
+        model.aggiungiOfferta(new Offerta(1, 50, LocalDate.now(), LocalDate.of(2025, 12, 11), 1, 13));
         model.end();
     }
 }

@@ -20,15 +20,27 @@ import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.commons.dto.Optionals;
 import it.unibo.gestione_concessionario.commons.dto.Tipologia;
 
-public class ModelCliente {
+public class ModelCliente implements Model{
 
     private Connection connection;
     private int iD;
 
-    public ModelCliente(Connection connection, int iD) {
-        this.connection = connection;
-        this.iD = iD;
+    public ModelCliente() {
     }
+
+    
+    public void init(Connection connection){
+        this.connection = connection;
+    }
+
+    public void stop(){
+        try {
+            connection.close();
+        } catch (SQLException e) {
+
+        }
+    }
+
 
     public boolean fissaAppuntamento(Appuntamento appuntamento) {
         PreparedStatement ps = null;
@@ -58,12 +70,7 @@ public class ModelCliente {
         }
     }
 
-    public void end(){
-        try {
-            connection.close();
-        } catch (SQLException e) {
-        }
-    }
+
     List<Marchio> visualizzaMarchi() {
         PreparedStatement ps;
         List<Marchio> marchi = new ArrayList<>();
@@ -242,11 +249,34 @@ public class ModelCliente {
         }
     }
 
+    public boolean checkLoginCliente(String email, String password){
+        PreparedStatement ps = null;
+        final String login = "SELECT c.ID_CLIENTE " +
+                             "FROM CLIENTE c " + 
+                             "WHERE c.e_mail = ? " +
+                             "AND c.password = ?;";
+        try {
+            ps = connection.prepareStatement(login);
+            ps.setString(1, email);
+            ps.setString(2, password);
+            ResultSet set = ps.executeQuery();
+            if(set.next()){
+                iD=set.getInt(1);
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+
+    }
+
 
 
     public static void main(String[] args) {
-        ModelCliente model = new ModelCliente(ConnectionFactory.build("gestione_concessionario_prova",
-                "jdbc:mysql://localhost:3306/", "root", "Strong.2024.Password"), 13);
+        ModelCliente model = new ModelCliente();
+                model.init(ConnectionFactory.build("gestione_concessionario_prova",
+                "jdbc:mysql://localhost:3306/", "root", "Strong.2024.Password"));
         model.visualizzaMarchi();
         System.out.println("----------------------");
         model.visualizzaModello();
