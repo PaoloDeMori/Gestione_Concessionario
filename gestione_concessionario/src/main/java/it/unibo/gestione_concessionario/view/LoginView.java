@@ -1,30 +1,20 @@
 package it.unibo.gestione_concessionario.view;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.JOptionPane;
-
+import javax.swing.*;
 import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.controller.Controller;
 
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class LoginView implements View {
 
     private JFrame loginFrame;
-    private JLabel emailLabel;
-    private JLabel passwordLabel;
     private JTextField emailField;
     private JPasswordField passwordField;
     private CustomButton loginButton;
-    private CustomButton createAccountButton;  // New button for account creation
+    private CustomButton createAccountButton;
     private Controller controller;
-    private JPanel loginPanel;
 
     public LoginView(Controller controller) {
         this.controller = controller;
@@ -42,111 +32,95 @@ public class LoginView implements View {
         loginFrame.setLayout(new FlowLayout());
     }
 
-    // Initial Panel with Client/Employee buttons
+    // Panel with Client/Employee selection buttons
     private void initializeStartPanel() {
         JPanel panel = new JPanel();
 
-        CustomButton cliente = new CustomButton("Cliente");
-        CustomButton dipendente = new CustomButton("Dipendente");
+        CustomButton clienteButton = new CustomButton("Cliente");
+        CustomButton dipendenteButton = new CustomButton("Dipendente");
 
-        cliente.addActionListener(e -> { 
-            showLoginPanel(false); 
-            this.controller.initCliente(); 
+        clienteButton.addActionListener(e -> {
+            showLoginPanel(false);
+            this.controller.initCliente();
         });
-        dipendente.addActionListener(e -> showLoginPanel(true));
 
-        panel.add(cliente);
-        panel.add(dipendente);
+        dipendenteButton.addActionListener(e -> showLoginPanel(true));
 
-        loginFrame.getContentPane().removeAll(); // Properly clear the content pane
+        panel.add(clienteButton);
+        panel.add(dipendenteButton);
+
+        loginFrame.getContentPane().removeAll();  // Clear the content pane before switching
         loginFrame.add(panel);
         loginFrame.setVisible(true);
     }
 
-    // Shows Login Panel based on the user type
+    // Show Login Panel based on user type (Client or Employee)
     private void showLoginPanel(boolean isEmployee) {
-        loginFrame.getContentPane().removeAll(); // Properly clear the content pane
-        
+        loginFrame.getContentPane().removeAll();  // Clear the content pane
+
+        // Create email and password panels
         JPanel emailPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        loginPanel = new JPanel(new GridLayout(2,1,20,20));
 
-        emailLabel = new JLabel("Email:");
-        passwordLabel = new JLabel("Password:");
+        JLabel emailLabel = new JLabel("Email:");
+        JLabel passwordLabel = new JLabel("Password:");
 
         emailField = new JTextField(25);
         passwordField = new JPasswordField(25);
 
+        // Login and account creation buttons
         loginButton = new CustomButton("Accedi");
         loginButton.addActionListener(isEmployee ? getEmployeeLoginListener() : getClientLoginListener());
 
-        createAccountButton = new CustomButton("Crea Account");  // New account creation button
-        createAccountButton.addActionListener(e -> showCreateAccountPanel()); // Open create account panel on click
+        createAccountButton = new CustomButton("Crea Account");
+        createAccountButton.addActionListener(e -> showCreateAccountPanel());
 
+        // Assemble login panel
+        JPanel loginPanel = new JPanel(new GridLayout(2, 1, 20, 20));
         emailPanel.add(emailLabel);
         emailPanel.add(emailField);
         passwordPanel.add(passwordLabel);
         passwordPanel.add(passwordField);
-
+        
         loginPanel.add(emailPanel);
         loginPanel.add(passwordPanel);
         loginPanel.add(loginButton);
-        loginPanel.add(createAccountButton);  // Add the new button to the panel
-    
+        loginPanel.add(createAccountButton);
+
         loginFrame.add(loginPanel);
         refreshGui();
     }
 
-    // Opens Account Creation Panel
+    // Show Create Account Panel
     private void showCreateAccountPanel() {
         loginFrame.getContentPane().removeAll();  // Clear the content pane
-        loginFrame.setSize(700,450);
-        JPanel createAccountPanel = new JPanel(new GridLayout(6, 2, 10, 10));  // Layout for form fields
+        loginFrame.setSize(700, 450);
+
+        JPanel createAccountPanel = new JPanel(new GridLayout(6, 2, 10, 10));
 
         // Form fields for account creation
         JLabel firstNameLabel = new JLabel("Nome:");
         JTextField firstNameField = new JTextField(25);
         JLabel lastNameLabel = new JLabel("Cognome:");
         JTextField lastNameField = new JTextField(25);
-        JLabel telefonoLabel = new JLabel("telefono:");
+        JLabel telefonoLabel = new JLabel("Telefono:");
         JTextField telefonoField = new JTextField(25);
         JLabel emailLabel = new JLabel("Email:");
         JTextField emailField = new JTextField(25);
         JLabel passwordLabel = new JLabel("Password:");
         JPasswordField passwordField = new JPasswordField(25);
 
+        // Submit button for account creation
         CustomButton createAccountSubmitButton = new CustomButton("Crea Account");
-        createAccountSubmitButton.addActionListener(e -> {
-            // Collect data from form fields
-            String firstName = firstNameField.getText();
-            String lastName = lastNameField.getText();
-            String telefono = telefonoField.getText();
-            String email = emailField.getText();
-            String password = new String(passwordField.getPassword());
+        createAccountSubmitButton.addActionListener(e -> handleCreateAccount(
+            firstNameField.getText(),
+            lastNameField.getText(),
+            telefonoField.getText(),
+            emailField.getText(),
+            new String(passwordField.getPassword())
+        ));
 
-            // Call the controller to create the account
-            if(controller.createCliente(new Cliente(firstName, lastName, telefono,email, password)))
-            {
-                JOptionPane.showMessageDialog(loginFrame, "Account creato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
-                if(this.controller.checkLoginCliente(email, password)){
-                    this.stop();
-                    this.controller.startCliente();
-                }
-                else{
-                    this.loginFrame.removeAll();
-                    this.loginFrame.setVisible(false);
-                    this.showLoginPanel(false);
-                }
-            }
-            else{
-                error("Impossibile creare account", "errore creazione account");
-            }
-
-            // Return to login screen
-            initializeStartPanel();
-        });
-
-        // Add components to the panel
+        // Add form components to the panel
         createAccountPanel.add(firstNameLabel);
         createAccountPanel.add(firstNameField);
         createAccountPanel.add(lastNameLabel);
@@ -157,11 +131,29 @@ public class LoginView implements View {
         createAccountPanel.add(emailField);
         createAccountPanel.add(passwordLabel);
         createAccountPanel.add(passwordField);
-        createAccountPanel.add(new JLabel());  // Empty cell for layout alignment
+        createAccountPanel.add(new JLabel());  // Placeholder for layout alignment
         createAccountPanel.add(createAccountSubmitButton);
 
         loginFrame.add(createAccountPanel);
-        refreshGui();  // Refresh to show the new account creation form
+        refreshGui();
+    }
+
+    // Handle Account Creation
+    private void handleCreateAccount(String firstName, String lastName, String telefono, String email, String password) {
+        // Create Cliente and check if the account creation is successful
+        if (controller.createCliente(new Cliente(firstName, lastName, telefono, email, password))) {
+            JOptionPane.showMessageDialog(loginFrame, "Account creato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+
+            // Automatically login after account creation
+            if (controller.checkLoginCliente(email, password)) {
+                this.stop();
+                controller.startCliente();
+            } else {
+                showLoginPanel(false);
+            }
+        } else {
+            error("Impossibile creare account", "Errore creazione account");
+        }
     }
 
     // Client Login Action Listener
@@ -169,12 +161,12 @@ public class LoginView implements View {
         return e -> {
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
+
             if (!controller.checkLoginCliente(email, password)) {
-                error("Impossibile eseguire il Login","Errore di Login");
-            }
-            else{
+                error("Impossibile eseguire il Login", "Errore di Login");
+            } else {
                 this.stop();
-                this.controller.startCliente();
+                controller.startCliente();
             }
         };
     }
@@ -184,8 +176,9 @@ public class LoginView implements View {
         return e -> {
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
+
             if (!controller.checkLoginDipendente(email, password)) {
-                error("Impossibile eseguire il Login","Errore di Login");
+                error("Impossibile eseguire il Login", "Errore di Login");
             }
         };
     }
@@ -197,16 +190,13 @@ public class LoginView implements View {
 
     @Override
     public void stop() {
-    loginFrame.removeAll();
-    loginFrame.setVisible(false);    
+        loginFrame.removeAll();
+        loginFrame.setVisible(false);
     }
 
     @Override
-    public void error(String errore,String tipoDiErrore) {
-        JOptionPane.showMessageDialog(null, 
-                errore, 
-                tipoDiErrore, 
-                JOptionPane.ERROR_MESSAGE);
+    public void error(String errore, String tipoDiErrore) {
+        JOptionPane.showMessageDialog(null, errore, tipoDiErrore, JOptionPane.ERROR_MESSAGE);
     }
 
     @Override

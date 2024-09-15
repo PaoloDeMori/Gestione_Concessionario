@@ -1,188 +1,237 @@
 package it.unibo.gestione_concessionario.view;
 
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JTable;
+import javax.swing.*;
 
+import it.unibo.gestione_concessionario.commons.dto.Garanzia;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
+import it.unibo.gestione_concessionario.commons.dto.Optionals;
 import it.unibo.gestione_concessionario.controller.Controller;
-import it.unibo.gestione_concessionario.view.panels.AppuntamentoSetter;
-import it.unibo.gestione_concessionario.view.panels.AutoFiltrate;
-import it.unibo.gestione_concessionario.view.panels.MarchiPanel;
-import it.unibo.gestione_concessionario.view.panels.ModelliPanel;
-import it.unibo.gestione_concessionario.view.panels.SingoloDipendentePanel;
-
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
+import it.unibo.gestione_concessionario.view.panels.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Color;
+import java.util.Optional;
+import java.util.List;
 
 public class ClienteView extends JFrame implements View {
 
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    Controller controller;
+    private Controller controller;
     private MarchiPanel marchiPanel;
-    private ModelliPanel modelliPanel = new ModelliPanel();
-    private JPanel dipendente = new JPanel();
-    private AutoFiltrate autoFiltrate;
-    private AppuntamentoSetter appuntamentoSetter;
+    private ModelliPanel modelliPanel;
+    private JPanel dipendentePanel;
+    private AutoFiltrate autoFiltratePanel;
+    private AppuntamentoSetter appuntamentoSetterPanel;
+    private AllAutoPanel allAuto;
+    private GaranziaPanel garanziaPanel;
+    private OptionalPanel optionalPanel;
+    private AutoScontate autoScontate;
 
     public ClienteView(Controller controller) {
         this.controller = controller;
-        autoFiltrate = new AutoFiltrate(controller);
-        marchiPanel = new MarchiPanel();
-        this.initialize();
-
+        this.marchiPanel = new MarchiPanel();
+        this.allAuto = new AllAutoPanel();
+        this.modelliPanel = new ModelliPanel();
+        this.dipendentePanel = new JPanel();
+        this.autoFiltratePanel = new AutoFiltrate(controller);
+        this.autoScontate=new AutoScontate(controller);
+        this.appuntamentoSetterPanel = new AppuntamentoSetter(controller);
+        this.optionalPanel=new OptionalPanel();
+        garanziaPanel=new GaranziaPanel();
+        initialize();
     }
 
     private void initialize() {
-        this.setTitle("Menu and CardLayout Example");
-        this.setSize(800, 600);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLayout(new BorderLayout());
+        // Impostazioni iniziali della finestra
+        setTitle("Menu and CardLayout Example");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        // Crea il menu bar
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.setBackground(Color.BLACK);
+        // Creazione della barra menu
+        JMenuBar menuBar = createMenuBar();
+        setJMenuBar(menuBar);
 
-        // Crea il menu principale "File"
-        JMenu menu = new JMenu("Menu");
-        menu.setForeground(new Color(255, 140, 0));
-
-        // Aggiungi le voci del menu
-        CustomButton homeItem = new CustomButton("Home");
-        CustomButton profileItem = new CustomButton("Profile");
-        CustomButton settingsItem = new CustomButton("Settings");
-
-        // Aggiungi le voci al menu
-        menu.add(homeItem);
-        menu.add(profileItem);
-        menu.add(settingsItem);
-
-
-
-        CustomButton marchiButton = new CustomButton("Visualizza Marchi");
-        menuBar.add(marchiButton);
-
-        CustomButton modelliButton = new CustomButton("Visualizza Modelli");
-        menuBar.add(modelliButton);
-
-        CustomButton autoFiltrateButton = new CustomButton("Auto");
-        menuBar.add(autoFiltrateButton);
-
-        CustomButton createAppuntamentoButton = new CustomButton("Create appuntamento");
-        menuBar.add(createAppuntamentoButton);
-
-        // Aggiungi il menu al menu bar
-        menuBar.add(menu);
-
-        // Aggiungi il menu bar alla finestra
-        this.setJMenuBar(menuBar);
-
-        // Crea il CardLayout per gestire i pannelli
+        // Creazione del CardLayout per la gestione dei pannelli
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        // Pannelli specifici per Home, Profile e Settings
+        // Aggiungi pannelli specifici al CardLayout
+        addPanelsToCardLayout();
+
+        // Aggiungi il cardPanel al centro della finestra
+        add(cardPanel, BorderLayout.CENTER);
+
+        // Visualizzazione iniziale su "Marchi"
+        cardLayout.show(cardPanel, "Marchi");
+    }
+
+    private JMenuBar createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.setBackground(Color.BLACK);
+
+
+        // Aggiungi pulsanti per la navigazione dei pannelli
+        addNavigationButtons(menuBar);
+        return menuBar;
+    }
+
+    private void addNavigationButtons(JMenuBar menuBar) {
+        CustomButton marchiButton = new CustomButton("Visualizza Marchi");
+        CustomButton modelliButton = new CustomButton("Visualizza Modelli");
+        CustomButton autoFiltrateButton = new CustomButton("Auto");
+        CustomButton createAppuntamentoButton = new CustomButton("Create appuntamento");
+        CustomButton allAutoButton = new CustomButton("Tutte le auto");
+        CustomButton autoScontateButton = new CustomButton("Auto Scontate");
+
+        menuBar.add(marchiButton);
+        menuBar.add(modelliButton);
+        menuBar.add(autoFiltrateButton);
+        menuBar.add(createAppuntamentoButton);
+        menuBar.add(allAutoButton);
+        menuBar.add(autoScontateButton);
+
+        // Aggiungi gli ActionListener per gestire i cambi di pannello
+        addPanelSwitchListeners(marchiButton, modelliButton, autoFiltrateButton, createAppuntamentoButton,allAutoButton,autoScontateButton);
+    }
+
+    private void addPanelsToCardLayout() {
+        // Crea pannelli specifici per "Home", "Profile" e "Settings"
         JPanel homePanel = new JPanel();
-        homePanel.add(new javax.swing.JLabel("Home Content"));
+        homePanel.add(new JLabel("Home Content"));
 
         JPanel profilePanel = new JPanel();
-        profilePanel.add(new javax.swing.JLabel("Profile Content"));
+        profilePanel.add(new JLabel("Profile Content"));
 
         JPanel settingsPanel = new JPanel();
-        settingsPanel.add(new javax.swing.JLabel("Settings Content"));
-
-        // Imposta inizialmente i dati del MarchiPanel
-        marchiPanel.setButtonActionListener(new ActionListener() {
-            JTable tabella = marchiPanel.getTable();
-            int id;
-            String nome;
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dipendente.removeAll();
-               int rigaSelezionata = tabella.getSelectedRow();
-               if(rigaSelezionata>=0){
-               nome = (String)tabella.getValueAt(rigaSelezionata, 0);
-               id = controller.idFromNameMarchio(nome);
-               dipendente.add(new SingoloDipendentePanel(controller.dipendenteFromMarchio(new Marchio(id, nome))));
-               cardLayout.show(cardPanel, "Dipendente");
-               }
-            }
-            
-        });
-        marchiPanel.setMarchi(controller.allMarchi());
-        marchiPanel.revalidate();
-        marchiPanel.repaint();
-
-        appuntamentoSetter = new AppuntamentoSetter(controller);
-        cardPanel.add(appuntamentoSetter,"Appuntamento");
+        settingsPanel.add(new JLabel("Settings Content"));
 
         // Aggiungi i pannelli al CardLayout
         cardPanel.add(modelliPanel, "Modelli");
         cardPanel.add(marchiPanel, "Marchi");
-        cardPanel.add(dipendente, "Dipendente");
-        cardPanel.add(autoFiltrate, "AutoFilter");
+        cardPanel.add(dipendentePanel, "Dipendente");
+        cardPanel.add(autoFiltratePanel, "AutoFilter");
+        cardPanel.add(appuntamentoSetterPanel, "Appuntamento");
+        cardPanel.add(allAuto, "Auto");
+        cardPanel.add(garanziaPanel,"Garanzia");
+        cardPanel.add(optionalPanel,"Optionals");
+        cardPanel.add(autoScontate,"Sconti");
 
-        // Aggiungi il cardPanel al centro della finestra
-        this.add(cardPanel, BorderLayout.CENTER);
+        // Imposta inizialmente i dati del MarchiPanel
+        setUpMarchiPanel();
 
+        setUpAllAutoPanel();
+    }
 
+    private void setUpAllAutoPanel() {
 
-        // Imposta la visualizzazione iniziale su "Home"
-        cardLayout.show(cardPanel, "Marchi");
+        allAuto.setAuto(controller.allAuto());
 
-        createAppuntamentoButton.addActionListener(new ActionListener() {
-
+        allAuto.setGaranziaButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "Appuntamento");
-            }
-            
-        });
+                JTable table = allAuto.getTable();
+                int selectedRow = table.getSelectedRow();
 
+                if (selectedRow >= 0) {
+                    String numeroTelaio = (String) table.getValueAt(selectedRow, 0);
+                    garanziaPanel.removeAll();
+                    Optional<Garanzia> garanzia = controller.visualizzaGaranzia(numeroTelaio);
+                    if(garanzia.isPresent()){
+                        garanziaPanel.setGaranziaPanel(garanzia.get());
+                        cardLayout.show(cardPanel, "Garanzia");
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(table, "Non c'è garanzia", "NO GARANZIA", JOptionPane.WARNING_MESSAGE);
+                    }
 
-        // Aggiungi gli ActionListener per gestire i cambi di pannello
-        marchiButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Update MarchiPanel data
-                marchiPanel.setMarchi(controller.allMarchi());
-                // Switch to the 'Marchi' panel
-                cardLayout.show(cardPanel, "Marchi");
-            }
-        });
-
-        // Aggiungi gli ActionListener per gestire i cambi di pannello
-        modelliButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Update MarchiPanel data
-                modelliPanel.setModelli(controller.allModelli());
-                modelliPanel.revalidate();
-                modelliPanel.repaint();
-                // Switch to the 'Marchi' panel
-                cardLayout.show(cardPanel, "Modelli");
+                }
             }
         });
 
-        autoFiltrateButton.addActionListener(new ActionListener() {
 
+        allAuto.setOptionalButtonActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "AutoFilter");
+                JTable table = allAuto.getTable();
+                int selectedRow = table.getSelectedRow();
+
+                if (selectedRow >= 0) {
+                    String numeroTelaio = (String) table.getValueAt(selectedRow, 0);
+                    optionalPanel.removeAll();
+                    List<Optionals> optional = controller.visualizzaOptionals(numeroTelaio);
+                    if(optional.size()>0){
+                        optionalPanel.setOptional(optional);
+                        cardLayout.show(cardPanel, "Optionals");
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(table, "Non ci sono optional", "NO OPTIONAL", JOptionPane.WARNING_MESSAGE);
+                    }
+
+                }
             }
-            
         });
+    }
+
+    private void setUpMarchiPanel() {
+        marchiPanel.setMarchi(controller.allMarchi());
+
+        marchiPanel.setButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTable table = marchiPanel.getTable();
+                int selectedRow = table.getSelectedRow();
+
+                if (selectedRow >= 0) {
+                    String nome = (String) table.getValueAt(selectedRow, 0);
+                    int id = controller.idFromNameMarchio(nome);
+
+                    dipendentePanel.removeAll();
+                    dipendentePanel
+                            .add(new SingoloDipendentePanel(controller.dipendenteFromMarchio(new Marchio(id, nome))));
+                    cardLayout.show(cardPanel, "Dipendente");
+                }
+            }
+        });
+        marchiPanel.revalidate();
+        marchiPanel.repaint();
+
+    }
+
+    private void addPanelSwitchListeners(CustomButton marchiButton, CustomButton modelliButton,
+            CustomButton autoFiltrateButton, CustomButton createAppuntamentoButton,CustomButton allAutoButton,CustomButton autoScontateButton) {
+        // Listener per visualizzare il pannello Marchi
+        marchiButton.addActionListener(e -> {
+            marchiPanel.setMarchi(controller.allMarchi());
+            cardLayout.show(cardPanel, "Marchi");
+        });
+
+        allAutoButton.addActionListener(e -> {
+            allAuto.setAuto(controller.allAuto());
+            cardLayout.show(cardPanel, "Auto");
+        });
+
+        // Listener per visualizzare il pannello Modelli
+        modelliButton.addActionListener(e -> {
+            modelliPanel.setModelli(controller.allModelli());
+            modelliPanel.revalidate();
+            modelliPanel.repaint();
+            cardLayout.show(cardPanel, "Modelli");
+        });
+
+        // Listener per visualizzare il pannello AutoFiltrate
+        autoFiltrateButton.addActionListener(e -> cardLayout.show(cardPanel, "AutoFilter"));
+
+        autoScontateButton.addActionListener(e-> cardLayout.show(cardPanel, "Sconti"));
+
+        // Listener per visualizzare il pannello Appuntamento
+        createAppuntamentoButton.addActionListener(e -> cardLayout.show(cardPanel, "Appuntamento"));
     }
 
     @Override
     public void start() {
-        this.setVisible(true);
+        setVisible(true);
     }
 
     @Override
@@ -197,14 +246,14 @@ public class ClienteView extends JFrame implements View {
 
     @Override
     public void refreshGui() {
-        this.revalidate();
-        this.repaint();
+        revalidate();
+        repaint();
     }
 
     public static void main(String[] args) {
-        Controller c = new Controller();
-        c.initCliente();
-        ClienteView cv = new ClienteView(c);
-        cv.start();
+        Controller controller = new Controller();
+        controller.initCliente();
+        ClienteView clienteView = new ClienteView(controller);
+        clienteView.start();
     }
 }

@@ -187,7 +187,7 @@ public class ModelCliente implements Model {
         }
     }
 
-    public List<Optionals> visualizzaOptional(Auto macchina) {
+    public List<Optionals> visualizzaOptional(String numero_Telaio) {
         PreparedStatement ps;
         List<Optionals> optional = new ArrayList<>();
         final String vediOptional = "SELECT O.ID_Optional, O.descrizione, O.prezzo " +
@@ -199,7 +199,7 @@ public class ModelCliente implements Model {
                 "WHERE A.Numero_Telaio = ?;";
         try {
             ps = connection.prepareStatement(vediOptional);
-            ps.setString(1, macchina.numero_telaio());
+            ps.setString(1, numero_Telaio);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 optional.add(new Optionals(set.getInt(1), set.getString(2), set.getDouble(3)));
@@ -215,24 +215,25 @@ public class ModelCliente implements Model {
 
     }
 
-    List<Garanzia> visualizzaGaranzia(Auto macchina) {
+    public Optional<Garanzia> visualizzaGaranzia(String numeroTelaio) {
         PreparedStatement ps;
-        List<Garanzia> garanzia = new ArrayList<>();
+        Garanzia garanzia = null;
         final String vediGaranzia = "SELECT ID_Garanzia, scadenza, copertura " +
                 "FROM GARANZIA " +
                 "WHERE Numero_Telaio = ?;";
         try {
             ps = connection.prepareStatement(vediGaranzia);
-            ps.setString(1, macchina.numero_telaio());
+            ps.setString(1, numeroTelaio);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                garanzia.add(new Garanzia(set.getInt(1), set.getString(2), set.getString(3)));
-            }
-            for (var g : garanzia) {
-                System.out.println(g.toString());
+                garanzia = new Garanzia(set.getInt(1), set.getString(2), set.getString(3));
             }
             ps.close();
-            return garanzia;
+            if (garanzia != null) {
+                return Optional.of(garanzia);
+            } else {
+                return Optional.empty();
+            }
         } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
@@ -358,7 +359,8 @@ public class ModelCliente implements Model {
             throw new ProblemWithConnectionException(e);
         } finally {
             try {
-                if (ps != null) ps.close();
+                if (ps != null)
+                    ps.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -381,7 +383,8 @@ public class ModelCliente implements Model {
             throw new ProblemWithConnectionException(e);
         } finally {
             try {
-                if (ps != null) ps.close();
+                if (ps != null)
+                    ps.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -407,25 +410,37 @@ public class ModelCliente implements Model {
         }
     }
 
-    List<Auto> visualizzaAutoScontate(Marchio marchio) {
+    public List<Auto> visualizzaAutoScontate(Marchio marchio) {
         PreparedStatement ps;
         List<Auto> auto = new ArrayList<>();
-        final String vediAuto = "SELECT A.Numero_Telaio,  A.prezzo , A.Immatricolazione, A.targa, A.data, M.Descrizione AS Modello, S.Percentuale, S.data_inizio, S.data_fine "
-                +
-                "FROM AUTO A " +
+        final String vediAuto = "SELECT " +
+                "A.Numero_Telaio, " +
+                "A.Prezzo, " +
+                "A.Immatricolazione, " +
+                "A.Targa, " +
+                "A.Data, " +
+                "M.Descrizione AS Modello, " +
+                "MR.Nome AS Marchio, " +
+                "COALESCE(O.Percentuale, 0) AS Offerta_Percentuale, " +
+                "COALESCE(S.Percentuale, 0) AS Sconto_Percentuale " +
+                "FROM " +
+                "AUTO A " +
                 "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
                 "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO " +
                 "JOIN MARCHIO MR ON M.ID_MARCHIO = MR.ID_MARCHIO " +
-                "JOIN SCONTO S ON A.Numero_Telaio = S.Numero_Telaio " +
-                "WHERE MR.ID_MARCHIO = ? " +
-                "AND CURRENT_DATE BETWEEN S.data_inizio AND S.data_fine;";
+                "LEFT JOIN OFFERTA O ON MR.ID_MARCHIO = O.ID_MARCHIO " +
+                "AND CURRENT_DATE BETWEEN O.Data_Inizio AND O.Data_Fine " +
+                "LEFT JOIN SCONTO S ON A.Numero_Telaio = S.Numero_Telaio " +
+                "AND CURRENT_DATE BETWEEN S.Data_Inizio AND S.Data_Fine " +
+                "WHERE " +
+                "MR.ID_MARCHIO = ?";
         try {
             ps = connection.prepareStatement(vediAuto);
             ps.setInt(1, marchio.idMarchio());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(4)),
-                        Optional.of(set.getDate(5).toLocalDate()), "", "", ""));
+                        Optional.of(set.getDate(5).toLocalDate()), set.getString(6), "", ""));
             }
             for (var a : auto) {
                 System.out.println(a.toString());
@@ -460,7 +475,7 @@ public class ModelCliente implements Model {
 
     }
 
-    public Cliente getCliente(){
+    public Cliente getCliente() {
         return this.cliente;
     }
 
@@ -484,6 +499,41 @@ public class ModelCliente implements Model {
         }
     }
 
+    public List<Auto> visualizzaTutteLeAutoConDescrizioneModello() {
+        PreparedStatement ps = null;
+        List<Auto> autoList = new ArrayList<>();
+        final String query = "SELECT A.Numero_Telaio, A.Prezzo, A.Immatricolazione, A.data, A.targa, M.Descrizione AS DescrizioneModello "
+                +
+                "FROM AUTO A " +
+                "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
+                "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO;";
+
+        try {
+            ps = connection.prepareStatement(query);
+            ResultSet resultSet = ps.executeQuery();
+
+            while (resultSet.next()) {
+                Auto auto = new Auto(
+                        resultSet.getString("Numero_Telaio"),
+                        resultSet.getDouble("Prezzo"),
+                        resultSet.getBoolean("Immatricolazione"),
+                        Optional.ofNullable(resultSet.getString("targa")),
+                        Optional.ofNullable(
+                                resultSet.getDate("data") != null ? resultSet.getDate("data").toLocalDate() : null),
+                        resultSet.getString("DescrizioneModello"),
+                        "",
+                        "");
+                autoList.add(auto);
+            }
+
+            ps.close();
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+
+        return autoList;
+    }
+
     public static void main(String[] args) {
         ModelCliente model = new ModelCliente();
         model.init(ConnectionFactory.build("gestione_concessionario_prova",
@@ -492,8 +542,9 @@ public class ModelCliente implements Model {
         System.out.println("----------------------");
         model.visualizzaModello();
         System.out.println("----------------------");
-        model.visualizzaGaranzia(new Auto("1HGBH41JXMN109186", 20000.00, true, Optional.of("AB123CD"),
-                Optional.of(LocalDate.of(2024, 01, 10)), "", "", ""));
+        // model.visualizzaGaranzia(new Auto("1HGBH41JXMN109186", 20000.00, true,
+        // Optional.of("AB123CD"),
+        // Optional.of(LocalDate.of(2024, 01, 10)), "", "", ""));
         System.out.println("----------------------");
         model.visualizzaDipendente(new Marchio(2, "Lamborghini"));
     }
