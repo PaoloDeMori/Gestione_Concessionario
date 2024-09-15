@@ -6,7 +6,8 @@ import it.unibo.gestione_concessionario.commons.dto.Garanzia;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.commons.dto.Optionals;
 import it.unibo.gestione_concessionario.controller.Controller;
-import it.unibo.gestione_concessionario.view.panels.*;
+import it.unibo.gestione_concessionario.view.panelsCliente.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

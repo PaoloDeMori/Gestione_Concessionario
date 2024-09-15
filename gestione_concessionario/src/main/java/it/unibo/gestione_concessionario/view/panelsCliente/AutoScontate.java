@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panels;
+package it.unibo.gestione_concessionario.view.panelsCliente;
 
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;

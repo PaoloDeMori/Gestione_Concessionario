@@ -1,6 +1,6 @@
-package it.unibo.gestione_concessionario.view.panels;
+package it.unibo.gestione_concessionario.view.panelsCliente;
 
-import it.unibo.gestione_concessionario.commons.dto.Optionals;
+import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.view.CustomButton;
 import it.unibo.gestione_concessionario.view.View;
 
@@ -13,23 +13,22 @@ import javax.swing.JTable;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
 import java.util.List;
-
 import javax.swing.table.DefaultTableModel;
 
-public class OptionalPanel extends JPanel {
+public class MarchiPanel extends JPanel {
 
     private JTable table;
-    private String[] columnNames = {"Descrizione","Prezzo"};
+    private String[] columnNames = {"Nome"};
     private Object[][] data;
     private CustomButton dipendenteButton;
 
     // Costruttore che configura il layout generale
-    public OptionalPanel() {
+    public MarchiPanel() {
         this.setLayout(new BorderLayout());
 
         // Pannello del titolo
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel title = new JLabel("Optionals");
+        JLabel title = new JLabel("I marchi del nostro concessionario");
         title.setFont(View.titleFont);
         title.setHorizontalAlignment(JLabel.CENTER);
         titlePanel.add(title);
@@ -46,12 +45,11 @@ public class OptionalPanel extends JPanel {
     }
 
     // Metodo per impostare i marchi nella tabella
-    public void setOptional(List<Optionals> optionals) {
+    public void setMarchi(List<Marchio> marchi) {
         // Crea i dati per la tabella
-        data = new Object[optionals.size()][2];
-        for (int i = 0; i < optionals.size(); i++) {
-            data[i][0] = optionals.get(i).descrizione();
-            data[i][1] = optionals.get(i).prezzo();
+        data = new Object[marchi.size()][2];
+        for (int i = 0; i < marchi.size(); i++) {
+            data[i][0] = marchi.get(i).nome();
         }
 
         // Crea un modello di tabella personalizzato non modificabile con i dati aggiornati
