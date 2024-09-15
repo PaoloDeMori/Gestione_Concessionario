@@ -5,4 +5,9 @@ public record Tipologia(
         String nome,
         String caratteristiche) {
 
+        @Override
+        public String toString() {
+                return nome;
+        }
+
 }

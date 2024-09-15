@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
-import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Configurazione;
 import it.unibo.gestione_concessionario.commons.dto.Contratto;
@@ -93,7 +91,7 @@ public class ModelDipendente implements Model {
         }
     }
 
-    List<Appuntamento> visualizzaAppuntamenti() {
+    /*List<Appuntamento> visualizzaAppuntamenti() {
         PreparedStatement ps;
         List<Appuntamento> app = new ArrayList<>();
         final String vediAppuntamenti = "SELECT a.ID_APPUNTAMENTO, a.data, a.ora, a.Tipologia, a.durata, a.Numero_Telaio, "
@@ -114,7 +112,7 @@ public class ModelDipendente implements Model {
                 LocalTime durata = set.getDate(5) != null ? set.getTime(2).toLocalTime() : null;
                 String nome_cliente = set.getString(7) + " " + set.getString(8);
                 String nome_dipendente = set.getString(9) + " " + set.getString(10);
-                app.add(new Appuntamento(set.getInt(1), data, ora, set.getString(4), durata,
+                app.add(new Appuntamento(data, ora, set.getString(4), durata,
                         set.getString(6), nome_cliente, nome_dipendente));
             }
             for (var a : app) {
@@ -125,7 +123,7 @@ public class ModelDipendente implements Model {
             throw new ProblemWithConnectionException(e);
         }
 
-    }
+    }*/
 
     public boolean aggiungiSconto(Sconto sconto) {
         PreparedStatement ps;
@@ -205,7 +203,7 @@ public class ModelDipendente implements Model {
 
     }
 
-    public boolean fissaTestDrive(Appuntamento appuntamento) {
+    /*public boolean fissaTestDrive(Appuntamento appuntamento) {
         PreparedStatement ps;
         final String fissaTestDrive = "INSERT INTO APPUNTAMENTO (data, ora, Tipologia, durata, Numero_Telaio, ID_CLIENTE, ID_DIPENDENTE) " +
                                       "VALUES (?,Test-Drive,?,?,?,?,?);";
@@ -229,9 +227,9 @@ public class ModelDipendente implements Model {
             }
             return false;
         }
-    }
+    }*/
 
-    public boolean fissaConsulenza(Appuntamento appuntamento) {
+    /*public boolean fissaConsulenza(Appuntamento appuntamento) {
         PreparedStatement ps;
         final String fissaTestDrive = "INSERT INTO APPUNTAMENTO (data, ora, Tipologia, durata, Numero_Telaio, ID_CLIENTE, ID_DIPENDENTE) " +
                                       "VALUES (?,Consulenza,?,?,?,?,?);";
@@ -255,7 +253,7 @@ public class ModelDipendente implements Model {
             }
             return false;
         }
-    }
+    }*/
 
     public boolean agigungiDipendente(Dipendente dipendente) {
         PreparedStatement ps;
@@ -405,7 +403,7 @@ public class ModelDipendente implements Model {
         ModelDipendente model = new ModelDipendente();
         model.init(ConnectionFactory.build("gestione_concessionario_prova",
                 "jdbc:mysql://localhost:3306/", "root", "cadmio"));
-        model.visualizzaAppuntamenti();
+        //model.visualizzaAppuntamenti();
         System.out.println("______________________________________________________________________________");
         model.visualizzaAutoDelDipendente();
         // model.aggiungiSconto(new Sconto(80,LocalDate.now(),LocalDate.of(2025,

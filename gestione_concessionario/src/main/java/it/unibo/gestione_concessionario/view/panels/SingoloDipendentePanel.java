@@ -8,6 +8,8 @@ import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import java.awt.GridLayout;
 
 public class SingoloDipendentePanel extends JPanel {
+
+    //CustomButton 
     
     public SingoloDipendentePanel(Dipendente dipendente) {
         setLayout(new GridLayout(5, 2));

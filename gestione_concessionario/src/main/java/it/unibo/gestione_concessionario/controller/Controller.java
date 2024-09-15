@@ -2,12 +2,13 @@ package it.unibo.gestione_concessionario.controller;
 
 
 import it.unibo.gestione_concessionario.commons.ConnectionFactory;
+import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
-import it.unibo.gestione_concessionario.commons.dto.Optionals;
+import it.unibo.gestione_concessionario.commons.dto.Tipologia;
 import it.unibo.gestione_concessionario.model.ModelCliente;
 import it.unibo.gestione_concessionario.model.ModelDipendente;
 import it.unibo.gestione_concessionario.view.ClienteView;
@@ -78,14 +79,41 @@ public class Controller {
     public Dipendente dipendenteFromMarchio(Marchio marchio){
      return   this.modelCliente.visualizzaDipendente(marchio);
     }
+    public Dipendente dipendeteFromModello(Modello modello){
+        return this.modelCliente.visualizzaDipendente(modello);
+    }
 
     public int idFromNameMarchio(String name){
         return modelCliente.visualizzaIDMarchio(name);
     }
 
-    public List<Optionals> optionalsFromModel(Modello macchina){
-        return this.modelCliente.visualizzaOptional(macchina);
+    public List<Auto> visualizzaAutoxMarchioxTipologia(Marchio marchio, Tipologia tipologia){
+        return modelCliente.visualizzaAutoxMarchioxTipologia(marchio, tipologia);
     }
 
+    public List<Tipologia> allTipologie(){
+        return this.modelCliente.visualizzTipologie();
+    }
+
+    public List<Auto> allAutoFromModelli(Modello modello){
+       return this.modelCliente.visualizzaAutoxModello(modello);
+    }
+
+    public int idMarchioFromNomeModello(Modello modello){
+        return this.modelCliente.ID_Marchio(modello);
+    }
+
+    public boolean addAppuntamento(Appuntamento appuntamento){
+        return this.modelCliente.fissaAppuntamento(appuntamento);
+    }
+    public Cliente getClienteUser(){
+        return this.modelCliente.getCliente();
+    }
+    public int id_ClienteByEmail(String email){
+        return this.modelCliente.getClienteIDByEmail(email);
+    }
+    public int id_DipendenteByEmail(String email){
+        return this.modelCliente.getDipendenteIDByEmail(email);
+    }
 
 }

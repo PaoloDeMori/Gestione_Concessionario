@@ -133,6 +133,8 @@ public class LoginView implements View {
                     this.controller.startCliente();
                 }
                 else{
+                    this.loginFrame.removeAll();
+                    this.loginFrame.setVisible(false);
                     this.showLoginPanel(false);
                 }
             }

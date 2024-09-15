@@ -8,4 +8,9 @@ public record Modello(
     String marchio
 ) {
 
+    @Override
+    public String toString() {
+        return this.descrizione;
+    }
+
 }

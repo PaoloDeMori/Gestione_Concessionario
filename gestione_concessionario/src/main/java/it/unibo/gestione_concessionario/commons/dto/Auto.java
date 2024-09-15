@@ -8,10 +8,14 @@ public record Auto(
     boolean immatricolazione,
     Optional<String> targa,
     Optional<LocalDate> data,
-    //Configurazione configurazione
     String descrizioneModello,
     String motore,
     String alimentazione
 ) {
+
+    @Override
+    public String toString() {
+        return numero_telaio;
+    }
 
 }

@@ -6,10 +6,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
-import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
-import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.controller.Controller;
+import it.unibo.gestione_concessionario.view.panels.AppuntamentoSetter;
+import it.unibo.gestione_concessionario.view.panels.AutoFiltrate;
 import it.unibo.gestione_concessionario.view.panels.MarchiPanel;
 import it.unibo.gestione_concessionario.view.panels.ModelliPanel;
 import it.unibo.gestione_concessionario.view.panels.SingoloDipendentePanel;
@@ -28,9 +28,12 @@ public class ClienteView extends JFrame implements View {
     private MarchiPanel marchiPanel;
     private ModelliPanel modelliPanel = new ModelliPanel();
     private JPanel dipendente = new JPanel();
+    private AutoFiltrate autoFiltrate;
+    private AppuntamentoSetter appuntamentoSetter;
 
     public ClienteView(Controller controller) {
         this.controller = controller;
+        autoFiltrate = new AutoFiltrate(controller);
         marchiPanel = new MarchiPanel();
         this.initialize();
 
@@ -60,11 +63,19 @@ public class ClienteView extends JFrame implements View {
         menu.add(profileItem);
         menu.add(settingsItem);
 
+
+
         CustomButton marchiButton = new CustomButton("Visualizza Marchi");
         menuBar.add(marchiButton);
 
         CustomButton modelliButton = new CustomButton("Visualizza Modelli");
         menuBar.add(modelliButton);
+
+        CustomButton autoFiltrateButton = new CustomButton("Auto");
+        menuBar.add(autoFiltrateButton);
+
+        CustomButton createAppuntamentoButton = new CustomButton("Create appuntamento");
+        menuBar.add(createAppuntamentoButton);
 
         // Aggiungi il menu al menu bar
         menuBar.add(menu);
@@ -108,18 +119,33 @@ public class ClienteView extends JFrame implements View {
         marchiPanel.revalidate();
         marchiPanel.repaint();
 
+        appuntamentoSetter = new AppuntamentoSetter(controller);
+        cardPanel.add(appuntamentoSetter,"Appuntamento");
+
         // Aggiungi i pannelli al CardLayout
         cardPanel.add(modelliPanel, "Modelli");
         cardPanel.add(marchiPanel, "Marchi");
         cardPanel.add(dipendente, "Dipendente");
-        cardPanel.add(new JPanel(), "Optional");
+        cardPanel.add(autoFiltrate, "AutoFilter");
 
         // Aggiungi il cardPanel al centro della finestra
         this.add(cardPanel, BorderLayout.CENTER);
 
+
+
         // Imposta la visualizzazione iniziale su "Home"
         cardLayout.show(cardPanel, "Marchi");
-        
+
+        createAppuntamentoButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Appuntamento");
+            }
+            
+        });
+
+
         // Aggiungi gli ActionListener per gestire i cambi di pannello
         marchiButton.addActionListener(new ActionListener() {
             @Override
@@ -144,25 +170,13 @@ public class ClienteView extends JFrame implements View {
             }
         });
 
-        homeItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "Home");
-            }
-        });
+        autoFiltrateButton.addActionListener(new ActionListener() {
 
-        profileItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "Profile");
+                cardLayout.show(cardPanel, "AutoFilter");
             }
-        });
-
-        settingsItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "Settings");
-            }
+            
         });
     }
 
