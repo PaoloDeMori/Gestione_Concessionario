@@ -2,7 +2,6 @@ package it.unibo.gestione_concessionario.view.panels;
 
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
-import it.unibo.gestione_concessionario.commons.dto.Tipologia;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
 
