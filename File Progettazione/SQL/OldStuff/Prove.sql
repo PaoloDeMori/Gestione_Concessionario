@@ -11,11 +11,23 @@ VALUES
 ('Roberto', 'Gialli', '3216549878', 'roberto.gialli@example.com', 'clientpass9'),
 ('Simona', 'Marrone', '3216549879', 'simona.marrone@example.com', 'clientpass10');
 
+INSERT INTO TIPOLOGIA (nome, caratteristiche) VALUES
+('Coupé', 'Due porte, design sportivo, spesso due posti'),
+('Sedan', 'Quattro porte, comoda e spaziosa, adatta per famiglie'),
+('Hatchback', 'Cinque porte, versatilità elevata con spazio aggiuntivo'),
+('Station Wagon', 'Cinque porte, spazio extra nel bagagliaio'),
+('SUV', 'Sport Utility Vehicle, alte prestazioni off-road e comfort'),
+('Crossover', 'Combinazione di SUV e berlina, design moderno e funzionale'),
+('Convertible', 'Auto con tetto apribile, design elegante e sportivo'),
+('Pickup', 'Veicolo con cassone posteriore, progettato per trasportare carichi'),
+('Minivan', 'Veicolo spazioso con capacità di trasporto per famiglie numerose'),
+('Roadster', 'Auto a due posti con tetto rimovibile, progettata per guidare all’aria aperta');
+
+
 
 BEGIN;
 DROP TRIGGER check_modello_dipendente_marchio;
 INSERT INTO MARCHIO (Nome) VALUES
-('Ferrari'),
 ('Lamborghini'),
 ('Porsche'),
 ('Audi'),
@@ -27,15 +39,15 @@ INSERT INTO MARCHIO (Nome) VALUES
 ('Chevrolet');
 
 INSERT INTO MODELLO (Descrizione, Anno, ID_TIPOLOGIA, ID_MARCHIO) VALUES
-('Lamborghini Huracan', 2024, 1, 2),
-('Porsche 911', 2024, 2, 3),
-('Audi A4', 2024, 2, 4),
-('BMW M3', 2024, 3, 5),
-('Mercedes-Benz C-Class', 2024, 3, 6),
-('Toyota Corolla', 2024, 4, 7),
-('Honda Civic', 2024, 4, 8),
-('Ford Mustang', 2024, 5, 9),
-('Chevrolet Camaro', 2024, 5, 10);
+('Lamborghini Huracan', 2024, 1, 1),
+('Porsche 911', 2024, 2, 2),
+('Audi A4', 2024, 2, 3),
+('BMW M3', 2024, 3, 4),
+('Mercedes-Benz C-Class', 2024, 3, 5),
+('Toyota Corolla', 2024, 4, 6),
+('Honda Civic', 2024, 4, 7),
+('Ford Mustang', 2024, 5, 8),
+('Chevrolet Camaro', 2024, 5, 9);
 
 DELIMITER $$
 
@@ -64,11 +76,19 @@ VALUES
 (6, 'Francesco', 'Blu', '1234567895', FALSE, 'francesco.blu@example.com', 'password987'),
 (7, 'Stefano', 'Viola', '1234567896', FALSE, 'stefano.viola@example.com', 'password159'),
 (8, 'Claudia', 'Arancioni', '1234567897', FALSE, 'claudia.arancioni@example.com', 'password753'),
-(9, 'Federico', 'Rosa', '1234567898', TRUE, 'federico.rosa@example.com', 'password369'),
-(10, 'Elena', 'Marrone', '1234567899', FALSE, 'elena.marrone@example.com', 'password258');
+(9, 'Federico', 'Rosa', '1234567898', TRUE, 'federico.rosa@example.com', 'password369');
 
-
-
+INSERT INTO CONFIGURAZIONE (Motore, alimentazione, cc, horse_power, ID_MODELLO) VALUES
+('Motore V8', 'Benzina', 4000, 400, 1),
+('Motore V6', 'Diesel', 3000, 300, 2),
+('Motore I4', 'Elettrico', 2000, 150, 3),
+('Motore I3', 'Ibrido', 1500, 120, 4),
+('Motore V8', 'Benzina', 4000, 450, 5),
+('Motore V6', 'Diesel', 3000, 320, 6),
+('Motore I4', 'Elettrico', 2000, 160, 7),
+('Motore I3', 'Ibrido', 1500, 130, 8),
+('Motore V8', 'Benzina', 4000, 420, 9),
+('Motore V6', 'Diesel', 3000, 310, 9);
 
 INSERT INTO AUTO (Numero_Telaio, Prezzo, Immatricolazione, data, targa, ID_Configurazione) VALUES
 ('1HGBH41JXMN109186', 20000.00, TRUE, '2024-01-10', 'AB123CD', 1),
@@ -82,29 +102,6 @@ INSERT INTO AUTO (Numero_Telaio, Prezzo, Immatricolazione, data, targa, ID_Confi
 ('9HGBH41JXMN109194', 17000.00, FALSE, '2024-09-18', 'IJ901KL', 9),
 ('0HGBH41JXMN109195', 19000.00, TRUE, '2024-10-19', 'JK012LM', 1);
 
-INSERT INTO TIPOLOGIA (nome, caratteristiche) VALUES
-('Coupé', 'Due porte, design sportivo, spesso due posti'),
-('Sedan', 'Quattro porte, comoda e spaziosa, adatta per famiglie'),
-('Hatchback', 'Cinque porte, versatilità elevata con spazio aggiuntivo'),
-('Station Wagon', 'Cinque porte, spazio extra nel bagagliaio'),
-('SUV', 'Sport Utility Vehicle, alte prestazioni off-road e comfort'),
-('Crossover', 'Combinazione di SUV e berlina, design moderno e funzionale'),
-('Convertible', 'Auto con tetto apribile, design elegante e sportivo'),
-('Pickup', 'Veicolo con cassone posteriore, progettato per trasportare carichi'),
-('Minivan', 'Veicolo spazioso con capacità di trasporto per famiglie numerose'),
-('Roadster', 'Auto a due posti con tetto rimovibile, progettata per guidare all’aria aperta');
-
-INSERT INTO CONFIGURAZIONE (Motore, alimentazione, cc, horse_power, ID_MODELLO) VALUES
-('Motore V8', 'Benzina', 4000, 400, 1),
-('Motore V6', 'Diesel', 3000, 300, 2),
-('Motore I4', 'Elettrico', 2000, 150, 3),
-('Motore I3', 'Ibrido', 1500, 120, 4),
-('Motore V8', 'Benzina', 4000, 450, 5),
-('Motore V6', 'Diesel', 3000, 320, 6),
-('Motore I4', 'Elettrico', 2000, 160, 7),
-('Motore I3', 'Ibrido', 1500, 130, 8),
-('Motore V8', 'Benzina', 4000, 420, 9),
-('Motore V6', 'Diesel', 3000, 310, 9);
 
 INSERT INTO APPUNTAMENTO (ID_APPUNTAMENTO, data, ora, Tipologia, durata, Numero_Telaio, ID_CLIENTE, ID_DIPENDENTE)
 VALUES 

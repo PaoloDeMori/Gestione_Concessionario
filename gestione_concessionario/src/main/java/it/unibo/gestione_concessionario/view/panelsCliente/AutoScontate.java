@@ -46,7 +46,7 @@ public class AutoScontate extends JPanel {
         this.add(filtroPanel, BorderLayout.NORTH);
 
         // Inizializza la tabella per visualizzare le auto filtrate
-        tableModel = new DefaultTableModel(new Object[]{"Numero Telaio", "Modello", "Prezzo", "Data Immatricolazione", "Targa"}, 0);
+        tableModel = new DefaultTableModel(new Object[]{"Numero Telaio", "Modello", "Prezzo Scontato", "Data Immatricolazione", "Targa"}, 0);
         autoTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(autoTable);
         this.add(scrollPane, BorderLayout.CENTER);

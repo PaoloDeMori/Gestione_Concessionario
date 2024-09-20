@@ -343,6 +343,39 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+-- ______________________________________________________________________________________________________________________________________________________________________________________
+DELIMITER $$
+
+CREATE TRIGGER update_support_on_personalization
+BEFORE INSERT ON Personalizzazione
+FOR EACH ROW
+BEGIN
+    DECLARE model_id INT;
+
+    -- Recupera l'ID del modello associato all'auto (Numero_Telaio)
+    SELECT C.ID_MODELLO INTO model_id
+    FROM AUTO A
+    JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione
+    WHERE A.Numero_Telaio = NEW.Numero_Telaio;
+
+    -- Verifica se l'optional è già associato al modello nella tabella Supporto
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM Supporto 
+        WHERE ID_MODELLO = model_id 
+        AND ID_Optional = NEW.ID_Optional
+    ) THEN
+        -- Se l'optional non è associato al modello, inserisci la relazione in Supporto
+        INSERT INTO Supporto (ID_MODELLO, ID_Optional) 
+        VALUES (model_id, NEW.ID_Optional);
+    END IF;
+END$$
+
+DELIMITER ;
+
+
 -- Index Section
 -- _____________ 
 

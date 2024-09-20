@@ -59,6 +59,11 @@ public class OptionalPanel extends JPanel {
 
         // Imposta il modello sulla tabella
         table.setModel(tableModel);
+        table.revalidate();
+        table.repaint();
+        this.revalidate();
+        this.repaint();
+        this.add(table);
     }
 
     public JTable getTable() {

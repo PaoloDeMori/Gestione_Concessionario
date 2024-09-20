@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import it.unibo.gestione_concessionario.commons.ConnectionFactory;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Cliente;
@@ -323,17 +322,26 @@ public class ModelCliente implements Model {
     public Dipendente visualizzaDipendente(Modello modello) {
         PreparedStatement ps;
         Dipendente dipendente = null;
-        final String vediDipendente = "SELECT * " +
+        final String vediDipendente = "SELECT ID_MARCHIO, nome, cognome, telefono, e_mail " +
                 "FROM DIPENDENTE " +
                 "WHERE ID_MARCHIO = ? ";
         try {
             ps = connection.prepareStatement(vediDipendente);
-            ps.setInt(1, ID_Marchio(modello));
+            
+            // Ottenere l'ID del marchio associato al modello
+            int ID_MARCHIO_MODELLO = ID_Marchio(modello); 
+            ps.setInt(1, ID_MARCHIO_MODELLO); // Impostiamo l'ID marchio nella query
+    
             ResultSet set = ps.executeQuery();
-            while (set.next()) {
-                dipendente = new Dipendente(set.getInt(2), set.getString(3),
-                        set.getString(4), set.getString(5),
-                        set.getString(7));
+            if (set.next()) {
+                // Crea il Dipendente mappando i campi correttamente
+                dipendente = new Dipendente(
+                    set.getInt(1),    // ID_MARCHIO
+                    set.getString(2), // Nome
+                    set.getString(3), // Cognome
+                    set.getString(4), // Telefono
+                    set.getString(5)  // E-mail
+                );
             }
             ps.close();
             return dipendente;
@@ -341,6 +349,7 @@ public class ModelCliente implements Model {
             throw new ProblemWithConnectionException(e);
         }
     }
+    
 
     public int getClienteIDByEmail(String email) {
         PreparedStatement ps = null;
@@ -420,8 +429,8 @@ public class ModelCliente implements Model {
                 "A.Data, " +
                 "M.Descrizione AS Modello, " +
                 "MR.Nome AS Marchio, " +
-                "COALESCE(O.Percentuale, 0) AS Offerta_Percentuale, " +
-                "COALESCE(S.Percentuale, 0) AS Sconto_Percentuale " +
+                "COALESCE(O.Percentuale, 1) AS Offerta_Percentuale, " +
+                "COALESCE(S.Percentuale, 1) AS Sconto_Percentuale " +
                 "FROM " +
                 "AUTO A " +
                 "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
@@ -438,7 +447,12 @@ public class ModelCliente implements Model {
             ps.setInt(1, marchio.idMarchio());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(4)),
+                double prezzoOriginale = set.getDouble(2);
+                int percentualeSconto = set.getInt(9);
+                double importoSconto = (prezzoOriginale * percentualeSconto) / 100;
+                double prezzoScontato = prezzoOriginale - importoSconto;
+
+                auto.add(new Auto(set.getString(1), prezzoScontato, set.getBoolean(3), Optional.of(set.getString(4)),
                         Optional.of(set.getDate(5).toLocalDate()), set.getString(6), "", ""));
             }
             for (var a : auto) {
@@ -532,20 +546,4 @@ public class ModelCliente implements Model {
 
         return autoList;
     }
-
-    public static void main(String[] args) {
-        ModelCliente model = new ModelCliente();
-        model.init(ConnectionFactory.build("gestione_concessionario_prova",
-                "jdbc:mysql://localhost:3306/", "root", "Strong.2024.Password"));
-        model.visualizzaMarchi();
-        System.out.println("----------------------");
-        model.visualizzaModello();
-        System.out.println("----------------------");
-        // model.visualizzaGaranzia(new Auto("1HGBH41JXMN109186", 20000.00, true,
-        // Optional.of("AB123CD"),
-        // Optional.of(LocalDate.of(2024, 01, 10)), "", "", ""));
-        System.out.println("----------------------");
-        model.visualizzaDipendente(new Marchio(2, "Lamborghini"));
-    }
-
 }
