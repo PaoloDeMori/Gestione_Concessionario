@@ -130,7 +130,7 @@ public class AppuntamentoSetter extends JPanel {
             ora,
             tipologia,
             durata,
-            ((Auto)tfNumeroTelaio.getSelectedItem()).numero_telaio(),
+            ((Auto)tfNumeroTelaio.getSelectedItem()).getNumero_telaio(),
             this.controller.id_DipendenteByEmail(email),
             this.controller.id_ClienteByEmail(this.controller.getClienteUser().eMail())
         );

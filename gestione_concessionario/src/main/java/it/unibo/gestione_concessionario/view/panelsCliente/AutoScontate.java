@@ -79,11 +79,11 @@ public class AutoScontate extends JPanel {
         // Aggiungi i risultati filtrati nella tabella
         for (Auto auto : autoFiltrate) {
             tableModel.addRow(new Object[]{
-                auto.numero_telaio(),
-                auto.descrizioneModello(),  // Descrizione del modello
-                auto.prezzo(),              // Prezzo
-                auto.data().isPresent() ? auto.data().get() : "",  // Data immatricolazione
-                auto.targa().isPresent() ? auto.targa().get() : "" // Targa (se presente)
+                auto.getNumero_telaio(),
+                auto.getDescrizioneModello(),  // Descrizione del modello
+                auto.getPrezzo(),              // Prezzo
+                auto.getData().isPresent() ? auto.getData().get() : "",  // Data immatricolazione
+                auto.getTarga().isPresent() ? auto.getTarga().get() : "" // Targa (se presente)
             });
         }
     }

@@ -322,14 +322,14 @@ public class ModelDipendente implements Model {
                 "VALUES (?, ?, ?, ?, ?);";
         try {
             ps = connection.prepareStatement(aggiungiAuto);
-            ps.setString(1, auto.numero_telaio());
-            ps.setDouble(2, auto.prezzo());
-            ps.setBoolean(3, auto.immatricolazione());
-            ps.setString(4, auto.targa().get());
-            ps.setDate(5, Date.valueOf(auto.data().get()));
-            ps.setString(6, auto.descrizioneModello());
-            ps.setString(7, auto.motore());
-            ps.setString(8, auto.alimentazione());
+            ps.setString(1, auto.getNumero_telaio());
+            ps.setDouble(2, auto.getPrezzo());
+            ps.setBoolean(3, auto.getImmatricolazione());
+            ps.setString(4, auto.getTarga().get());
+            ps.setDate(5, Date.valueOf(auto.getData().get()));
+            ps.setString(6, auto.getDescrizioneModello());
+            ps.setString(7, auto.getMotore());
+            ps.setString(8, auto.getAlimentazione());
             ps.executeUpdate();
             ps.close();
             connection.commit();

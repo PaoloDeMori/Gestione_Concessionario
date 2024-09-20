@@ -59,9 +59,9 @@ public class AllAutoPanel extends JPanel {
         // Crea i dati per la tabella
         data = new Object[auto.size()][6];
         for (int i = 0; i < auto.size(); i++) {
-            data[i][0] = auto.get(i).numero_telaio();
-            data[i][1] = auto.get(i).prezzo();
-            data[i][2] = auto.get(i).immatricolazione();
+            data[i][0] = auto.get(i).getNumero_telaio();
+            data[i][1] = auto.get(i).getPrezzo();
+            data[i][2] = auto.get(i).getImmatricolazione();
         }
 
         // Crea un modello di tabella personalizzato non modificabile con i dati aggiornati

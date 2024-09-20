@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -255,8 +256,14 @@ public class ModelCliente implements Model {
             ps.setString(2, tipologia.nome());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
+                if(set.getBoolean(3)){
                 auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(4)),
                         Optional.of(set.getDate(5).toLocalDate()), set.getString(6), "", ""));
+                }
+                else{
+                    auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of("non immatricolata"),
+                        Optional.empty(), set.getString(6), "", ""));
+                }
             }
             for (var a : auto) {
                 System.out.println(a.toString());
@@ -451,9 +458,14 @@ public class ModelCliente implements Model {
                 int percentualeSconto = set.getInt(9);
                 double importoSconto = (prezzoOriginale * percentualeSconto) / 100;
                 double prezzoScontato = prezzoOriginale - importoSconto;
-
+                if(set.getBoolean(3)){
                 auto.add(new Auto(set.getString(1), prezzoScontato, set.getBoolean(3), Optional.of(set.getString(4)),
                         Optional.of(set.getDate(5).toLocalDate()), set.getString(6), "", ""));
+                }
+                else{
+                    auto.add(new Auto(set.getString(1), prezzoScontato, set.getBoolean(3), Optional.of("Non immatricolata"),
+                    Optional.empty(), set.getString(6), "", ""));
+                }
             }
             for (var a : auto) {
                 System.out.println(a.toString());
