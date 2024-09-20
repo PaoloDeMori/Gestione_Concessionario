@@ -32,7 +32,7 @@ public class ModelliPanel extends JPanel {
         this.add(titlePanel, BorderLayout.NORTH);
 
         // Inizializza la tabella senza dati (i dati saranno impostati dal metodo setModelli)
-        table = new JTable();
+        table = new PersTable();
         JScrollPane scrollPane = new JScrollPane(table);
         this.add(scrollPane, BorderLayout.CENTER);
     }

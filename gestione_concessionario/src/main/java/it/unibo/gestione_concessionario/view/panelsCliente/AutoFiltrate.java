@@ -53,8 +53,8 @@ public class AutoFiltrate extends JPanel {
         this.add(filtroPanel, BorderLayout.NORTH);
 
         // Inizializza la tabella per visualizzare le auto filtrate
-        tableModel = new DefaultTableModel(new Object[]{"Numero Telaio", "Modello", "Prezzo", "Data Immatricolazione", "Targa"}, 0);
-        autoTable = new JTable(tableModel);
+        tableModel = new TablesModel(new String[]{"Numero Telaio", "Modello", "Prezzo1", "Data Immatricolazione", "Targa"});
+        autoTable = new PersTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(autoTable);
         this.add(scrollPane, BorderLayout.CENTER);
 

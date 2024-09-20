@@ -39,7 +39,7 @@ public class MarchiPanel extends JPanel {
         dipendenteButton=new CustomButton("Info Dipendente Marchio Selezionato");
         this.add(dipendenteButton,BorderLayout.SOUTH);
         // Inizializza la tabella senza dati (i dati saranno impostati dal metodo setMarchi)
-        table = new JTable();
+        table = new PersTable();
         JScrollPane scrollPane = new JScrollPane(table);
         this.add(scrollPane, BorderLayout.CENTER);
     }

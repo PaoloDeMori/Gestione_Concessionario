@@ -48,7 +48,7 @@ public class AllAutoPanel extends JPanel {
         optionalButton=new CustomButton("Optional Selezionato");
         buttonPanel.add(optionalButton);
         // Inizializza la tabella senza dati (i dati saranno impostati dal metodo setMarchi)
-        table = new JTable();
+        table = new PersTable();
         JScrollPane scrollPane = new JScrollPane(table);
         this.add(buttonPanel,BorderLayout.SOUTH);
         this.add(scrollPane, BorderLayout.CENTER);
