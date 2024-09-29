@@ -44,6 +44,12 @@ public class LoginView implements View {
             this.controller.initCliente();
         });
 
+        dipendenteButton.addActionListener(e -> {
+            showLoginPanel(true);
+            this.controller.initDipendente();
+        });
+
+
         dipendenteButton.addActionListener(e -> showLoginPanel(true));
 
         panel.add(clienteButton);
@@ -71,10 +77,10 @@ public class LoginView implements View {
         // Login and account creation buttons
         loginButton = new CustomButton("Accedi");
         loginButton.addActionListener(isEmployee ? getEmployeeLoginListener() : getClientLoginListener());
-
+        if(!isEmployee){
         createAccountButton = new CustomButton("Crea Account");
         createAccountButton.addActionListener(e -> showCreateAccountPanel());
-
+        }
         // Assemble login panel
         JPanel loginPanel = new JPanel(new GridLayout(2, 1, 20, 20));
         emailPanel.add(emailLabel);
@@ -85,7 +91,9 @@ public class LoginView implements View {
         loginPanel.add(emailPanel);
         loginPanel.add(passwordPanel);
         loginPanel.add(loginButton);
+        if(!isEmployee){
         loginPanel.add(createAccountButton);
+        }
 
         loginFrame.add(loginPanel);
         refreshGui();
@@ -179,6 +187,10 @@ public class LoginView implements View {
 
             if (!controller.checkLoginDipendente(email, password)) {
                 error("Impossibile eseguire il Login", "Errore di Login");
+            }
+            else {
+                this.stop();
+                controller.startDipendente();
             }
         };
     }

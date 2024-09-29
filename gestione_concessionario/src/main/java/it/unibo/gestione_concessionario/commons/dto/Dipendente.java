@@ -5,6 +5,7 @@ public record Dipendente(
         String nome,
         String cognome,
         String telefono,
+        boolean isResponsabile,
         String eMail) {
 
     @Override
