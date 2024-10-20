@@ -49,7 +49,8 @@ create table CLIENTE (
      telefono varchar(20) not null,
      e_mail varchar(50) not null,
      password varchar(25) not null,
-     constraint ID_CLIENTE_ID primary key (ID_CLIENTE));
+     constraint ID_CLIENTE_ID primary key (ID_CLIENTE),
+     constraint UNIQUE_CLIENTE_EMAIL unique (e_mail));
 
 create table CONFIGURAZIONE (
      ID_Configurazione INT(7) AUTO_INCREMENT,
@@ -80,7 +81,8 @@ create table DIPENDENTE (
      e_mail varchar(50) not null,
      password varchar(25) not null,
      constraint ID_DIPENDENTE_ID primary key (ID_DIPENDENTE),
-     constraint SID_DIPEN_MARCH_ID unique (ID_MARCHIO));
+     constraint SID_DIPEN_MARCH_ID unique (ID_MARCHIO),
+     constraint UNIQUE_DIPENDENTE_EMAIL unique (e_mail));
 
 create table GARANZIA (
      scadenza date not null,

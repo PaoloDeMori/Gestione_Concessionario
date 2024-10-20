@@ -2,32 +2,66 @@ package it.unibo.gestione_concessionario.view;
 
 import javax.swing.*;
 
-
+import it.unibo.gestione_concessionario.commons.dto.Garanzia;
+import it.unibo.gestione_concessionario.commons.dto.Optionals;
 import it.unibo.gestione_concessionario.controller.Controller;
+import it.unibo.gestione_concessionario.view.panelsCliente.GaranziaPanel;
+import it.unibo.gestione_concessionario.view.panelsCliente.OptionalPanel;
+import it.unibo.gestione_concessionario.view.panelsDipendente.AddAutoDipendente;
+import it.unibo.gestione_concessionario.view.panelsDipendente.AddOffertaPanel;
 import it.unibo.gestione_concessionario.view.panelsDipendente.AddScontoPanel;
+import it.unibo.gestione_concessionario.view.panelsDipendente.AddVenditaPanel;
 import it.unibo.gestione_concessionario.view.panelsDipendente.AllAutoDipendente;
+import it.unibo.gestione_concessionario.view.panelsDipendente.AppuntamentiDipendentePanel;
+import it.unibo.gestione_concessionario.view.panelsDipendente.AppuntamentiSetterDipendente;
 import it.unibo.gestione_concessionario.view.panelsDipendente.AutoScontateDipendente;
+import it.unibo.gestione_concessionario.view.panelsDipendente.VenditeDipendente;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Optional;
 
+public class DipendenteView extends JFrame implements View {
 
-public class DipendenteView extends JFrame implements View{
-
-    private CardLayout cardLayout;
+    private CustomCardLayout cardLayout;
     private Controller controller;
     private JPanel cardPanel;
     private AllAutoDipendente autosPanel;
     private AutoScontateDipendente autoScontateDipendente;
     private AddScontoPanel addScontoPanel;
-
+    private AddOffertaPanel addOffertaPanel;
+    private AppuntamentiDipendentePanel appuntamentiDipendentePanel;
+    private AppuntamentiSetterDipendente AppuntamentiSetterDipendente;
+    private AddVenditaPanel addVenditaPanel;
+    private VenditeDipendente venditeDipendente;
+    private AddAutoDipendente addAutoDipendente;
+    private GaranziaPanel garanziaPanel;
+    private OptionalPanel optionalPanel;
 
     public DipendenteView(Controller controller) {
         this.controller = controller;
-        this.autosPanel=new AllAutoDipendente();
+        this.autosPanel = new AllAutoDipendente();
+        this.addOffertaPanel = new AddOffertaPanel(controller);
+        this.addAutoDipendente = new AddAutoDipendente(controller);
+        this.appuntamentiDipendentePanel = new AppuntamentiDipendentePanel(controller);
+        this.AppuntamentiSetterDipendente=new AppuntamentiSetterDipendente(controller);
+        this.venditeDipendente = new VenditeDipendente(controller);
+        this.optionalPanel=new OptionalPanel();
+        garanziaPanel=new GaranziaPanel();
         initialize();
         this.start();
     }
 
+    private class CustomCardLayout extends CardLayout {
+        @Override
+        public void show(Container parent, String name) {
+            super.show(parent, name);
+            addVenditaPanel.refresh();
+        }
+    }
+        
 
     private void initialize() {
         // Impostazioni iniziali della finestra
@@ -41,11 +75,11 @@ public class DipendenteView extends JFrame implements View{
         setJMenuBar(menuBar);
 
         // Creazione del CardLayout per la gestione dei pannelli
-        cardLayout = new CardLayout();
+        cardLayout = new CustomCardLayout();
         cardPanel = new JPanel(cardLayout);
 
         // Aggiungi pannelli specifici al CardLayout
-       // addPanelsToCardLayout();
+        // addPanelsToCardLayout();
 
         // Aggiungi il cardPanel al centro della finestra
         add(cardPanel, BorderLayout.CENTER);
@@ -54,8 +88,6 @@ public class DipendenteView extends JFrame implements View{
         // Visualizzazione iniziale su "Marchi"
         cardLayout.show(cardPanel, "autoGestite");
     }
-
-
 
     @Override
     public void start() {
@@ -84,13 +116,11 @@ public class DipendenteView extends JFrame implements View{
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(Color.BLACK);
 
-
         // Aggiungi pulsanti per la navigazione dei pannelli
         addNavigationButtons(menuBar);
         return menuBar;
     }
 
-    
     private void addNavigationButtons(JMenuBar menuBar) {
         CustomButton autosButton = new CustomButton("Auto Gestite");
         CustomButton addAutoButton = new CustomButton("Inserisci Auto");
@@ -99,21 +129,20 @@ public class DipendenteView extends JFrame implements View{
         CustomButton sellAutoButton = new CustomButton("Vendi Un Auto");
         CustomButton statsButton = new CustomButton("Statistiche");
         CustomButton allAutoScontate = new CustomButton("Sconti Disponibili");
-        CustomButton autoScontateButton = new CustomButton("Sconto Marchio");
-        CustomButton autoScontataSingolaButton = new CustomButton("Sconta Un Auto");
+        CustomButton autoConOffertaButton = new CustomButton("Offerta Marchio");
+        CustomButton autoScontataButton = new CustomButton("Sconta Un Auto");
         CustomButton leTueVenditeButton = new CustomButton("Le Tue Vendite");
         CustomButton AggiungiDipendente = new CustomButton("Auto Scontate");
 
-        CustomMenu cmSconti= new CustomMenu("Sconti");
-        CustomMenu cmAppuntamenti= new CustomMenu("Appuntamenti");
+        CustomMenu cmSconti = new CustomMenu("Sconti");
+        CustomMenu cmAppuntamenti = new CustomMenu("Appuntamenti");
 
         cmSconti.add(allAutoScontate);
-        cmSconti.add(autoScontateButton);
-        cmSconti.add(autoScontataSingolaButton);
+        cmSconti.add(autoConOffertaButton);
+        cmSconti.add(autoScontataButton);
 
         cmAppuntamenti.add(createAppuntamentoButton);
         cmAppuntamenti.add(meetingsButton);
-
 
         menuBar.add(autosButton);
         menuBar.add(addAutoButton);
@@ -124,49 +153,129 @@ public class DipendenteView extends JFrame implements View{
         menuBar.add(AggiungiDipendente);
 
         // Aggiungi gli ActionListener per gestire i cambi di pannello
-        addPanelSwitchListeners(autosButton, addAutoButton, meetingsButton, createAppuntamentoButton,sellAutoButton,autoScontateButton,autoScontataSingolaButton,AggiungiDipendente,statsButton,allAutoScontate);
+        addPanelSwitchListeners(autosButton, addAutoButton, meetingsButton, createAppuntamentoButton, sellAutoButton,
+                autoConOffertaButton,leTueVenditeButton, autoScontataButton, AggiungiDipendente, statsButton, allAutoScontate);
     }
 
-    
-    private void addPanelSwitchListeners(CustomButton autosButton,CustomButton addAutoButton,CustomButton meetingsButton,CustomButton createAppuntamentoButton,CustomButton sellAutoButton,CustomButton autoScontateButton,CustomButton autoScontataSingolaButton,CustomButton AggiungiDipendente, CustomButton statsButton, CustomButton allAutoScontateButton) {
+    private void addPanelSwitchListeners(CustomButton autosButton, CustomButton addAutoButton,
+            CustomButton meetingsButton, CustomButton createAppuntamentoButton, CustomButton sellAutoButton,
+            CustomButton autoConOffertaButton,CustomButton leTueVenditeButton, CustomButton autoScontataButton, CustomButton AggiungiDipendente,
+            CustomButton statsButton, CustomButton allautoConOffertaButton) {
         autosButton.addActionListener(e -> {
             autosPanel.setAuto(this.controller.allAutoDipendente());
             cardLayout.show(cardPanel, "autoGestite");
         });
-        allAutoScontateButton.addActionListener(e -> {
+        allautoConOffertaButton.addActionListener(e -> {
             autoScontateDipendente.filtraAuto();
             cardLayout.show(cardPanel, "allAutoScontate");
         });
 
-        autoScontataSingolaButton.addActionListener(e -> {
-            autoScontateDipendente.filtraAuto();
+        autoScontataButton.addActionListener(e -> {
             cardLayout.show(cardPanel, "addSconto");
+        });
+        autoConOffertaButton.addActionListener(e -> {
+            cardLayout.show(cardPanel, "addOfferta");
+        });
+        meetingsButton.addActionListener(e -> {
+            appuntamentiDipendentePanel.setAppuntamento(this.controller.visualizzaAppuntamenti());
+            cardLayout.show(cardPanel, "allAppuntamenti");
+        });
+        createAppuntamentoButton.addActionListener(e -> {
+            appuntamentiDipendentePanel.setAppuntamento(this.controller.visualizzaAppuntamenti());
+            cardLayout.show(cardPanel, "createAppuntamenti");
+        });
+        sellAutoButton.addActionListener(e -> {
+            cardLayout.show(cardPanel, "CreaVendita");
+        });
+        leTueVenditeButton.addActionListener(e -> {
+            venditeDipendente.filtraVendite();
+            cardLayout.show(cardPanel, "LeTueVendite");
+        });
+
+        addAutoButton.addActionListener(e -> {
+            cardLayout.show(cardPanel, "InserisciAuto");
         });
     }
 
     private void addPanelsToCardLayout() {
-        autoScontateDipendente=new AutoScontateDipendente(controller);
-        addScontoPanel=new AddScontoPanel(controller);
+        autoScontateDipendente = new AutoScontateDipendente(controller);
+        addScontoPanel = new AddScontoPanel(controller);
+        addVenditaPanel = new AddVenditaPanel(controller);
 
         // Aggiungi i pannelli al CardLayout
         cardPanel.add(autosPanel, "autoGestite");
-        cardPanel.add(autoScontateDipendente,"allAutoScontate");
-        cardPanel.add(addScontoPanel,"addSconto");
-        /* 
-        cardPanel.add(marchiPanel, "Marchi");
-        cardPanel.add(dipendentePanel, "Dipendente");
-        cardPanel.add(autoFiltratePanel, "AutoFilter");
-        cardPanel.add(appuntamentoSetterPanel, "Appuntamento");
-        cardPanel.add(allAuto, "Auto");
+        cardPanel.add(autoScontateDipendente, "allAutoScontate");
+        cardPanel.add(addScontoPanel, "addSconto");
+        cardPanel.add(addOffertaPanel, "addOfferta");
+        cardPanel.add(appuntamentiDipendentePanel,"allAppuntamenti");
+        cardPanel.add(AppuntamentiSetterDipendente,"createAppuntamenti");
+        cardPanel.add(addVenditaPanel,"CreaVendita");
+        cardPanel.add(venditeDipendente,"LeTueVendite");
         cardPanel.add(garanziaPanel,"Garanzia");
         cardPanel.add(optionalPanel,"Optionals");
-        cardPanel.add(autoScontate,"Sconti");*/
+        cardPanel.add(addAutoDipendente,"InserisciAuto");
+
+        /*
+         * cardPanel.add(marchiPanel, "Marchi");
+         * cardPanel.add(dipendentePanel, "Dipendente");
+         * cardPanel.add(autoFiltratePanel, "AutoFilter");
+         * cardPanel.add(appuntamentoSetterPanel, "Appuntamento");
+         * cardPanel.add(allAuto, "Auto");
+         * 
+         * cardPanel.add(autoScontate,"Sconti");
+         */
 
         setDipendenteAuto();
     }
 
-    private void setDipendenteAuto(){
+    private void setDipendenteAuto() {
+
         this.autosPanel.setAuto(this.controller.allAutoDipendente());
+
+        autosPanel.setGaranziaButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTable table = autosPanel.getTable();
+                int selectedRow = table.getSelectedRow();
+
+                if (selectedRow >= 0) {
+                    String numeroTelaio = (String) table.getValueAt(selectedRow, 1);
+                    garanziaPanel.removeAll();
+                    Optional<Garanzia> garanzia = controller.visualizzaGaranzia(numeroTelaio);
+                    if(garanzia.isPresent()){
+                        garanziaPanel.setGaranziaPanel(garanzia.get());
+                        cardLayout.show(cardPanel, "Garanzia");
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(table, "Non c'è garanzia", "NO GARANZIA", JOptionPane.WARNING_MESSAGE);
+                    }
+
+                }
+            }
+        });
+
+
+        autosPanel.setOptionalButtonActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTable table = autosPanel.getTable();
+                int selectedRow = table.getSelectedRow();
+
+                if (selectedRow >= 0) {
+                    String numeroTelaio = (String) table.getValueAt(selectedRow, 1);
+                    optionalPanel.removeAll();
+                    List<Optionals> optional = controller.visualizzaOptionals(numeroTelaio);
+                    if(optional.size()>0){
+                        optionalPanel.setOptional(optional);
+                        cardLayout.show(cardPanel, "Optionals");
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(table, "Non ci sono optional", "NO OPTIONAL", JOptionPane.WARNING_MESSAGE);
+                    }
+
+                }
+            }
+        });
     }
 
 

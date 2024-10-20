@@ -1,7 +1,5 @@
 package it.unibo.gestione_concessionario.view.panelsCliente;
 
-
-
 import javax.swing.*;
 
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
@@ -32,8 +30,6 @@ public class AppuntamentoSetter extends JPanel {
     CustomButton saveAppuntamentoTestDrive;
     CustomButton saveAppuntamentoConsulenza;
 
-
-
     public AppuntamentoSetter(Controller controller) {
         setLayout(new GridLayout(9, 2, 5, 5)); // 8 righe, 2 colonne con spazi di 5px tra le celle
         this.controller = controller;
@@ -59,7 +55,7 @@ public class AppuntamentoSetter extends JPanel {
                 updateAuto();
                 updateDipendente();
             }
-            
+
         });
         add(tfmodello);
 
@@ -70,7 +66,8 @@ public class AppuntamentoSetter extends JPanel {
         add(spDurata);
 
         add(new JLabel("Numero Telaio:"));
-        tfNumeroTelaio = new JComboBox<Auto>(getAuto((Modello)tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
+        tfNumeroTelaio = new JComboBox<Auto>(
+                getAuto((Modello) tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
         add(tfNumeroTelaio);
 
         add(new JLabel("Nome Dipendente:"));
@@ -79,10 +76,10 @@ public class AppuntamentoSetter extends JPanel {
         add(tfNomeDipendente);
 
         add(new JLabel("Nome Cliente:"));
-        tfNomeCliente = new JLabel(controller.getClienteUser().nome()+" "+controller.getClienteUser().cognome());
+        tfNomeCliente = new JLabel(controller.getClienteUser().nome() + " " + controller.getClienteUser().cognome());
         add(tfNomeCliente);
 
-        saveAppuntamentoTestDrive=new CustomButton("Inserisci Test-Drive");
+        saveAppuntamentoTestDrive = new CustomButton("Inserisci Test-Drive");
         this.add(saveAppuntamentoTestDrive);
 
         saveAppuntamentoTestDrive.addActionListener(e -> {
@@ -95,7 +92,7 @@ public class AppuntamentoSetter extends JPanel {
             }
         });
 
-        saveAppuntamentoConsulenza=new CustomButton("Inserisci Consulenza");
+        saveAppuntamentoConsulenza = new CustomButton("Inserisci Consulenza");
         saveAppuntamentoConsulenza.addActionListener(e -> {
             try {
                 Appuntamento appuntamento = this.getAppuntamento(false);
@@ -112,48 +109,59 @@ public class AppuntamentoSetter extends JPanel {
     // Metodo per ottenere i dati dall'interfaccia
     public Appuntamento getAppuntamento(boolean isTestDrive) {
         String tipologia;
-        if(isTestDrive){
-            tipologia="Test-Drive";
+        if (isTestDrive) {
+            tipologia = "Test-Drive";
+        } else {
+            tipologia = "Consulenza";
         }
-        else{
-            tipologia="Consulenza";
-        }
-        updateAuto();
         updateDipendente();
-        LocalDate data = ((java.util.Date) spData.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-        LocalTime ora = ((java.util.Date) spOra.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalTime();
-        LocalTime durata =LocalTime.of(0, 0, 0);
+        LocalDate data = ((java.util.Date) spData.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault())
+                .toLocalDate();
+        LocalTime ora = ((java.util.Date) spOra.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault())
+                .toLocalTime();
+        LocalTime durata = ((java.util.Date) spDurata.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault())
+                .toLocalTime();
+        String numeroTelaio = ((Auto) tfNumeroTelaio.getSelectedItem()).getNumero_telaio();
+
         String email = dipendente.eMail();
-        
+        updateAuto();
+
         return new Appuntamento(
-            data,
-            ora,
-            tipologia,
-            durata,
-            ((Auto)tfNumeroTelaio.getSelectedItem()).getNumero_telaio(),
-            this.controller.id_DipendenteByEmail(email),
-            this.controller.id_ClienteByEmail(this.controller.getClienteUser().eMail())
-        );
+                data,
+                ora,
+                tipologia,
+                durata,
+                numeroTelaio,
+                this.controller.id_DipendenteByEmail(email),
+                this.controller.id_ClienteByEmail(this.controller.getClienteUser().eMail()));
     }
 
     private List<Modello> getModelli() {
         return controller.allModelli();
     }
-    private List<Auto> getAuto(Modello modello){
+
+    private List<Auto> getAuto(Modello modello) {
         return controller.allAutoFromModelli(modello);
     }
-    private void updateAuto(){
+
+    private void updateAuto() {
         tfNumeroTelaio.removeAllItems();
-        Auto[] auto = getAuto((Modello)tfmodello.getSelectedItem()).stream().toArray(Auto[]::new);
-        for(Auto auto1 : auto){
-        tfNumeroTelaio.addItem(auto1);
+        Auto[] auto = getAuto((Modello) tfmodello.getSelectedItem()).stream().toArray(Auto[]::new);
+        for (Auto auto1 : auto) {
+            tfNumeroTelaio.addItem(auto1);
         }
+
+        if (auto.length > 0) {
+            tfNumeroTelaio.setSelectedItem(auto[0]);
+        }
+
         tfNumeroTelaio.revalidate();
         tfNumeroTelaio.repaint();
     }
-    private void updateDipendente(){
-        this.dipendente=this.controller.dipendeteFromModello((Modello)tfmodello.getSelectedItem());
+
+    private void updateDipendente() {
+        this.dipendente = this.controller.dipendeteFromModello((Modello) tfmodello.getSelectedItem());
         this.tfNomeDipendente.setText(dipendente.toString());
     }
-  
+
 }

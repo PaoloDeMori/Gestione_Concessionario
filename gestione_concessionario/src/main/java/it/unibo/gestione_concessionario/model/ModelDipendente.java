@@ -5,13 +5,16 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
-import it.unibo.gestione_concessionario.commons.ConnectionFactory;
+import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
+import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.commons.dto.Configurazione;
 import it.unibo.gestione_concessionario.commons.dto.Contratto;
 import it.unibo.gestione_concessionario.commons.dto.Dipendente;
@@ -54,7 +57,8 @@ public class ModelDipendente extends Model {
             ResultSet set = ps.executeQuery();
             if (set.next()) {
                 iD = set.getInt(1);
-                dipendente=new Dipendente(set.getInt(1),set.getString(2),set.getString(3),set.getString(4),set.getBoolean(5),set.getString(6));
+                dipendente = new Dipendente(set.getInt(1), set.getString(2), set.getString(3), set.getString(4),
+                        set.getBoolean(5), set.getString(6));
                 return true;
             }
             return false;
@@ -67,14 +71,15 @@ public class ModelDipendente extends Model {
     public List<Auto> visualizzaAutoDelDipendente() {
         PreparedStatement ps;
         List<Auto> auto = new ArrayList<>();
-        final String vediAuto ="SELECT A.Numero_Telaio, A.prezzo, A.Immatricolazione, A.data, A.targa, M.Descrizione AS Modello, C.Motore, C.alimentazione "+
-        "FROM AUTO A "+
-        "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione "+  
-        "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO "+  
-        "JOIN MARCHIO MA ON M.ID_MARCHIO = MA.ID_MARCHIO "+
-        "JOIN DIPENDENTE D ON D.ID_MARCHIO = MA.ID_MARCHIO "+ 
-        "WHERE D.ID_DIPENDENTE = ? "+
-        "AND A.Numero_Telaio NOT IN (SELECT Numero_Telaio FROM VENDITA);";
+        final String vediAuto = "SELECT A.Numero_Telaio, A.prezzo, A.Immatricolazione, A.data, A.targa, M.Descrizione AS Modello, C.Motore, C.alimentazione "
+                +
+                "FROM AUTO A " +
+                "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
+                "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO " +
+                "JOIN MARCHIO MA ON M.ID_MARCHIO = MA.ID_MARCHIO " +
+                "JOIN DIPENDENTE D ON D.ID_MARCHIO = MA.ID_MARCHIO " +
+                "WHERE D.ID_DIPENDENTE = ? " +
+                "AND A.Numero_Telaio NOT IN (SELECT Numero_Telaio FROM VENDITA);";
         try {
             ps = connection.prepareStatement(vediAuto);
             ps.setInt(1, iD);
@@ -93,44 +98,43 @@ public class ModelDipendente extends Model {
         }
     }
 
-    /*
-     * List<Appuntamento> visualizzaAppuntamenti() {
-     * PreparedStatement ps;
-     * List<Appuntamento> app = new ArrayList<>();
-     * final String vediAppuntamenti =
-     * "SELECT a.ID_APPUNTAMENTO, a.data, a.ora, a.Tipologia, a.durata, a.Numero_Telaio, "
-     * +
-     * "c.Nome AS Cliente_Nome, c.Cognome AS Cliente_Cognome, d.Nome AS Dipendente_Nome, d.Cognome AS Dipendente_Cognome "
-     * +
-     * "FROM APPUNTAMENTO a " +
-     * "JOIN CLIENTE c ON a.ID_CLIENTE = c.ID_CLIENTE " +
-     * "JOIN DIPENDENTE d ON a.ID_DIPENDENTE = d.ID_DIPENDENTE " +
-     * "WHERE a.ID_DIPENDENTE = ?;";
-     * try {
-     * ps = connection.prepareStatement(vediAppuntamenti);
-     * ps.setInt(1, iD);
-     * ResultSet set = ps.executeQuery();
-     * while (set.next()) {
-     * LocalDate data = set.getDate(2) != null ? set.getDate(2).toLocalDate() :
-     * null;
-     * LocalTime ora = set.getDate(3) != null ? set.getTime(2).toLocalTime() : null;
-     * LocalTime durata = set.getDate(5) != null ? set.getTime(2).toLocalTime() :
-     * null;
-     * String nome_cliente = set.getString(7) + " " + set.getString(8);
-     * String nome_dipendente = set.getString(9) + " " + set.getString(10);
-     * app.add(new Appuntamento(data, ora, set.getString(4), durata,
-     * set.getString(6), nome_cliente, nome_dipendente));
-     * }
-     * for (var a : app) {
-     * System.out.println(a.toString());
-     * }
-     * return app;
-     * } catch (SQLException e) {
-     * throw new ProblemWithConnectionException(e);
-     * }
-     * 
-     * }
-     */
+    public List<Appuntamento> visualizzaAppuntamenti() {
+        PreparedStatement ps;
+        List<Appuntamento> app = new ArrayList<>();
+        final String vediAppuntamenti = "SELECT a.data, a.ora, a.durata, a.Numero_Telaio, a.Tipologia, "
+                +
+                "c.ID_CLIENTE, d.ID_DIPENDENTE "
+                +
+                "FROM APPUNTAMENTO a "
+                +
+                "JOIN CLIENTE c ON a.ID_CLIENTE = c.ID_CLIENTE "
+                +
+                "JOIN DIPENDENTE d ON a.ID_DIPENDENTE = d.ID_DIPENDENTE "
+                +
+                "WHERE a.ID_DIPENDENTE = ? " +
+                "AND CONCAT(a.data, ' ', a.ora) > CURRENT_TIMESTAMP;";
+        try {
+            ps = connection.prepareStatement(vediAppuntamenti);
+            ps.setInt(1, iD);
+            ResultSet set = ps.executeQuery();
+            while (set.next()) {
+                LocalDate data = set.getDate(1) != null ? set.getDate(1).toLocalDate() : null;
+                LocalTime ora = set.getDate(2) != null ? set.getTime(2).toLocalTime() : null;
+                LocalTime durata = set.getDate(3) != null ? set.getTime(3).toLocalTime() : null;
+                int iD_Cliente = set.getInt(6);
+                int iD_Dipendente = set.getInt(7);
+                app.add(new Appuntamento(data, ora, set.getString(5), durata, set.getString(4),
+                        iD_Dipendente, iD_Cliente));
+            }
+            for (var a : app) {
+                System.out.println(a.toString());
+            }
+            return app;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+
+    }
 
     public boolean aggiungiSconto(Sconto sconto) {
         PreparedStatement ps;
@@ -302,48 +306,51 @@ public class ModelDipendente extends Model {
         }
     }
 
-    public boolean aggiungiConfigurazione(Configurazione configurazione) {
+    public int aggiungiConfigurazione(Configurazione configurazione) throws SQLException {
         PreparedStatement ps;
-        final String aggiungiConfigurazione = "INSERT INTO CONFIGURAZIONE (ID_Configurazione, Motore, alimentazione, cc, horse_power, ID_MODELLO) "
+        final String aggiungiConfigurazione = "INSERT INTO CONFIGURAZIONE (Motore, alimentazione, cc, horse_power, ID_MODELLO) "
                 +
-                "VALUES (?, ?, ?, ?, ?, ?);";
+                "VALUES (?, ?, ?, ?, ?);";
         try {
-            ps = connection.prepareStatement(aggiungiConfigurazione);
-            ps.setInt(1, configurazione.idConfigurazione());
-            ps.setString(2, configurazione.motore());
-            ps.setString(3, configurazione.alimentazione());
-            ps.setInt(4, configurazione.cc());
-            ps.setInt(5, configurazione.horsePower());
-            ps.setInt(6, configurazione.id_modello());
+            ps = connection.prepareStatement(aggiungiConfigurazione,PreparedStatement.RETURN_GENERATED_KEYS);
+            ps.setString(1, configurazione.motore());
+            ps.setString(2, configurazione.alimentazione());
+            ps.setInt(3, configurazione.cc());
+            ps.setInt(4, configurazione.horsePower());
+            ps.setInt(5, configurazione.id_modello());
             ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            int generatedId = -1;
+            if (rs.next()) {
+                generatedId = rs.getInt(1);
+            }
             ps.close();
             connection.commit();
-            return true;
+            return generatedId;
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                throw new SQLException("Impossibile creare configurazione");
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
-            return false;
         }
+        return -1;
     }
 
     public boolean aggiungiAuto(Auto auto) {
         PreparedStatement ps;
-        final String aggiungiAuto = "INSERT INTO AUTO (Numero_Telaio, Immatricolazione, data, targa, ID_Configurazione) "
+        final String aggiungiAuto = "INSERT INTO AUTO (Numero_Telaio,prezzo, Immatricolazione, data, targa, ID_Configurazione) "
                 +
-                "VALUES (?, ?, ?, ?, ?);";
+                "VALUES (?, ?, ?, ?, ?, ?);";
         try {
             ps = connection.prepareStatement(aggiungiAuto);
             ps.setString(1, auto.getNumero_telaio());
             ps.setDouble(2, auto.getPrezzo());
             ps.setBoolean(3, auto.getImmatricolazione());
-            ps.setString(4, auto.getTarga().get());
-            ps.setDate(5, Date.valueOf(auto.getData().get()));
-            ps.setString(6, auto.getDescrizioneModello());
-            ps.setString(7, auto.getMotore());
-            ps.setString(8, auto.getAlimentazione());
+            ps.setDate(4, Date.valueOf(auto.getData().get()));
+            ps.setString(5, auto.getTarga().get());
+            ps.setInt(6, auto.getIdConfigurazione());
             ps.executeUpdate();
             ps.close();
             connection.commit();
@@ -360,18 +367,18 @@ public class ModelDipendente extends Model {
 
     public boolean inserisciVendita(Vendita vendita) {
         PreparedStatement ps;
-        final String inserisciVendita = "INSERT INTO VENDITA (Numero_Telaio, ID_Contratto, data, ora, tipologia ,ID_DIPENDENTE, ID_CLIENTE) "
+        final String inserisciVendita = "INSERT INTO VENDITA (Numero_Telaio, ID_Contratto, data, ora,ID_DIPENDENTE, ID_CLIENTE) "
                 +
                 "VALUES (?,?,?,?,?,?);";
         try {
             ps = connection.prepareStatement(inserisciVendita);
-            ps.setInt(1, vendita.idVendita());
-            ps.setInt(2, vendita.idContratto());
+            // TODO inserire numero_telaio
+            ps.setString(1, vendita.nuremo_telaio());
+            ps.setInt(2, vendita.contratto().getIdContratto());
             ps.setDate(3, Date.valueOf(vendita.data()));
             ps.setTime(4, java.sql.Time.valueOf(vendita.ora()));
-            ps.setString(5, vendita.tipologia().get());
-            ps.setInt(6, vendita.id_dipendente());
-            ps.setInt(7, vendita.codCliente());
+            ps.setInt(5, vendita.id_dipendente());
+            ps.setInt(6, vendita.codCliente());
             ps.executeUpdate();
             ps.close();
             connection.commit();
@@ -386,24 +393,70 @@ public class ModelDipendente extends Model {
         }
     }
 
-    public boolean aggiungiContratto(Contratto contratto) {
+    public int aggiungiContratto(Contratto contratto) {
         PreparedStatement ps;
-        final String aggiungiContratto = "INSERT INTO CONTRATTO (ID_CONTRATTO,prezzo, Tipologia, Nome_banca, codice_finanziamento, Intestatario, metodo_di_pagamento) "
+        final String aggiungiContratto = "INSERT INTO CONTRATTO (prezzo, Tipologia, Nome_banca, codice_finanziamento, Intestatario, metodo_di_pagamento) "
                 +
                 "VALUES (?,?,?,?,?,?);";
         try {
-            ps = connection.prepareStatement(aggiungiContratto);
-            ps.setInt(1, contratto.idContratto());
-            ps.setDouble(2, contratto.prezzo());
-            ps.setString(3, contratto.tipologia());
-            ps.setString(4, contratto.nomeBanca().get());
-            ps.setString(5, contratto.codiceFinanziamento().get());
-            ps.setString(6, contratto.intestatario().get());
-            ps.setString(7, contratto.metodoDiPagamento().get());
+            // Prepara lo statement specificando che vuoi le chiavi generate
+            ps = connection.prepareStatement(aggiungiContratto, PreparedStatement.RETURN_GENERATED_KEYS);
+            ps.setDouble(1, contratto.getPrezzo());
+            ps.setString(2, contratto.getTipologia());
+    
+            if (contratto.getTipologia().equals("Finanziamento")) {
+                ps.setString(3, contratto.getNomeBanca().get());
+                ps.setString(4, contratto.getCodiceFinanziamento().get());
+                ps.setString(5, contratto.getIntestatario().get());
+                ps.setNull(6, Types.VARCHAR);
+            } else if(contratto.getTipologia().equals("Unica Rata")){
+                ps.setNull(3, Types.VARCHAR);
+                ps.setNull(4, Types.VARCHAR);
+                ps.setNull(5, Types.VARCHAR);
+                ps.setString(6, contratto.getMetodoDiPagamento().get());
+            } else {
+                throw new SQLException("Tipologia non valida");
+            }
+    
+            // Esegui l'update
             ps.executeUpdate();
+    
+            // Recupera le chiavi generate
+            ResultSet rs = ps.getGeneratedKeys();
+            int generatedId = -1;
+            if (rs.next()) {
+                generatedId = rs.getInt(1);
+            }
+    
+            // Chiudi lo statement e fai il commit
             ps.close();
             connection.commit();
-            return true;
+    
+            // Ritorna l'ID generato
+            return generatedId;
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            return -1;
+        }
+    }
+    
+
+    public boolean eliminaContratto(Contratto contratto) {
+        PreparedStatement ps;
+        final String eliminaContratto = "DELETE FROM CONTRATTO WHERE id_contratto = ?;";
+    
+        try {
+            ps = connection.prepareStatement(eliminaContratto);
+            ps.setInt(1, contratto.getIdContratto());
+    
+            int rowsAffected = ps.executeUpdate();
+            ps.close();
+            connection.commit();
+                return rowsAffected > 0;
         } catch (SQLException e) {
             try {
                 connection.rollback();
@@ -414,51 +467,124 @@ public class ModelDipendente extends Model {
         }
     }
 
-    public Dipendente getDipendenteUser(){
+    
+
+    @Override
+    public List<Modello> visualizzaModello() {
+        PreparedStatement ps;
+        List<Modello> modello = new ArrayList<>();
+        final String vediModello = "SELECT m.ID_MODELLO, m.Descrizione, m.Anno,T.nome, ma.nome " +
+                "FROM MODELLO m " +
+                "JOIN TIPOLOGIA T ON T.ID_TIPOLOGIA=m.ID_TIPOLOGIA " +
+                "JOIN MARCHIO ma ON ma.ID_MARCHIO=m.ID_MARCHIO " +
+                "WHERE m.ID_MARCHIO=?;";
+        try {
+            ps = connection.prepareStatement(vediModello);
+            ps.setInt(1, dipendente.idmarchio());
+            ResultSet set = ps.executeQuery();
+            while (set.next()) {
+                modello.add(new Modello(set.getInt(1), set.getString(2), set.getInt(3), set.getString(4),
+                        set.getString(5)));
+            }
+            for (var m : modello) {
+                System.out.println(m.toString());
+            }
+            ps.close();
+            return modello;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+    }
+
+    public List<Vendita> visualizzaVendite() {
+        PreparedStatement ps;
+        List<Vendita> vendite = new ArrayList<>();
+        final String vediModello = "SELECT v.Numero_Telaio, v.data,v.ora, v.ID_CLIENTE,v.ID_DIPENDENTE, c.ID_Contratto,c.prezzo, c.Tipologia " +
+                "FROM VENDITA v " +
+                "JOIN CONTRATTO c ON c.ID_Contratto=v.ID_Contratto " +
+                "WHERE v.ID_DIPENDENTE=?;";
+        try {
+            ps = connection.prepareStatement(vediModello);
+            ps.setInt(1, dipendente.idmarchio());
+            ResultSet set = ps.executeQuery();
+            while (set.next()) {
+                Contratto contratto = new Contratto(set.getInt(6),set.getDouble(7),set.getString(8));
+                vendite.add(new Vendita(set.getString(1), contratto, set.getDate(2).toLocalDate(), set.getTime(3).toLocalTime(),
+                        set.getInt(5),set.getInt(4)));
+            }
+            for (var v : vendite) {
+                System.out.println(v.toString());
+            }
+            ps.close();
+            return vendite;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+    }
+
+
+    public Dipendente getDipendenteUser() {
         return this.dipendente;
     }
 
-    public boolean isUserResponabile(){
+    public boolean isUserResponabile() {
         return this.dipendente.isResponsabile();
     }
 
     public Optional<Marchio> getMyMarchio() {
-    PreparedStatement ps = null;
-    final String queryMarchio = "SELECT ID_MARCHIO, Nome FROM MARCHIO WHERE ID_MARCHIO = ?;";
-    try {
-        ps = connection.prepareStatement(queryMarchio);
-        ps.setInt(1, iD);
-        ResultSet resultSet = ps.executeQuery();
-        if (resultSet.next()) {
-            int id = resultSet.getInt("ID_MARCHIO");
-            String nome = resultSet.getString("Nome");
-            return Optional.of(new Marchio(id, nome));
-        } else {
-            return Optional.empty();
-        }
-    } catch (SQLException e) {
-        throw new ProblemWithConnectionException(e);
-    } finally {
+        PreparedStatement ps = null;
+        final String queryMarchio = "SELECT ID_MARCHIO, Nome FROM MARCHIO WHERE ID_MARCHIO = ?;";
         try {
-            if (ps != null) {
-                ps.close();
+            ps = connection.prepareStatement(queryMarchio);
+            ps.setInt(1, iD);
+            ResultSet resultSet = ps.executeQuery();
+            if (resultSet.next()) {
+                int id = resultSet.getInt("ID_MARCHIO");
+                String nome = resultSet.getString("Nome");
+                return Optional.of(new Marchio(id, nome));
+            } else {
+                return Optional.empty();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new ProblemWithConnectionException(e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
-}
 
-    public static void main(String[] args) {
-        ModelDipendente model = new ModelDipendente();
-        model.init(ConnectionFactory.build("gestione_concessionario_prova",
-                "jdbc:mysql://localhost:3306/", "root", "cadmio"));
-        // model.visualizzaAppuntamenti();
-        System.out.println("______________________________________________________________________________");
-        model.visualizzaAutoDelDipendente();
-        // model.aggiungiSconto(new Sconto(80,LocalDate.now(),LocalDate.of(2025,
-        // 12,11),"1HGBH41JXMN109186"));
-        model.aggiungiOfferta(new Offerta(1, 50, LocalDate.now(), LocalDate.of(2025, 12, 11), 1, 13));
-        model.end();
+    public List<Cliente> allClienti() {
+        PreparedStatement ps = null;
+        List<Cliente> clienti = new ArrayList<Cliente>();
+        final String queryMarchio = "SELECT nome, cognome, telefono,e_mail,password FROM CLIENTE ;";
+        try {
+            ps = connection.prepareStatement(queryMarchio);
+            ResultSet resultSet = ps.executeQuery();
+            while (resultSet.next()) {
+                String nome = resultSet.getString("nome");
+                String cognome = resultSet.getString("cognome");
+                String telefono = resultSet.getString("telefono");
+                String e_mail = resultSet.getString("e_mail");
+                String password = resultSet.getString("password");
+                clienti.add(new Cliente(nome, cognome, telefono, e_mail, password));
+            }
+            return clienti;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        } finally {
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }

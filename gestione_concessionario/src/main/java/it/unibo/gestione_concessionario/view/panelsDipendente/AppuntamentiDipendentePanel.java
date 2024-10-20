@@ -1,15 +1,14 @@
 package it.unibo.gestione_concessionario.view.panelsDipendente;
 
 
-import it.unibo.gestione_concessionario.commons.dto.Auto;
-import it.unibo.gestione_concessionario.view.CustomButton;
+import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
+import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.View;
 import it.unibo.gestione_concessionario.view.panelsCliente.PersTable;
 import it.unibo.gestione_concessionario.view.panelsCliente.TablesModel;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -19,57 +18,47 @@ import java.awt.BorderLayout;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
-public class AllAutoDipendente extends JPanel {
+public class AppuntamentiDipendentePanel extends JPanel {
 
     private JTable table;
-    private String[] columnNames = {"Modello","Numero Telaio", "Prezzo", "Immatricolazione", "Motore","alimentazione","Data Immatricolazione","Targa"};
+    private String[] columnNames = {"Nome Cliente","Data", "Ora", "Durata", "Tipologia","Auto"};
     private Object[][] data;
     JPanel buttonPanel;
-    private CustomButton garanziaButton;
-    private CustomButton optionalButton;
+    Controller controller;
 
     // Costruttore che configura il layout generale
-    public AllAutoDipendente() {
+    public AppuntamentiDipendentePanel(Controller controller) {
+        this.controller=controller;
         this.setLayout(new BorderLayout());
 
         // Pannello del titolo
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel title = new JLabel("Le auto che gestisci");
+        JLabel title = new JLabel("I Tuoi Appuntamenti");
         title.setFont(View.titleFont);
         title.setHorizontalAlignment(JLabel.CENTER);
         titlePanel.add(title);
 
         buttonPanel=new JPanel(new GridLayout(1,2));
-        
-        garanziaButton=new CustomButton("Garanzia Selezionato");
-        buttonPanel.add(garanziaButton);
-
-        optionalButton=new CustomButton("Optional Selezionato");
-        buttonPanel.add(optionalButton);
-
-
         // Aggiungi il pannello del titolo alla parte superiore del layout
         this.add(titlePanel, BorderLayout.NORTH);
         // Inizializza la tabella senza dati (i dati saranno impostati dal metodo setMarchi)
         table = new PersTable();
         JScrollPane scrollPane = new JScrollPane(table);
         this.add(scrollPane, BorderLayout.CENTER);
-        this.add(buttonPanel,BorderLayout.SOUTH);
     }
 
     // Metodo per impostare i marchi nella tabella
-    public void setAuto(List<Auto> auto) {
+    public void setAppuntamento(List<Appuntamento> appuntamenti) {
         // Crea i dati per la tabella
-        data = new Object[auto.size()][8];
-        for (int i = 0; i < auto.size(); i++) {
-            data[i][0] = auto.get(i).getDescrizioneModello();
-            data[i][1] = auto.get(i).getNumero_telaio();
-            data[i][2] = auto.get(i).getPrezzo();
-            data[i][3] = auto.get(i).getImmatricolazione();
-            data[i][4] = auto.get(i).getMotore();
-            data[i][5]=auto.get(i).getAlimentazione();
-            data[i][6]=(auto.get(i).getImmatricolazione()==true) ? auto.get(i).getData().get() : "";
-            data[i][7]=(auto.get(i).getImmatricolazione()==true) ? auto.get(i).getTarga().get() : "";
+        data = new Object[appuntamenti.size()][6];
+        for (int i = 0; i < appuntamenti.size(); i++) {
+            String nomeCliente = this.controller.getClienteNameById(appuntamenti.get(i).id_cliente());
+            data[i][0] = nomeCliente;
+            data[i][1] = appuntamenti.get(i).data();
+            data[i][2] = appuntamenti.get(i).ora();
+            data[i][3] = appuntamenti.get(i).durata();
+            data[i][4] = appuntamenti.get(i).tipologia();
+            data[i][5] = appuntamenti.get(i).numero_telaio();
         }
 
         // Crea un modello di tabella personalizzato non modificabile con i dati aggiornati
@@ -82,16 +71,6 @@ public class AllAutoDipendente extends JPanel {
     public JTable getTable() {
         return table;
     }
-
-    
-    public void setGaranziaButtonActionListener(ActionListener al){
-        this.garanziaButton.addActionListener(al);
-    }
-
-    public void setOptionalButtonActionListener(ActionListener al){
-        this.optionalButton.addActionListener(al);
-    }
-
 }
 
     

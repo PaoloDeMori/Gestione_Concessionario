@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
+import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.controller.Controller;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-public class AppuntamentoiSetterDipendente extends JPanel {
+public class AppuntamentiSetterDipendente extends JPanel {
 
     private JSpinner spData;
     private JSpinner spOra;
@@ -26,7 +27,7 @@ public class AppuntamentoiSetterDipendente extends JPanel {
     private JSpinner spDurata;
     private JComboBox<Auto> tfNumeroTelaio;
     private JLabel tfNomeDipendente;
-    private JLabel tfNomeCliente;
+    private JComboBox<Cliente> tfNomeCliente;
     private Controller controller;
     private Dipendente dipendente;
     CustomButton saveAppuntamentoTestDrive;
@@ -34,7 +35,7 @@ public class AppuntamentoiSetterDipendente extends JPanel {
 
 
 
-    public AppuntamentoiSetterDipendente(Controller controller) {
+    public AppuntamentiSetterDipendente(Controller controller) {
         setLayout(new GridLayout(9, 2, 5, 5)); // 8 righe, 2 colonne con spazi di 5px tra le celle
         this.controller = controller;
 
@@ -79,7 +80,7 @@ public class AppuntamentoiSetterDipendente extends JPanel {
         add(tfNomeDipendente);
 
         add(new JLabel("Nome Cliente:"));
-        tfNomeCliente = new JLabel(controller.getClienteUser().nome()+" "+controller.getClienteUser().cognome());
+        tfNomeCliente = new JComboBox<Cliente>(controller.allClienti().stream().toArray(Cliente[]::new));;
         add(tfNomeCliente);
 
         saveAppuntamentoTestDrive=new CustomButton("Inserisci Test-Drive");
@@ -118,11 +119,11 @@ public class AppuntamentoiSetterDipendente extends JPanel {
         else{
             tipologia="Consulenza";
         }
-        updateAuto();
         updateDipendente();
         LocalDate data = ((java.util.Date) spData.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
         LocalTime ora = ((java.util.Date) spOra.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalTime();
-        LocalTime durata =LocalTime.of(0, 0, 0);
+        LocalTime durata =((java.util.Date) spDurata.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault())
+        .toLocalTime();;
         String email = dipendente.eMail();
         
         return new Appuntamento(
@@ -132,7 +133,7 @@ public class AppuntamentoiSetterDipendente extends JPanel {
             durata,
             ((Auto)tfNumeroTelaio.getSelectedItem()).getNumero_telaio(),
             this.controller.id_DipendenteByEmail(email),
-            this.controller.id_ClienteByEmail(this.controller.getClienteUser().eMail())
+            this.controller.id_ClienteByEmail( ((Cliente)tfNomeCliente.getSelectedItem()).eMail())
         );
     }
 
@@ -152,7 +153,7 @@ public class AppuntamentoiSetterDipendente extends JPanel {
         tfNumeroTelaio.repaint();
     }
     private void updateDipendente(){
-        this.dipendente=this.controller.dipendeteFromModello((Modello)tfmodello.getSelectedItem());
+        this.dipendente=this.controller.getDipendenteUser();
         this.tfNomeDipendente.setText(dipendente.toString());
     }
   

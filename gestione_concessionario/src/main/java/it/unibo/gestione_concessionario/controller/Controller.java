@@ -5,13 +5,17 @@ import it.unibo.gestione_concessionario.model.ProblemWithConnectionException;
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Cliente;
+import it.unibo.gestione_concessionario.commons.dto.Configurazione;
+import it.unibo.gestione_concessionario.commons.dto.Contratto;
 import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Garanzia;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
+import it.unibo.gestione_concessionario.commons.dto.Offerta;
 import it.unibo.gestione_concessionario.commons.dto.Optionals;
 import it.unibo.gestione_concessionario.commons.dto.Sconto;
 import it.unibo.gestione_concessionario.commons.dto.Tipologia;
+import it.unibo.gestione_concessionario.commons.dto.Vendita;
 import it.unibo.gestione_concessionario.model.Model;
 import it.unibo.gestione_concessionario.model.ModelCliente;
 import it.unibo.gestione_concessionario.model.ModelDipendente;
@@ -20,6 +24,7 @@ import it.unibo.gestione_concessionario.view.DipendenteView;
 import it.unibo.gestione_concessionario.view.View;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -144,6 +149,10 @@ public class Controller {
         return model.visualizzaAutoxModello(modello);
     }
 
+    public List<Auto> allAutoNonVenduteFromModelli(Modello modello) {
+        return model.visualizzaAutoxModelloNonVendute(modello);
+    }
+
     public int idMarchioFromNomeModello(Modello modello) {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).ID_Marchio(modello);
@@ -153,12 +162,9 @@ public class Controller {
     }
 
     public boolean addAppuntamento(Appuntamento appuntamento) {
-        if (model instanceof ModelCliente) {
-            return ((ModelCliente) model).fissaAppuntamento(appuntamento);
-        } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
-        }
+            return model.fissaAppuntamento(appuntamento);
     }
+
 
     public Cliente getClienteUser() {
         if (model instanceof ModelCliente) {
@@ -169,19 +175,11 @@ public class Controller {
     }
 
     public int id_ClienteByEmail(String email) {
-        if (model instanceof ModelCliente) {
-            return ((ModelCliente) model).getClienteIDByEmail(email);
-        } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
-        }
+            return model.getClienteIDByEmail(email);
     }
 
     public int id_DipendenteByEmail(String email) {
-        if (model instanceof ModelCliente) {
-            return ((ModelCliente) model).getDipendenteIDByEmail(email);
-        } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
-        }
+        return model.getDipendenteIDByEmail(email);
     }
 
     public List<Auto> allAuto() {
@@ -193,19 +191,11 @@ public class Controller {
     }
 
     public Optional<Garanzia> visualizzaGaranzia(String numeroTelaio) {
-        if (model instanceof ModelCliente) {
-            return ((ModelCliente) model).visualizzaGaranzia(numeroTelaio);
-        } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
-        }
+            return model.visualizzaGaranzia(numeroTelaio);
     }
 
     public List<Optionals> visualizzaOptionals(String numeroTelaio) {
-        if (model instanceof ModelCliente) {
-            return ((ModelCliente) model).visualizzaOptional(numeroTelaio);
-        } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
-        }
+            return model.visualizzaOptional(numeroTelaio);
     }
 
     public List<Auto> visualizzaAutoScontate(Marchio marchio) {
@@ -221,6 +211,24 @@ public class Controller {
             throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
         }
     }
+
+    
+    public int addContratto(Contratto contratto) {
+        if (model instanceof ModelDipendente) {
+            return ((ModelDipendente) model).aggiungiContratto(contratto);
+        } else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+    }
+
+    public boolean eliminaContratto(Contratto contratto) {
+        if (model instanceof ModelDipendente) {
+            return ((ModelDipendente) model).eliminaContratto(contratto);
+        } else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+    }
+
 
     public Dipendente getDipendenteUser() {
         if (model instanceof ModelDipendente) {
@@ -245,5 +253,73 @@ public class Controller {
         } else {
             throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
         }
+    }
+
+    public void addVendita(Vendita vendita) {
+        if (model instanceof ModelDipendente) {
+            ((ModelDipendente) model).inserisciVendita(vendita);
+        } else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+    }
+
+    public void addOfferta(Offerta offerta){
+        if(model instanceof ModelDipendente){
+            ((ModelDipendente) model).aggiungiOfferta(offerta);
+        }
+        else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+    }
+
+    public void createAutoEConfig(Auto auto,Configurazione config) throws SQLException{
+        if(model instanceof ModelDipendente){
+            try {
+                auto.setIdConfigurazione(((ModelDipendente) model).aggiungiConfigurazione(config));
+                ((ModelDipendente) model).aggiungiAuto(auto);
+            } catch (SQLException e) {
+                throw new SQLException("errore nella creazione dell'auto");
+
+            }
+        }
+        else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+    }
+
+    public String getClienteNameById(int id){
+        return this.model.getClienteNameById(id);
+    }
+
+    public String getDipendenteNameById(int iD){
+        return this.model.getDipendenteNameById(iD);
+    }
+
+    public List<Appuntamento> visualizzaAppuntamenti(){
+        if(model instanceof ModelDipendente){
+          return ((ModelDipendente) model).visualizzaAppuntamenti();
+        }
+        else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+
+    }
+
+    public List<Cliente> allClienti(){
+        if(model instanceof ModelDipendente){
+            return ((ModelDipendente) model).allClienti();
+          }
+          else {
+              throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+          }
+    }
+
+    public List<Vendita> allVendite(){
+        if(model instanceof ModelDipendente){
+            return ((ModelDipendente) model).visualizzaVendite();
+          }
+          else {
+              throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+          }
     }
 }

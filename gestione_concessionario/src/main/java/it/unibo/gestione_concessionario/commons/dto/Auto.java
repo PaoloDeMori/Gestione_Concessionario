@@ -11,6 +11,7 @@ public class Auto{
     String descrizioneModello;
     String motore;
     String alimentazione;
+    int idConfigurazione;
 
 
     public Auto(String numero_telaio, Double prezzo,boolean immatricolazione,Optional<String>targa,Optional<LocalDate> data,String descrizioneModello){
@@ -104,6 +105,14 @@ public class Auto{
 
     public boolean getImmatricolazione(){
         return this.immatricolazione;
+    }
+
+    public int getIdConfigurazione() {
+        return idConfigurazione;
+    }
+
+    public void setIdConfigurazione(int idConfigurazione) {
+        this.idConfigurazione = idConfigurazione;
     }
 
 }
