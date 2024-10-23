@@ -2,30 +2,27 @@ package it.unibo.gestione_concessionario.view.panelsDipendente;
 
 import javax.swing.*;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
-import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.commons.dto.Configurazione;
-import it.unibo.gestione_concessionario.commons.dto.Contratto;
-import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
-import it.unibo.gestione_concessionario.commons.dto.Vendita;
+import it.unibo.gestione_concessionario.commons.dto.Optionals;
+import it.unibo.gestione_concessionario.commons.dto.Personalizzazione;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Calendar;
 
 public class AddAutoDipendente extends JPanel {
 
     private JTextField numeroTelaioField;
     private JTextField prezzoField;
-    private JButton creaContrattoButton;
+    private JButton creaModelloButton;
     private JComboBox<Boolean> immatricolazioneBox;
     private JLabel targaLabel = new JLabel("Targa");
     private JTextField targaaField;
@@ -42,18 +39,25 @@ public class AddAutoDipendente extends JPanel {
     private JSpinner spData;
 
     private JComboBox<Modello> tfmodello;
+    private List<Optionals> optionals;
+
     private Controller controller;
     private CustomButton saveAuto;
-    private ContrattoDialog contrattoDialog;
+    private CustomButton addOptionalButton;
+
+    private CreaModelloDialog creaModelloDialog;
+    private AddOptionalsDialog addOptionalsDialog;
     private String descrizioneModello;
-    private String motore;
-    private String alimentazione;
-    private JLabel creaContrattoLabel = new JLabel("Contratto da Creare");
+    private JLabel creaModelloLabel = new JLabel("Crea Modello");
     private JPanel maiPanel;
+    Auto auto;
 
     public AddAutoDipendente(Controller controller) {
+        creaModelloDialog = new CreaModelloDialog(controller, this);
         setLayout(new GridLayout(1, 1));
         this.controller = controller;
+        addOptionalsDialog = new AddOptionalsDialog(this,controller);
+
 
         this.setMainPanel();
 
@@ -62,17 +66,39 @@ public class AddAutoDipendente extends JPanel {
 
     private void setMainPanel() {
         maiPanel = new JPanel();
-        maiPanel.setLayout(new GridLayout(12, 2, 5, 5));
+        maiPanel.setLayout(new GridLayout(14, 2, 5, 5));
 
-        maiPanel.add(creaContrattoLabel);
-        creaContrattoButton = new CustomButton("Crea Contratto");
-        maiPanel.add(creaContrattoButton);
+        maiPanel.add(creaModelloLabel);
+        creaModelloButton = new CustomButton("Crea Modello");
+        maiPanel.add(creaModelloButton);
         // contrattoDialog = new ContrattoDialog(controller, this);
-        creaContrattoButton.addActionListener(e -> contrattoDialog.setVisible(true));
+        creaModelloButton.addActionListener(e -> creaModelloDialog.setVisible(true));
 
         maiPanel.add(new JLabel("Numero Telaio:"));
         numeroTelaioField = new JTextField("00000000000000000");
         maiPanel.add(numeroTelaioField);
+
+        maiPanel.add(new JLabel("Modello:"));
+        tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
+        tfmodello.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                descrizioneModello = ((Modello) tfmodello.getSelectedItem()).descrizione();
+            }
+
+        });
+        maiPanel.add(tfmodello);
+
+
+        maiPanel.add(new JLabel("Optionals:"));
+        addOptionalButton = new CustomButton("Aggiungi otpionals");
+        maiPanel.add(addOptionalButton);
+        // contrattoDialog = new ContrattoDialog(controller, this);
+        addOptionalButton.addActionListener(e -> addOptionalsDialog.setVisible(true));
+
+     
+
 
         maiPanel.add(new JLabel("Prezzo:"));
         prezzoField = new JTextField("0000");
@@ -110,27 +136,18 @@ public class AddAutoDipendente extends JPanel {
         spData.setEditor(dateEditor);
         maiPanel.add(spData);
 
-        maiPanel.add(new JLabel("Modello:"));
-        tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
-        tfmodello.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                descrizioneModello = ((Modello)tfmodello.getSelectedItem()).descrizione();
-            }
-
-        });
-        maiPanel.add(tfmodello);
-
         saveAuto = new CustomButton("Aggiungi auto");
         maiPanel.add(saveAuto);
         saveAuto.addActionListener(e -> {
             try {
-                Auto auto = getAuto();
+                auto = getAuto();
                 Configurazione configurazione = getConfigurazione();
-                
+
                 if (auto != null && configurazione != null) {
                     controller.createAutoEConfig(auto, configurazione);
+                    for (Personalizzazione p : getPersonalizzazioni()) {
+                        controller.addPersonalizzazione(p);
+                    }
                     JOptionPane.showMessageDialog(this, "Auto creata:\n" + auto);
                     this.removeAll();
                     setMainPanel();
@@ -169,6 +186,23 @@ public class AddAutoDipendente extends JPanel {
         }
     }
 
+    public List<Personalizzazione> getPersonalizzazioni() {
+        if (auto != null && this.optionals != null) {
+            List<Optionals> selectedOptionals = optionals;
+            if (!selectedOptionals.isEmpty()) {
+                List<Personalizzazione> personalizzazioni = new ArrayList<>();
+                for (Optionals optional : selectedOptionals) {
+                    personalizzazioni.add(new Personalizzazione(optional, auto));
+                }
+                return personalizzazioni;
+            } else {
+                return List.of();
+            }
+        } else {
+            throw new IllegalArgumentException("Impossibile creare una personalizzazione senza un'auto.");
+        }
+    }
+
     public Configurazione getConfigurazione() {
         try {
             int cc = Integer.parseInt(ccField.getText());
@@ -190,6 +224,19 @@ public class AddAutoDipendente extends JPanel {
         return controller.allModelli();
     }
 
+    protected List<Optionals> getOptional() {
+        return controller.visualizzaAllOptionals();
+    }
+
+    public void addModello() {
+        this.removeAll(); // Rimuove tutti i componenti dal pannello
+        this.setMainPanel(); // Ricostruisce il pannello principale
+        this.add(maiPanel); // Aggiunge nuovamente il pannello aggiornato
+        tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
+        this.revalidate(); // Aggiorna il layout del pannello
+        this.repaint(); // Ridisegna il pannello
+    }
+
     public void updateAvailableFields() {
         if ((Boolean) immatricolazioneBox.getSelectedItem()) {
             targaaField.setVisible(true);
@@ -198,5 +245,9 @@ public class AddAutoDipendente extends JPanel {
             targaaField.setVisible(false);
             spData.setVisible(false);
         }
+    }
+
+    public void setOptionals(List<Optionals> optionals) {
+        this.optionals = optionals;
     }
 }

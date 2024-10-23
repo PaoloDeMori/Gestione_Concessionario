@@ -318,6 +318,27 @@ public abstract class Model {
 
     }
 
+    public List<Optionals> visualizzaAllOptional() {
+        PreparedStatement ps;
+        List<Optionals> optional = new ArrayList<>();
+        final String vediOptional = "SELECT * FROM OPTIONAL;";
+        try {
+            ps = connection.prepareStatement(vediOptional);
+            ResultSet set = ps.executeQuery();
+            while (set.next()) {
+                optional.add(new Optionals(set.getInt(1), set.getString(2), set.getDouble(3)));
+            }
+            for (var o : optional) {
+                System.out.println(o.toString());
+            }
+            ps.close();
+            return optional;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+
+    }
+
     public Optional<Garanzia> visualizzaGaranzia(String numeroTelaio) {
         PreparedStatement ps;
         Garanzia garanzia = null;

@@ -15,6 +15,7 @@ import it.unibo.gestione_concessionario.view.panelsDipendente.AllAutoDipendente;
 import it.unibo.gestione_concessionario.view.panelsDipendente.AppuntamentiDipendentePanel;
 import it.unibo.gestione_concessionario.view.panelsDipendente.AppuntamentiSetterDipendente;
 import it.unibo.gestione_concessionario.view.panelsDipendente.AutoScontateDipendente;
+import it.unibo.gestione_concessionario.view.panelsDipendente.OfferteDisponibiliPanel;
 import it.unibo.gestione_concessionario.view.panelsDipendente.VenditeDipendente;
 
 import java.awt.*;
@@ -39,6 +40,7 @@ public class DipendenteView extends JFrame implements View {
     private AddAutoDipendente addAutoDipendente;
     private GaranziaPanel garanziaPanel;
     private OptionalPanel optionalPanel;
+    private OfferteDisponibiliPanel offerteDisponibiliPanel;
 
     public DipendenteView(Controller controller) {
         this.controller = controller;
@@ -49,6 +51,7 @@ public class DipendenteView extends JFrame implements View {
         this.AppuntamentiSetterDipendente=new AppuntamentiSetterDipendente(controller);
         this.venditeDipendente = new VenditeDipendente(controller);
         this.optionalPanel=new OptionalPanel();
+        this.offerteDisponibiliPanel=new OfferteDisponibiliPanel(controller);
         garanziaPanel=new GaranziaPanel();
         initialize();
         this.start();
@@ -133,6 +136,8 @@ public class DipendenteView extends JFrame implements View {
         CustomButton autoScontataButton = new CustomButton("Sconta Un Auto");
         CustomButton leTueVenditeButton = new CustomButton("Le Tue Vendite");
         CustomButton AggiungiDipendente = new CustomButton("Auto Scontate");
+        CustomButton allOfferte = new CustomButton("Offerte Attive");
+
 
         CustomMenu cmSconti = new CustomMenu("Sconti");
         CustomMenu cmAppuntamenti = new CustomMenu("Appuntamenti");
@@ -140,6 +145,8 @@ public class DipendenteView extends JFrame implements View {
         cmSconti.add(allAutoScontate);
         cmSconti.add(autoConOffertaButton);
         cmSconti.add(autoScontataButton);
+        cmSconti.add(allOfferte);
+
 
         cmAppuntamenti.add(createAppuntamentoButton);
         cmAppuntamenti.add(meetingsButton);
@@ -154,13 +161,13 @@ public class DipendenteView extends JFrame implements View {
 
         // Aggiungi gli ActionListener per gestire i cambi di pannello
         addPanelSwitchListeners(autosButton, addAutoButton, meetingsButton, createAppuntamentoButton, sellAutoButton,
-                autoConOffertaButton,leTueVenditeButton, autoScontataButton, AggiungiDipendente, statsButton, allAutoScontate);
+                autoConOffertaButton,leTueVenditeButton, autoScontataButton, AggiungiDipendente, statsButton, allAutoScontate, allOfferte);
     }
 
     private void addPanelSwitchListeners(CustomButton autosButton, CustomButton addAutoButton,
             CustomButton meetingsButton, CustomButton createAppuntamentoButton, CustomButton sellAutoButton,
             CustomButton autoConOffertaButton,CustomButton leTueVenditeButton, CustomButton autoScontataButton, CustomButton AggiungiDipendente,
-            CustomButton statsButton, CustomButton allautoConOffertaButton) {
+            CustomButton statsButton, CustomButton allautoConOffertaButton, CustomButton allOfferte) {
         autosButton.addActionListener(e -> {
             autosPanel.setAuto(this.controller.allAutoDipendente());
             cardLayout.show(cardPanel, "autoGestite");
@@ -195,6 +202,10 @@ public class DipendenteView extends JFrame implements View {
         addAutoButton.addActionListener(e -> {
             cardLayout.show(cardPanel, "InserisciAuto");
         });
+        allOfferte.addActionListener(e -> {
+            offerteDisponibiliPanel.filtraOfferte();
+            cardLayout.show(cardPanel, "TutteOfferte");
+        });
     }
 
     private void addPanelsToCardLayout() {
@@ -214,6 +225,8 @@ public class DipendenteView extends JFrame implements View {
         cardPanel.add(garanziaPanel,"Garanzia");
         cardPanel.add(optionalPanel,"Optionals");
         cardPanel.add(addAutoDipendente,"InserisciAuto");
+        cardPanel.add(offerteDisponibiliPanel,"TutteOfferte");
+
 
         /*
          * cardPanel.add(marchiPanel, "Marchi");

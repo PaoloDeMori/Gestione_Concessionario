@@ -13,6 +13,7 @@ import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.commons.dto.Offerta;
 import it.unibo.gestione_concessionario.commons.dto.Optionals;
+import it.unibo.gestione_concessionario.commons.dto.Personalizzazione;
 import it.unibo.gestione_concessionario.commons.dto.Sconto;
 import it.unibo.gestione_concessionario.commons.dto.Tipologia;
 import it.unibo.gestione_concessionario.commons.dto.Vendita;
@@ -103,6 +104,14 @@ public class Controller {
 
     public List<Modello> allModelli() {
         return model.visualizzaModello();
+    }
+
+    public List<Offerta> allOfferte(){
+        if (model instanceof ModelDipendente) {
+            return ((ModelDipendente) model).visualizzaOfferte();
+        } else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
     }
 
     public Dipendente dipendenteFromMarchio(Marchio marchio) {
@@ -198,6 +207,11 @@ public class Controller {
             return model.visualizzaOptional(numeroTelaio);
     }
 
+    public List<Optionals> visualizzaAllOptionals() {
+        return model.visualizzaAllOptional();
+    }
+
+
     public List<Auto> visualizzaAutoScontate(Marchio marchio) {
         return model.visualizzaAutoScontate(marchio);
     }
@@ -247,9 +261,25 @@ public class Controller {
         }
     }
 
+    public List<Tipologia> getTipologie() {
+        if (model instanceof ModelDipendente) {
+            return ((ModelDipendente) model).visualizzaTipologia();
+        } else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+    }
+
     public void addSconto(Sconto sconto) {
         if (model instanceof ModelDipendente) {
             ((ModelDipendente) model).aggiungiSconto(sconto);
+        } else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+    }
+
+    public void addSconto(Modello modello) {
+        if (model instanceof ModelDipendente) {
+            ((ModelDipendente) model).aggiungiModello(modello);
         } else {
             throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
         }
@@ -271,6 +301,26 @@ public class Controller {
             throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
         }
     }
+
+    public void addModello(Modello modello){
+        if(model instanceof ModelDipendente){
+            ((ModelDipendente) model).aggiungiModello(modello);
+        }
+        else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+    }
+
+    public void addPersonalizzazione(Personalizzazione personalizzazione){
+        if(model instanceof ModelDipendente){
+            ((ModelDipendente) model).aggiungiPersonalizzazione(personalizzazione);
+        }
+        else {
+            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+        }
+    }
+
+
 
     public void createAutoEConfig(Auto auto,Configurazione config) throws SQLException{
         if(model instanceof ModelDipendente){

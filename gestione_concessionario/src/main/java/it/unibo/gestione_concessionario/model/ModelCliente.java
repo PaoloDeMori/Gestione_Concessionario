@@ -11,7 +11,6 @@ import java.util.Optional;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.commons.dto.Dipendente;
-import it.unibo.gestione_concessionario.commons.dto.Garanzia;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.commons.dto.Optionals;
