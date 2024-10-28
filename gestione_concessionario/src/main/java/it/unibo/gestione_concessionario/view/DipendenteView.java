@@ -23,6 +23,8 @@ import it.unibo.gestione_concessionario.view.panelsdipendente.VenditeDipendente;
 import it.unibo.gestione_concessionario.view.panelsdipendente.VisualizzaStatisticheDipendente;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +81,22 @@ public class DipendenteView extends JFrame implements View {
     private void initialize() {
         setTitle("Menu and CardLayout Example");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    controller.stop();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(cardPanel, ex.getMessage(), "Impossibile chiudere la connessione",
+                            ABORT);
+                }
+                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                dispose();
+                System.exit(0);
+            }
+        });
+
         setLayout(new BorderLayout());
 
         JMenuBar menuBar = createMenuBar();
@@ -98,6 +115,7 @@ public class DipendenteView extends JFrame implements View {
     public void start() {
         this.setVisible(true);
     }
+
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(Color.BLACK);
@@ -119,17 +137,16 @@ public class DipendenteView extends JFrame implements View {
         CustomButton leTueVenditeButton = new CustomButton("Le Tue Vendite");
         CustomButton aggiungiDipendenteButton;
         CustomButton rimuoviDipendenteButton;
-        CustomButton esciButton=new CustomButton("Esci");
+        ExitButton esciButton = new ExitButton("Esci");
 
         aggiungiDipendenteButton = new CustomButton("Aggiungi un dipendente");
-        rimuoviDipendenteButton  = new CustomButton("Rimuovi un dipendente");
+        rimuoviDipendenteButton = new CustomButton("Rimuovi un dipendente");
         CustomButton allOfferte = new CustomButton("Offerte Attive");
 
         CustomMenu cmSconti = new CustomMenu("Sconti");
         CustomMenu cmAppuntamenti = new CustomMenu("Appuntamenti");
         CustomMenu cmAdmin = new CustomMenu("Funzioni Responsabile");
-        CustomMenu cmVendite = new CustomMenu("Info Vendite");
-
+        CustomMenu cmVendite = new CustomMenu("Vendite");
 
         cmSconti.add(allAutoScontate);
         cmSconti.add(autoConOffertaButton);
@@ -138,6 +155,7 @@ public class DipendenteView extends JFrame implements View {
 
         cmVendite.add(sellAutoButton);
         cmVendite.add(statsButton);
+        cmVendite.add(leTueVenditeButton);
 
         cmAppuntamenti.add(createAppuntamentoButton);
         cmAppuntamenti.add(meetingsButton);
@@ -147,15 +165,14 @@ public class DipendenteView extends JFrame implements View {
         menuBar.add(cmAppuntamenti);
         menuBar.add(cmSconti);
         menuBar.add(cmVendite);
-        menuBar.add(leTueVenditeButton);
-        if(user.isResponsabile()){
+        if (user.isResponsabile()) {
             cmAdmin.add(aggiungiDipendenteButton);
             cmAdmin.add(rimuoviDipendenteButton);
             menuBar.add(cmAdmin);
         }
         menuBar.add(esciButton);
 
-        esciButton.addActionListener(e->{
+        esciButton.addActionListener(e -> {
             try {
                 controller.stop();
             } catch (SQLException ex) {
@@ -166,14 +183,15 @@ public class DipendenteView extends JFrame implements View {
 
         addPanelSwitchListeners(autosButton, addAutoButton, meetingsButton, createAppuntamentoButton, sellAutoButton,
                 autoConOffertaButton, leTueVenditeButton, autoScontataButton, aggiungiDipendenteButton, statsButton,
-                allAutoScontate, allOfferte,rimuoviDipendenteButton);
+                allAutoScontate, allOfferte, rimuoviDipendenteButton);
     }
 
     private void addPanelSwitchListeners(CustomButton autosButton, CustomButton addAutoButton,
             CustomButton meetingsButton, CustomButton createAppuntamentoButton, CustomButton sellAutoButton,
             CustomButton autoConOffertaButton, CustomButton leTueVenditeButton, CustomButton autoScontataButton,
             CustomButton aggiungiDipendenteButton,
-            CustomButton statsButton, CustomButton allautoConOffertaButton, CustomButton allOfferte, CustomButton rimuoviDipendenteButton) {
+            CustomButton statsButton, CustomButton allautoConOffertaButton, CustomButton allOfferte,
+            CustomButton rimuoviDipendenteButton) {
         autosButton.addActionListener(e -> {
             autosPanel.setAuto(this.controller.allAutoDipendente());
             cardLayout.show(cardPanel, "autoGestite");
@@ -210,12 +228,18 @@ public class DipendenteView extends JFrame implements View {
             offerteDisponibiliPanel.filtraOfferte();
             cardLayout.show(cardPanel, "TutteOfferte");
         });
-        if(user.isResponsabile()){
-        aggiungiDipendenteButton.addActionListener(e-> cardLayout.show(cardPanel, "AggiungiDipendente"));
+        if (user.isResponsabile()) {
+            aggiungiDipendenteButton.addActionListener(e -> {
+                addDipendentePanel.updateMarchio();
+                cardLayout.show(cardPanel, "AggiungiDipendente");
+            });
         }
-        if(user.isResponsabile()){
-            rimuoviDipendenteButton.addActionListener(e-> cardLayout.show(cardPanel, "RimuoviDipendente"));
-         }    
+        if (user.isResponsabile()) {
+            rimuoviDipendenteButton.addActionListener(e -> {
+                cardLayout.show(cardPanel, "RimuoviDipendente");
+                rimuoviDipendentePanel.updateDipendente();
+            });
+        }
     }
 
     private void addPanelsToCardLayout() {
@@ -238,7 +262,6 @@ public class DipendenteView extends JFrame implements View {
         cardPanel.add(addDipendentePanel, "AggiungiDipendente");
         cardPanel.add(rimuoviDipendentePanel, "RimuoviDipendente");
         cardPanel.add(visualizzaStatisticheDipendente, "stats");
-
 
         setDipendenteAuto();
     }
@@ -266,25 +289,24 @@ public class DipendenteView extends JFrame implements View {
             }
         });
 
-        autosPanel.setOptionalButtonActionListener( e-> {
-                JTable table = autosPanel.getTable();
-                int selectedRow = table.getSelectedRow();
+        autosPanel.setOptionalButtonActionListener(e -> {
+            JTable table = autosPanel.getTable();
+            int selectedRow = table.getSelectedRow();
 
-                if (selectedRow >= 0) {
-                    String numeroTelaio = (String) table.getValueAt(selectedRow, 1);
-                    optionalPanel.removeAll();
-                    List<Optionals> optional = controller.visualizzaOptionals(numeroTelaio);
-                    if (!optional.isEmpty()) {
-                        optionalPanel.setOptional(optional);
-                        cardLayout.show(cardPanel, "Optionals");
-                    } else {
-                        JOptionPane.showMessageDialog(table, "Non ci sono optional", "NO OPTIONAL",
-                                JOptionPane.WARNING_MESSAGE);
-                    }
-
+            if (selectedRow >= 0) {
+                String numeroTelaio = (String) table.getValueAt(selectedRow, 1);
+                optionalPanel.removeAll();
+                List<Optionals> optional = controller.visualizzaOptionals(numeroTelaio);
+                if (!optional.isEmpty()) {
+                    optionalPanel.setOptional(optional);
+                    cardLayout.show(cardPanel, "Optionals");
+                } else {
+                    JOptionPane.showMessageDialog(table, "Non ci sono optional", "NO OPTIONAL",
+                            JOptionPane.WARNING_MESSAGE);
                 }
+
             }
-        );
+        });
     }
 
 }

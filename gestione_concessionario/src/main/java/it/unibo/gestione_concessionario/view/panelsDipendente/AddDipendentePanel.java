@@ -99,6 +99,7 @@ public class AddDipendentePanel extends JPanel {
             try {
                 controller.aggiungiDipendente(new Dipendente(marchio.idMarchio(), nomeField.getText(), cognomeField.getText(), telefonoField.getText(), isResponsabile, eMailField.getText()),passwordField.getText());
                 JOptionPane.showMessageDialog(this, "Dipendente creato con successo");
+                updateMarchio();
             } catch (SQLException e1) {
                 JOptionPane.showMessageDialog(this, "Impossibile creare dipendente");
             }
@@ -110,11 +111,17 @@ public class AddDipendentePanel extends JPanel {
         return controller.visualizzaMarchiSenzaDipendente();
     }
 
-    public void addModello() {
-        this.removeAll();
-        this.setMainPanel();
-        this.add(maiPanel);
-        marchioBox = new JComboBox<>(getMarchio().stream().toArray(Marchio[]::new));
+    public void updateMarchio() {
+        marchioBox.removeAllItems();
+        List<Marchio> marchi = getMarchio();
+        for (Marchio m : marchi) {
+            marchioBox.addItem(m);
+        }
+        if (!marchi.isEmpty()) {
+            marchio = marchi.get(0);
+        }
+        marchioBox.revalidate();
+        marchioBox.repaint();
         this.revalidate();
         this.repaint();
     }

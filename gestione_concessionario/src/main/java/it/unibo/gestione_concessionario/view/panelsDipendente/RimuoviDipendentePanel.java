@@ -74,11 +74,17 @@ public class RimuoviDipendentePanel extends JPanel {
         return controller.visualizzaDipendenti();
     }
 
-    public void addModello() {
-        this.removeAll();
-        this.setMainPanel();
-        this.add(maiPanel);
-        dipendenteBox = new JComboBox<>(getDipendente().stream().toArray(Dipendente[]::new));
+    public void updateDipendente() {
+        dipendenteBox.removeAllItems();
+        List<Dipendente> dipendenti = getDipendente();
+        for (Dipendente d : dipendenti) {
+            dipendenteBox.addItem(d);
+        }
+        if (!dipendenti.isEmpty()) {
+            dipendente = dipendenti.get(0);
+        }
+        dipendenteBox.revalidate();
+        dipendenteBox.repaint();
         this.revalidate();
         this.repaint();
     }

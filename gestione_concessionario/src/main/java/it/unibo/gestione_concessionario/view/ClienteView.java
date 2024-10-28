@@ -9,6 +9,8 @@ import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.panelscliente.*;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.List;
@@ -45,7 +47,23 @@ public class ClienteView extends JFrame implements View {
     private void initialize() {
         setTitle("Menu and CardLayout Example");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    controller.stop();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(cardPanel, ex.getMessage(), "Impossibile chiudere la connessione", ABORT);
+                }
+                setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                dispose();
+                System.exit(0);
+            }
+        });
+        
+
         setLayout(new BorderLayout());
 
         JMenuBar menuBar = createMenuBar();
@@ -64,7 +82,6 @@ public class ClienteView extends JFrame implements View {
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(Color.BLACK);
-
         addNavigationButtons(menuBar);
         return menuBar;
     }
@@ -76,7 +93,7 @@ public class ClienteView extends JFrame implements View {
         CustomButton createAppuntamentoButton = new CustomButton("Create appuntamento");
         CustomButton allAutoButton = new CustomButton("Tutte le auto");
         CustomButton autoScontateButton = new CustomButton("Auto Scontate");
-        CustomButton esciButton = new CustomButton("Esci");
+        ExitButton esciButton = new ExitButton("Esci");
 
         menuBar.add(marchiButton);
         menuBar.add(modelliButton);

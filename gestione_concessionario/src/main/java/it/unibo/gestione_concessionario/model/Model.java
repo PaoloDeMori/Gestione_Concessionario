@@ -31,7 +31,7 @@ public abstract class Model {
         final String vediAuto = "SELECT " +
                 "A.Numero_Telaio, " +
                 "A.Prezzo, " +
-                "A.Immatricolazione, " +
+                "A.Immatricolazione, A.data, A.targa, " +
                 "M.Descrizione AS Modello, " +
                 "MR.Nome AS Marchio, " +
                 "COALESCE(O.Percentuale, 0) AS Offerta_Percentuale, " +
@@ -55,21 +55,21 @@ public abstract class Model {
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 double prezzoOriginale = set.getDouble(2);
-                int percentualeSconto = set.getInt(7);
+                int percentualeSconto = set.getInt(9);
                 double importoSconto = (prezzoOriginale * percentualeSconto) / 100;
                 double prezzoScontato = prezzoOriginale - importoSconto;
 
-                int percentualeOfferta = set.getInt(6);
+                int percentualeOfferta = set.getInt(8);
                 double importoOfferta = (prezzoOriginale * percentualeOfferta) / 100;
                 double prezzoOfferta = prezzoOriginale - importoOfferta;
 
                 if (percentualeSconto > 0) {
                     auto.add(
-                            new Auto(set.getString(1), prezzoScontato, set.getBoolean(3), set.getString(4)));
+                            new Auto(set.getString(1), prezzoScontato, set.getBoolean(3), set.getString(6),Optional.of(set.getString(5)),Optional.of(set.getDate(4).toLocalDate())));
                 }
                 if (percentualeOfferta > 0) {
                     auto.add(
-                            new Auto(set.getString(1), prezzoOfferta, set.getBoolean(3), set.getString(4)));
+                        new Auto(set.getString(1), prezzoOfferta, set.getBoolean(3), set.getString(6),Optional.of(set.getString(5)),Optional.of(set.getDate(4).toLocalDate())));
                 }
             }
             ps.close();

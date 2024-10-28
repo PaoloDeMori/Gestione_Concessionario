@@ -1,12 +1,21 @@
 package it.unibo.gestione_concessionario.view;
 
-import javax.swing.*;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.SQLException;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
 import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.controller.Controller;
-
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.sql.SQLException;
 
 public class LoginView implements View {
 
@@ -16,6 +25,7 @@ public class LoginView implements View {
     private CustomButton loginButton;
     private CustomButton createAccountButton;
     private Controller controller;
+    private boolean isInit = false;
 
     public LoginView(Controller controller) {
         this.controller = controller;
@@ -25,7 +35,23 @@ public class LoginView implements View {
 
     private void initializeFrame() {
         loginFrame = new JFrame("Login");
-        loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        loginFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        loginFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (isInit) {
+                    try {
+                        controller.stop();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(loginFrame, ex.getMessage(),
+                                "Impossibile chiudere la connessione", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+                loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                loginFrame.dispose();
+                System.exit(0);
+            }
+        });
         loginFrame.setSize(800, 200);
         loginFrame.setResizable(false);
         loginFrame.setLocationRelativeTo(null);
@@ -41,20 +67,21 @@ public class LoginView implements View {
         clienteButton.addActionListener(e -> {
             showLoginPanel(false);
             this.controller.initCliente();
+            isInit = true;
         });
 
         dipendenteButton.addActionListener(e -> {
             showLoginPanel(true);
             this.controller.initDipendente();
+            isInit = true;
         });
-
 
         dipendenteButton.addActionListener(e -> showLoginPanel(true));
 
         panel.add(clienteButton);
         panel.add(dipendenteButton);
 
-        loginFrame.getContentPane().removeAll(); 
+        loginFrame.getContentPane().removeAll();
         loginFrame.add(panel);
     }
 
@@ -72,21 +99,21 @@ public class LoginView implements View {
 
         loginButton = new CustomButton("Accedi");
         loginButton.addActionListener(isEmployee ? getEmployeeLoginListener() : getClientLoginListener());
-        if(!isEmployee){
-        createAccountButton = new CustomButton("Crea Account");
-        createAccountButton.addActionListener(e -> showCreateAccountPanel());
+        if (!isEmployee) {
+            createAccountButton = new CustomButton("Crea Account");
+            createAccountButton.addActionListener(e -> showCreateAccountPanel());
         }
         JPanel loginPanel = new JPanel(new GridLayout(2, 1, 20, 20));
         emailPanel.add(emailLabel);
         emailPanel.add(emailField);
         passwordPanel.add(passwordLabel);
         passwordPanel.add(passwordField);
-        
+
         loginPanel.add(emailPanel);
         loginPanel.add(passwordPanel);
         loginPanel.add(loginButton);
-        if(!isEmployee){
-        loginPanel.add(createAccountButton);
+        if (!isEmployee) {
+            loginPanel.add(createAccountButton);
         }
 
         loginFrame.add(loginPanel);
@@ -94,7 +121,7 @@ public class LoginView implements View {
     }
 
     private void showCreateAccountPanel() {
-        loginFrame.getContentPane().removeAll();  
+        loginFrame.getContentPane().removeAll();
         loginFrame.setSize(700, 450);
 
         JPanel createAccountPanel = new JPanel(new GridLayout(6, 2, 10, 10));
@@ -112,12 +139,11 @@ public class LoginView implements View {
 
         CustomButton createAccountSubmitButton = new CustomButton("Crea Account");
         createAccountSubmitButton.addActionListener(e -> handleCreateAccount(
-            firstNameField.getText(),
-            lastNameField.getText(),
-            telefonoField.getText(),
-            emailField.getText(),
-            new String(passwordField.getPassword())
-        ));
+                firstNameField.getText(),
+                lastNameField.getText(),
+                telefonoField.getText(),
+                emailField.getText(),
+                new String(passwordField.getPassword())));
 
         createAccountPanel.add(firstNameLabel);
         createAccountPanel.add(firstNameField);
@@ -136,10 +162,12 @@ public class LoginView implements View {
         refreshGui();
     }
 
-    private void handleCreateAccount(String firstName, String lastName, String telefono, String email, String password) {
+    private void handleCreateAccount(String firstName, String lastName, String telefono, String email,
+            String password) {
         try {
             if (controller.createCliente(new Cliente(firstName, lastName, telefono, email, password))) {
-                JOptionPane.showMessageDialog(loginFrame, "Account creato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(loginFrame, "Account creato con successo!", "Successo",
+                        JOptionPane.INFORMATION_MESSAGE);
 
                 if (controller.checkLoginCliente(email, password)) {
                     this.stop();
@@ -176,8 +204,7 @@ public class LoginView implements View {
 
             if (!controller.checkLoginDipendente(email, password)) {
                 error("Impossibile eseguire il Login", "Errore di Login");
-            }
-            else {
+            } else {
                 this.stop();
                 controller.startDipendente();
             }
@@ -197,11 +224,10 @@ public class LoginView implements View {
     public void error(String errore, String tipoDiErrore) {
         JOptionPane.showMessageDialog(null, errore, tipoDiErrore, JOptionPane.ERROR_MESSAGE);
     }
-    
+
     public void refreshGui() {
         loginFrame.revalidate();
         loginFrame.repaint();
     }
-
 
 }
