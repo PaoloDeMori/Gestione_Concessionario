@@ -63,6 +63,7 @@ public class RimuoviDipendentePanel extends JPanel {
             try {
                 controller.rimuoviDipendente(dipendente.eMail());
                 JOptionPane.showMessageDialog(this, "Dipendente rimosso con successo");
+                updateDipendente();
             } catch (SQLException e1) {
                 JOptionPane.showMessageDialog(this, "Impossibile rimuovere dipendente");
             }
