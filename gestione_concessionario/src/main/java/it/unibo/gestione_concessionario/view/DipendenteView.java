@@ -119,7 +119,7 @@ public class DipendenteView extends JFrame implements View {
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(Color.BLACK);
-
+        menuBar.setLayout(new FlowLayout());
         addNavigationButtons(menuBar);
         return menuBar;
     }
