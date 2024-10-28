@@ -223,22 +223,6 @@ public class ClienteView extends JFrame implements View {
         setVisible(true);
     }
 
-    @Override
-    public void stop() {
-        throw new UnsupportedOperationException("Unimplemented method 'stop'");
-    }
-
-    @Override
-    public void error(String errore, String tipoDiErrore) {
-        throw new UnsupportedOperationException("Unimplemented method 'error'");
-    }
-
-    @Override
-    public void refreshGui() {
-        revalidate();
-        repaint();
-    }
-
     public static void main(String[] args) {
         Controller controller = new Controller();
         controller.initCliente();

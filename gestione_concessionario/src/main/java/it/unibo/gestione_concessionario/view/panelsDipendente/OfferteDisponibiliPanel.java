@@ -2,6 +2,7 @@ package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 import it.unibo.gestione_concessionario.commons.dto.Offerta;
 import it.unibo.gestione_concessionario.controller.Controller;
+import it.unibo.gestione_concessionario.view.View;
 import it.unibo.gestione_concessionario.view.panelscliente.PersTable;
 import it.unibo.gestione_concessionario.view.panelscliente.TablesModel;
 
@@ -23,6 +24,13 @@ public class OfferteDisponibiliPanel extends JPanel {
 
     private void initialize() {
         this.setLayout(new BorderLayout());
+
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel title = new JLabel("Offerte Attive");
+        title.setFont(View.titleFont);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(title);
+        this.add(titlePanel,BorderLayout.NORTH);
         
         tableModel = new TablesModel(new String[]{"percentuale", "data inizio", "data fine"});
         autoTable = new PersTable(tableModel);

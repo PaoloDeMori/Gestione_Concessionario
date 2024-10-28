@@ -4,6 +4,8 @@ import javax.swing.*;
 import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
+import it.unibo.gestione_concessionario.view.View;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,15 +23,23 @@ public class RimuoviDipendentePanel extends JPanel {
     private JPanel maiPanel;
 
     public RimuoviDipendentePanel(Controller controller) {
-        setLayout(new GridLayout(1, 1));
         this.controller = controller;
 
         this.setMainPanel();
 
-        this.add(maiPanel);
+        this.add(maiPanel,BorderLayout.CENTER);
     }
 
     private void setMainPanel() {
+        this.setLayout(new BorderLayout());
+
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel title = new JLabel("Rimuovi un Dipendente");
+        title.setFont(View.titleFont);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(title);
+        this.add(titlePanel,BorderLayout.NORTH);
+
         maiPanel = new JPanel();
         maiPanel.setLayout(new FlowLayout());
 

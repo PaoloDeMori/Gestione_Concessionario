@@ -11,6 +11,7 @@ import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
+import it.unibo.gestione_concessionario.view.View;
 
 import java.awt.*;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.util.List;
 
 public class AppuntamentiSetterDipendente extends JPanel {
 
+    private JPanel maiPanel;
     private JSpinner spData;
     private JSpinner spOra;
     private JComboBox<Modello> tfmodello;
@@ -34,22 +36,31 @@ public class AppuntamentiSetterDipendente extends JPanel {
 
 
     public AppuntamentiSetterDipendente(Controller controller) {
-        setLayout(new GridLayout(9, 2, 5, 5));
+        setLayout(new BorderLayout());
+
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel title = new JLabel("Crea Un Appuntamento");
+        title.setFont(View.titleFont);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(title);
+        this.add(titlePanel,BorderLayout.NORTH);
+
+        maiPanel=new JPanel(new GridLayout(9, 2, 5, 5));
         this.controller = controller;
 
-        add(new JLabel("Data:"));
+        maiPanel.add(new JLabel("Data:"));
         spData = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spData, "yyyy-MM-dd");
         spData.setEditor(dateEditor);
-        add(spData);
+        maiPanel.add(spData);
 
-        add(new JLabel("Ora:"));
+        maiPanel.add(new JLabel("Ora:"));
         spOra = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(spOra, "HH:mm");
         spOra.setEditor(timeEditor);
-        add(spOra);
+        maiPanel.add(spOra);
 
-        add(new JLabel("Modello:"));
+        maiPanel.add(new JLabel("Modello:"));
         tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
         tfmodello.addActionListener(e-> {
                 updateAuto();
@@ -57,29 +68,29 @@ public class AppuntamentiSetterDipendente extends JPanel {
             }
             
         );
-        add(tfmodello);
+        maiPanel.add(tfmodello);
 
-        add(new JLabel("Durata:"));
+        maiPanel.add(new JLabel("Durata:"));
         spDurata = new JSpinner(new SpinnerDateModel());
         timeEditor = new JSpinner.DateEditor(spDurata, "HH:mm");
         spDurata.setEditor(timeEditor);
-        add(spDurata);
+        maiPanel.add(spDurata);
 
-        add(new JLabel("Numero Telaio:"));
+        maiPanel.add(new JLabel("Numero Telaio:"));
         tfNumeroTelaio = new JComboBox<>(getAuto((Modello)tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
-        add(tfNumeroTelaio);
+        maiPanel.add(tfNumeroTelaio);
 
-        add(new JLabel("Nome Dipendente:"));
+        maiPanel.add(new JLabel("Nome Dipendente:"));
         tfNomeDipendente = new JLabel();
         updateDipendente();
-        add(tfNomeDipendente);
+        maiPanel.add(tfNomeDipendente);
 
-        add(new JLabel("Nome Cliente:"));
+        maiPanel.add(new JLabel("Nome Cliente:"));
         tfNomeCliente = new JComboBox<>(controller.allClienti().stream().toArray(Cliente[]::new));
-        add(tfNomeCliente);
+        maiPanel.add(tfNomeCliente);
 
         saveAppuntamentoTestDrive=new CustomButton("Inserisci Test-Drive");
-        this.add(saveAppuntamentoTestDrive);
+        maiPanel.add(saveAppuntamentoTestDrive);
 
         saveAppuntamentoTestDrive.addActionListener(e -> {
             try {
@@ -101,7 +112,8 @@ public class AppuntamentiSetterDipendente extends JPanel {
                 JOptionPane.showMessageDialog(this, "Errore nella creazione dell'appuntamento: " + ex.getMessage());
             }
         });
-        this.add(saveAppuntamentoConsulenza);
+        maiPanel.add(saveAppuntamentoConsulenza);
+        this.add(maiPanel,BorderLayout.CENTER);
 
     }
 

@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import it.unibo.gestione_concessionario.commons.Months;
 import it.unibo.gestione_concessionario.controller.Controller;
+import it.unibo.gestione_concessionario.view.View;
 
 import java.awt.*;
 
@@ -30,6 +31,14 @@ public class VisualizzaStatisticheDipendente extends JPanel {
     public VisualizzaStatisticheDipendente(Controller controller) {
         this.controller = controller;
         this.setLayout(new BorderLayout());
+
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel title = new JLabel("Statistiche");
+        title.setFont(View.titleFont);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(title);
+        this.add(titlePanel,BorderLayout.NORTH);
+
         refreshMainPanel();
         this.add(maiPanel,BorderLayout.CENTER);
         this.revalidate();

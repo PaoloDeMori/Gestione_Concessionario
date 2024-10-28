@@ -3,6 +3,7 @@ package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 import it.unibo.gestione_concessionario.commons.dto.Vendita;
 import it.unibo.gestione_concessionario.controller.Controller;
+import it.unibo.gestione_concessionario.view.View;
 import it.unibo.gestione_concessionario.view.panelscliente.PersTable;
 import it.unibo.gestione_concessionario.view.panelscliente.TablesModel;
 
@@ -24,6 +25,15 @@ public class VenditeDipendente extends JPanel {
 
     private void initialize() {
         this.setLayout(new BorderLayout());
+
+                this.setLayout(new BorderLayout());
+
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel title = new JLabel("Tutte Le Tue Vendite");
+        title.setFont(View.titleFont);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(title);
+        this.add(titlePanel,BorderLayout.NORTH);
         
         tableModel = new TablesModel(new String[]{"Prezzo", "Tipologia", "Data", "Ora", "Dipendente", "Cliente","Numero Telaio"});
         venditeTable = new PersTable(tableModel);

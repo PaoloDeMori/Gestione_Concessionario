@@ -9,6 +9,8 @@ import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.commons.dto.Vendita;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
+import it.unibo.gestione_concessionario.view.View;
+
 import java.awt.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -39,7 +41,7 @@ public class AddVenditaPanel extends JPanel {
     private JPanel maiPanel;
 
     public AddVenditaPanel(Controller controller) {
-        setLayout(new GridLayout(1, 1));
+        setLayout(new BorderLayout());
         this.controller = controller;
 
         this.setMainPanel();
@@ -49,6 +51,14 @@ public class AddVenditaPanel extends JPanel {
     }
 
     private void setMainPanel() {
+
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel title = new JLabel("Registra Una Vendite");
+        title.setFont(View.titleFont);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(title);
+        this.add(titlePanel,BorderLayout.NORTH);
+
         maiPanel = new JPanel();
         maiPanel.setLayout(new GridLayout(9, 2, 5, 5));
 
@@ -108,7 +118,7 @@ public class AddVenditaPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vendita creata:\n" + vendita);
                 this.removeAll();
                 setMainPanel();
-                this.add(maiPanel);
+                this.add(maiPanel,BorderLayout.CENTER);
                 this.revalidate();
                 this.repaint();
             } catch (Exception ex) {

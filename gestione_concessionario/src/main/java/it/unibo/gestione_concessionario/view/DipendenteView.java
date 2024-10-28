@@ -98,22 +98,6 @@ public class DipendenteView extends JFrame implements View {
     public void start() {
         this.setVisible(true);
     }
-
-    @Override
-    public void stop() {
-        throw new UnsupportedOperationException("Unimplemented method 'stop'");
-    }
-
-    @Override
-    public void error(String errore, String tipoDiErrore) {
-        throw new UnsupportedOperationException("Unimplemented method 'error'");
-    }
-
-    @Override
-    public void refreshGui() {
-        throw new UnsupportedOperationException("Unimplemented method 'refreshGui'");
-    }
-
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(Color.BLACK);

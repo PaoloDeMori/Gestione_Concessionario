@@ -7,6 +7,7 @@ import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.commons.dto.Sconto;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
+import it.unibo.gestione_concessionario.view.View;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,15 @@ public class AddScontoPanel extends JPanel {
     CustomButton saveSconto;
 
     public AddScontoPanel(Controller controller) {
+        setLayout(new BorderLayout());
+
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel title = new JLabel("Aggiungi Uno Sconto");
+        title.setFont(View.titleFont);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(title);
+        this.add(titlePanel,BorderLayout.NORTH);
+
         maiPanel = new JPanel(new GridLayout(9, 2, 5, 5));
         this.controller = controller;
         maiPanel.add(new JLabel("Data Inizio:"));
@@ -72,6 +82,7 @@ public class AddScontoPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Errore nella creazione dello Sconto: " + ex.getMessage());
             }
         });
+        this.add(maiPanel,BorderLayout.CENTER);
 
     }
 

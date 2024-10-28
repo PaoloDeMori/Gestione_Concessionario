@@ -189,18 +189,15 @@ public class LoginView implements View {
         loginFrame.setVisible(true);
     }
 
-    @Override
     public void stop() {
         loginFrame.removeAll();
         loginFrame.setVisible(false);
     }
 
-    @Override
     public void error(String errore, String tipoDiErrore) {
         JOptionPane.showMessageDialog(null, errore, tipoDiErrore, JOptionPane.ERROR_MESSAGE);
     }
-
-    @Override
+    
     public void refreshGui() {
         loginFrame.revalidate();
         loginFrame.repaint();
