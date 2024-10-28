@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsDipendente;
+package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 import javax.swing.*;
 
@@ -16,6 +16,7 @@ import java.util.List;
 
 public class AddScontoPanel extends JPanel {
 
+    private JPanel maiPanel;
     private JSpinner spData;
     private JSpinner spData2;
     private JSpinner spNumero;
@@ -25,25 +26,25 @@ public class AddScontoPanel extends JPanel {
     CustomButton saveSconto;
 
     public AddScontoPanel(Controller controller) {
-        setLayout(new GridLayout(9, 2, 5, 5)); // 8 righe, 2 colonne con spazi di 5px tra le celle
+        maiPanel = new JPanel(new GridLayout(9, 2, 5, 5));
         this.controller = controller;
-        add(new JLabel("Data Inizio:"));
+        maiPanel.add(new JLabel("Data Inizio:"));
         spData = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor dateEditor = new JSpinner.DateEditor(spData, "yyyy-MM-dd");
         spData.setEditor(dateEditor);
-        add(spData);
+        maiPanel.add(spData);
 
-        add(new JLabel("Data Fine:"));
+        maiPanel.add(new JLabel("Data Fine:"));
         spData2 = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor dateEditor2 = new JSpinner.DateEditor(spData, "yyyy-MM-dd");
         spData2.setEditor(dateEditor2);
-        add(spData2);
+        maiPanel.add(spData2);
 
-        add(new JLabel("Numero (1-100):")); // Etichetta per il JSpinner
-        spNumero = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1)); // JSpinner per il numero da 1 a 100
-        add(spNumero);
+        maiPanel.add(new JLabel("Numero (1-100):"));
+        spNumero = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1)); 
+        maiPanel.add(spNumero);
 
-        add(new JLabel("Modello:"));
+        maiPanel.add(new JLabel("Modello:"));
         tfmodello = new JComboBox<Modello>(getModelli().stream().toArray(Modello[]::new));
         tfmodello.addActionListener(new ActionListener() {
             @Override
@@ -52,15 +53,15 @@ public class AddScontoPanel extends JPanel {
             }
 
         });
-        add(tfmodello);
+        maiPanel.add(tfmodello);
 
-        add(new JLabel("Numero Telaio:"));
+        maiPanel.add(new JLabel("Numero Telaio:"));
         tfNumeroTelaio = new JComboBox<Auto>(
                 getAuto((Modello) tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
-        add(tfNumeroTelaio);
+                maiPanel.add(tfNumeroTelaio);
 
         saveSconto = new CustomButton("Inserisci");
-        this.add(saveSconto);
+        maiPanel.add(saveSconto);
 
         saveSconto.addActionListener(e -> {
             try {
@@ -74,7 +75,6 @@ public class AddScontoPanel extends JPanel {
 
     }
 
-    // Metodo per ottenere i dati dall'interfaccia
     public Sconto getSconto() {
         LocalDate dataInizio = ((java.util.Date) spData.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault())
                 .toLocalDate();
@@ -94,7 +94,7 @@ public class AddScontoPanel extends JPanel {
     }
 
     private List<Auto> getAuto(Modello modello) {
-        return controller.allAutoFromModelli(modello);
+        return controller.allAutoNonVenduteFromModelli(modello);
     }
 
     private void updateAuto() {

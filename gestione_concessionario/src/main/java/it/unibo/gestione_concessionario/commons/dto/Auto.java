@@ -23,6 +23,15 @@ public class Auto{
         this.setDescrizioneModello(descrizioneModello);
     }
 
+    public Auto(String numero_telaio, Double prezzo,boolean immatricolazione,String descrizioneModello){
+        this.setNumero_telaio(numero_telaio);
+        this.setPrezzo(prezzo);
+        this.setImmatricolazione(immatricolazione);
+        this.setTarga(targa);
+        this.setData(data);
+        this.setDescrizioneModello(descrizioneModello);
+    }
+
     public Auto(String numero_telaio, Double prezzo,boolean immatricolazione,Optional<String>targa,Optional<LocalDate> data,String descrizioneModello,String motore,String alimentazione){
         this.setNumero_telaio(numero_telaio);
         this.setPrezzo(prezzo);

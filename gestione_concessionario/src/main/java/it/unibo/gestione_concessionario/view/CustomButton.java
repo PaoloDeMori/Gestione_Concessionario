@@ -18,17 +18,17 @@ public class CustomButton extends JButton{
     }
 
     private void create(){
-        //caratteristiche grafiche
         this.setBorderPainted(false);
         this.setFocusPainted(false);
         this.setBackground(Color.BLACK);
         this.setForeground(new Color(255, 140, 0));
-        //listener per modificare grafica in caso di passaggio col mouse
         addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseEntered(MouseEvent event){
                 setBackground(new Color(255, 140, 0));
                 setForeground(Color.BLACK);
             }
+            @Override
             public void mouseExited(MouseEvent e){
                 setBackground(Color.BLACK);
                 setForeground(new Color(255, 140, 0));

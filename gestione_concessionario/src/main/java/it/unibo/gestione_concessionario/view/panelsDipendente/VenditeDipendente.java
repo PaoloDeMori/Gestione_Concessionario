@@ -1,10 +1,10 @@
-package it.unibo.gestione_concessionario.view.panelsDipendente;
+package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 
 import it.unibo.gestione_concessionario.commons.dto.Vendita;
 import it.unibo.gestione_concessionario.controller.Controller;
-import it.unibo.gestione_concessionario.view.panelsCliente.PersTable;
-import it.unibo.gestione_concessionario.view.panelsCliente.TablesModel;
+import it.unibo.gestione_concessionario.view.panelscliente.PersTable;
+import it.unibo.gestione_concessionario.view.panelscliente.TablesModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -25,7 +25,6 @@ public class VenditeDipendente extends JPanel {
     private void initialize() {
         this.setLayout(new BorderLayout());
         
-        // Inizializza la tabella per visualizzare le auto filtrate
         tableModel = new TablesModel(new String[]{"Prezzo", "Tipologia", "Data", "Ora", "Dipendente", "Cliente","Numero Telaio"});
         venditeTable = new PersTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(venditeTable);
@@ -35,18 +34,16 @@ public class VenditeDipendente extends JPanel {
     public void filtraVendite() {
         List<Vendita> vendite = controller.allVendite();
 
-        // Rimuovi tutti i dati attuali dalla tabella
         tableModel.setRowCount(0);
 
-        // Aggiungi i risultati filtrati nella tabella
         for (Vendita vendita : vendite) {
             tableModel.addRow(new Object[]{
                 vendita.contratto().getPrezzo(),
-                vendita.contratto().getTipologia(),  // Descrizione del modello
+                vendita.contratto().getTipologia(),
                 vendita.data(),             
                 vendita.ora(),
                 controller.getDipendenteNameById(vendita.id_dipendente()),
-                controller.getClienteNameById(vendita.codCliente()), // Prezzo
+                controller.getClienteNameById(vendita.codCliente()),
                 vendita.nuremo_telaio()
             });
         }

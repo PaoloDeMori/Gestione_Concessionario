@@ -23,7 +23,7 @@ public abstract class Model {
 
     public abstract void init(Connection connection);
 
-    public abstract void stop();
+    public abstract void stop() throws SQLException;
 
     public List<Auto> visualizzaAutoScontate(Marchio marchio) {
         PreparedStatement ps;
@@ -32,12 +32,10 @@ public abstract class Model {
                 "A.Numero_Telaio, " +
                 "A.Prezzo, " +
                 "A.Immatricolazione, " +
-                "A.Targa, " +
-                "A.Data, " +
                 "M.Descrizione AS Modello, " +
                 "MR.Nome AS Marchio, " +
-                "COALESCE(O.Percentuale, 1) AS Offerta_Percentuale, " +
-                "COALESCE(S.Percentuale, 1) AS Sconto_Percentuale " +
+                "COALESCE(O.Percentuale, 0) AS Offerta_Percentuale, " +
+                "COALESCE(S.Percentuale, 0) AS Sconto_Percentuale " +
                 "FROM " +
                 "AUTO A " +
                 "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
@@ -57,21 +55,22 @@ public abstract class Model {
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 double prezzoOriginale = set.getDouble(2);
-                int percentualeSconto = set.getInt(9);
+                int percentualeSconto = set.getInt(7);
                 double importoSconto = (prezzoOriginale * percentualeSconto) / 100;
                 double prezzoScontato = prezzoOriginale - importoSconto;
-                if (set.getBoolean(3)) {
+
+                int percentualeOfferta = set.getInt(6);
+                double importoOfferta = (prezzoOriginale * percentualeOfferta) / 100;
+                double prezzoOfferta = prezzoOriginale - importoOfferta;
+
+                if (percentualeSconto > 0) {
                     auto.add(
-                            new Auto(set.getString(1), prezzoScontato, set.getBoolean(3), Optional.of(set.getString(4)),
-                                    Optional.of(set.getDate(5).toLocalDate()), set.getString(6), "", ""));
-                } else {
-                    auto.add(new Auto(set.getString(1), prezzoScontato, set.getBoolean(3),
-                            Optional.of("Non immatricolata"),
-                            Optional.empty(), set.getString(6), "", ""));
+                            new Auto(set.getString(1), prezzoScontato, set.getBoolean(3), set.getString(4)));
                 }
-            }
-            for (var a : auto) {
-                System.out.println(a.toString());
+                if (percentualeOfferta > 0) {
+                    auto.add(
+                            new Auto(set.getString(1), prezzoOfferta, set.getBoolean(3), set.getString(4)));
+                }
             }
             ps.close();
             return auto;
@@ -93,9 +92,6 @@ public abstract class Model {
             while (set.next()) {
                 modello.add(new Modello(set.getInt(1), set.getString(2), set.getInt(3), set.getString(4),
                         set.getString(5)));
-            }
-            for (var m : modello) {
-                System.out.println(m.toString());
             }
             ps.close();
             return modello;
@@ -122,9 +118,6 @@ public abstract class Model {
                 auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(4)),
                         Optional.of(set.getDate(5).toLocalDate()), set.getString(6), "", ""));
             }
-            for (var a : auto) {
-                System.out.println(a.toString());
-            }
             ps.close();
             return auto;
         } catch (SQLException e) {
@@ -150,9 +143,6 @@ public abstract class Model {
             while (set.next()) {
                 auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(4)),
                         Optional.of(set.getDate(5).toLocalDate()), set.getString(6), "", ""));
-            }
-            for (var a : auto) {
-                System.out.println(a.toString());
             }
             ps.close();
             return auto;
@@ -185,16 +175,15 @@ public abstract class Model {
         }
     }
 
-    public String getDipendenteNameById(int Id) {
+    public String getDipendenteNameById(int iD) {
         PreparedStatement ps = null;
         final String query = "SELECT d.nome,d.cognome FROM DIPENDENTE d WHERE ID_DIPENDENTE = ?";
         try {
             ps = connection.prepareStatement(query);
-            ps.setInt(1, Id);
+            ps.setInt(1, iD);
             ResultSet set = ps.executeQuery();
             if (set.next()) {
-                String nomeCliente=set.getString(1) + "" + set.getString(2);
-                return nomeCliente; // Restituisce l'ID del dipendente
+                return set.getString(1) + "" + set.getString(2);
             } else {
                 throw new SQLException("Nessun cliente trovato con l'id fornito.");
             }
@@ -210,17 +199,15 @@ public abstract class Model {
         }
     }
 
-    
-    public String getClienteNameById(int Id) {
+    public String getClienteNameById(int iD) {
         PreparedStatement ps = null;
         final String query = "SELECT cl.nome,cl.cognome FROM CLIENTE cl WHERE ID_CLIENTE = ?";
         try {
             ps = connection.prepareStatement(query);
-            ps.setInt(1, Id);
+            ps.setInt(1, iD);
             ResultSet set = ps.executeQuery();
             if (set.next()) {
-                String nomeCliente=set.getString(1) + "" + set.getString(2);
-                return nomeCliente; // Restituisce l'ID del dipendente
+                return set.getString(1) + "" + set.getString(2);
             } else {
                 throw new SQLException("Nessun cliente trovato con l'id fornito.");
             }
@@ -236,7 +223,6 @@ public abstract class Model {
         }
     }
 
-    
     public int getClienteIDByEmail(String email) {
         PreparedStatement ps = null;
         final String query = "SELECT ID_CLIENTE FROM CLIENTE WHERE e_mail = ?;";
@@ -261,7 +247,7 @@ public abstract class Model {
         }
     }
 
-        public boolean fissaAppuntamento(Appuntamento appuntamento) {
+    public boolean fissaAppuntamento(Appuntamento appuntamento) throws SQLException {
         PreparedStatement ps = null;
         final String fissaAppuntamento = "INSERT INTO APPUNTAMENTO (data, ora, Tipologia, durata, Numero_Telaio, ID_DIPENDENTE, ID_CLIENTE) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -281,34 +267,28 @@ public abstract class Model {
         } catch (SQLException e) {
             try {
                 connection.rollback();
-                System.out.println(e.getMessage());
+                throw e;
             } catch (SQLException e1) {
                 e1.printStackTrace();
                 throw new ProblemWithConnectionException(e1);
             }
-            return false;
         }
     }
 
-        public List<Optionals> visualizzaOptional(String numero_Telaio) {
+    public List<Optionals> visualizzaOptional(String numeroTelaio) {
         PreparedStatement ps;
         List<Optionals> optional = new ArrayList<>();
         final String vediOptional = "SELECT O.ID_Optional, O.descrizione, O.prezzo " +
                 "FROM AUTO A " +
-                "JOIN CONFIGURAZIONE C ON A.ID_Configurazione = C.ID_Configurazione " +
-                "JOIN MODELLO M ON C.ID_MODELLO = M.ID_MODELLO " +
-                "JOIN Supporto S ON M.ID_MODELLO = S.ID_MODELLO " +
-                "JOIN OPTIONAL O ON S.ID_Optional = O.ID_Optional " +
+                "JOIN Personalizzazione P ON A.Numero_Telaio = P.Numero_Telaio " +
+                "JOIN OPTIONAL O ON P.ID_Optional = O.ID_Optional " +
                 "WHERE A.Numero_Telaio = ?;";
         try {
             ps = connection.prepareStatement(vediOptional);
-            ps.setString(1, numero_Telaio);
+            ps.setString(1, numeroTelaio);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 optional.add(new Optionals(set.getInt(1), set.getString(2), set.getDouble(3)));
-            }
-            for (var o : optional) {
-                System.out.println(o.toString());
             }
             ps.close();
             return optional;
@@ -321,15 +301,12 @@ public abstract class Model {
     public List<Optionals> visualizzaAllOptional() {
         PreparedStatement ps;
         List<Optionals> optional = new ArrayList<>();
-        final String vediOptional = "SELECT * FROM OPTIONAL;";
+        final String vediOptional = "SELECT ID_Optional, descrizione, prezzo FROM OPTIONAL;";
         try {
             ps = connection.prepareStatement(vediOptional);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
                 optional.add(new Optionals(set.getInt(1), set.getString(2), set.getDouble(3)));
-            }
-            for (var o : optional) {
-                System.out.println(o.toString());
             }
             ps.close();
             return optional;
@@ -342,7 +319,7 @@ public abstract class Model {
     public Optional<Garanzia> visualizzaGaranzia(String numeroTelaio) {
         PreparedStatement ps;
         Garanzia garanzia = null;
-        final String vediGaranzia = "SELECT ID_Garanzia, scadenza, copertura " +
+        final String vediGaranzia = "SELECT ID_Garanzia, scadenza, copertura, Numero_Telaio " +
                 "FROM GARANZIA " +
                 "WHERE Numero_Telaio = ?;";
         try {
@@ -350,7 +327,8 @@ public abstract class Model {
             ps.setString(1, numeroTelaio);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                garanzia = new Garanzia(set.getInt(1), set.getString(2), set.getString(3));
+                garanzia = new Garanzia(set.getInt(1), set.getDate(2).toLocalDate(), set.getString(3),
+                        set.getString(4));
             }
             ps.close();
             if (garanzia != null) {
@@ -362,6 +340,5 @@ public abstract class Model {
             throw new ProblemWithConnectionException(e);
         }
     }
-
 
 }

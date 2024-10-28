@@ -1,11 +1,11 @@
-package it.unibo.gestione_concessionario.view.panelsDipendente;
+package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 
 import it.unibo.gestione_concessionario.commons.dto.Appuntamento;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.View;
-import it.unibo.gestione_concessionario.view.panelsCliente.PersTable;
-import it.unibo.gestione_concessionario.view.panelsCliente.TablesModel;
+import it.unibo.gestione_concessionario.view.panelscliente.PersTable;
+import it.unibo.gestione_concessionario.view.panelscliente.TablesModel;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -26,12 +26,10 @@ public class AppuntamentiDipendentePanel extends JPanel {
     JPanel buttonPanel;
     Controller controller;
 
-    // Costruttore che configura il layout generale
     public AppuntamentiDipendentePanel(Controller controller) {
         this.controller=controller;
         this.setLayout(new BorderLayout());
 
-        // Pannello del titolo
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel title = new JLabel("I Tuoi Appuntamenti");
         title.setFont(View.titleFont);
@@ -39,17 +37,13 @@ public class AppuntamentiDipendentePanel extends JPanel {
         titlePanel.add(title);
 
         buttonPanel=new JPanel(new GridLayout(1,2));
-        // Aggiungi il pannello del titolo alla parte superiore del layout
         this.add(titlePanel, BorderLayout.NORTH);
-        // Inizializza la tabella senza dati (i dati saranno impostati dal metodo setMarchi)
         table = new PersTable();
         JScrollPane scrollPane = new JScrollPane(table);
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
-    // Metodo per impostare i marchi nella tabella
     public void setAppuntamento(List<Appuntamento> appuntamenti) {
-        // Crea i dati per la tabella
         data = new Object[appuntamenti.size()][6];
         for (int i = 0; i < appuntamenti.size(); i++) {
             String nomeCliente = this.controller.getClienteNameById(appuntamenti.get(i).id_cliente());
@@ -61,10 +55,8 @@ public class AppuntamentiDipendentePanel extends JPanel {
             data[i][5] = appuntamenti.get(i).numero_telaio();
         }
 
-        // Crea un modello di tabella personalizzato non modificabile con i dati aggiornati
         DefaultTableModel tableModel = new TablesModel(data, columnNames);
 
-        // Imposta il modello sulla tabella
         table.setModel(tableModel);
     }
 

@@ -53,7 +53,7 @@ FOR EACH ROW
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM MODELLO WHERE MODELLO.ID_MARCHIO = NEW.ID_MARCHIO) THEN
         SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Errore: Il marchio deve avere almeno un modello o un dipendente associato.';
+        SET MESSAGE_TEXT = 'Errore: Il marchio deve avere almeno un modello associato.';
     END IF;
 END$$
 
@@ -112,7 +112,18 @@ INSERT INTO AUTO (Numero_Telaio, Prezzo, Immatricolazione, data, targa, ID_Confi
 ('335BH41JXMN109195', 19000.00, TRUE, '2024-10-19', 'JK012LM', 11),
 ('334BH41JXMN109195', 19000.00, TRUE, '2024-10-19', 'JK012LM', 1);
 
-
+INSERT INTO CLIENTE (nome, cognome, telefono, e_mail, password)
+VALUES
+('Marco', 'Lupi', '3216549870', 'marco.lupi@example.com', 'clientpass1'),
+('Giorgia', 'Grigi', '3216549871', 'giorgia.grigi@example.com', 'clientpass2'),
+('Antonio', 'Verdi', '3216549872', 'antonio.verdi@example.com', 'clientpass3'),
+('Serena', 'Blu', '3216549873', 'serena.blu@example.com', 'clientpass4'),
+('Giovanni', 'Arancioni', '3216549874', 'giovanni.arancioni@example.com', 'clientpass5'),
+('Lucia', 'Rosa', '3216549875', 'lucia.rosa@example.com', 'clientpass6'),
+('Matteo', 'Neri', '3216549876', 'matteo.neri@example.com', 'clientpass7'),
+('Chiara', 'Viola', '3216549877', 'chiara.viola@example.com', 'clientpass8'),
+('Roberto', 'Gialli', '3216549878', 'roberto.gialli@example.com', 'clientpass9'),
+('Simona', 'Marrone', '3216549879', 'simona.marrone@example.com', 'clientpass10');
 
 
 INSERT INTO APPUNTAMENTO (ID_APPUNTAMENTO, data, ora, Tipologia, durata, Numero_Telaio, ID_CLIENTE, ID_DIPENDENTE)
@@ -162,15 +173,3 @@ END$$
 DELIMITER ;
 COMMIT;
 
-INSERT INTO CLIENTE (nome, cognome, telefono, e_mail, password)
-VALUES
-('Marco', 'Lupi', '3216549870', 'marco.lupi@example.com', 'clientpass1'),
-('Giorgia', 'Grigi', '3216549871', 'giorgia.grigi@example.com', 'clientpass2'),
-('Antonio', 'Verdi', '3216549872', 'antonio.verdi@example.com', 'clientpass3'),
-('Serena', 'Blu', '3216549873', 'serena.blu@example.com', 'clientpass4'),
-('Giovanni', 'Arancioni', '3216549874', 'giovanni.arancioni@example.com', 'clientpass5'),
-('Lucia', 'Rosa', '3216549875', 'lucia.rosa@example.com', 'clientpass6'),
-('Matteo', 'Neri', '3216549876', 'matteo.neri@example.com', 'clientpass7'),
-('Chiara', 'Viola', '3216549877', 'chiara.viola@example.com', 'clientpass8'),
-('Roberto', 'Gialli', '3216549878', 'roberto.gialli@example.com', 'clientpass9'),
-('Simona', 'Marrone', '3216549879', 'simona.marrone@example.com', 'clientpass10');

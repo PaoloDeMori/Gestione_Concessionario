@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsCliente;
+package it.unibo.gestione_concessionario.view.panelscliente;
 
 import javax.swing.table.DefaultTableModel;
 

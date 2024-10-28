@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsCliente;
+package it.unibo.gestione_concessionario.view.panelscliente;
 
 import javax.swing.*;
 
@@ -10,8 +10,6 @@ import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -31,7 +29,7 @@ public class AppuntamentoSetter extends JPanel {
     CustomButton saveAppuntamentoConsulenza;
 
     public AppuntamentoSetter(Controller controller) {
-        setLayout(new GridLayout(9, 2, 5, 5)); // 8 righe, 2 colonne con spazi di 5px tra le celle
+        setLayout(new GridLayout(9, 2, 5, 5));
         this.controller = controller;
 
         add(new JLabel("Data:"));
@@ -47,15 +45,10 @@ public class AppuntamentoSetter extends JPanel {
         add(spOra);
 
         add(new JLabel("Modello:"));
-        tfmodello = new JComboBox<Modello>(getModelli().stream().toArray(Modello[]::new));
-        tfmodello.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateAuto();
-                updateDipendente();
-            }
-
+        tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
+        tfmodello.addActionListener(e -> {
+            updateAuto();
+            updateDipendente();
         });
         add(tfmodello);
 
@@ -66,7 +59,7 @@ public class AppuntamentoSetter extends JPanel {
         add(spDurata);
 
         add(new JLabel("Numero Telaio:"));
-        tfNumeroTelaio = new JComboBox<Auto>(
+        tfNumeroTelaio = new JComboBox<>(
                 getAuto((Modello) tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
         add(tfNumeroTelaio);
 
@@ -106,7 +99,6 @@ public class AppuntamentoSetter extends JPanel {
 
     }
 
-    // Metodo per ottenere i dati dall'interfaccia
     public Appuntamento getAppuntamento(boolean isTestDrive) {
         String tipologia;
         if (isTestDrive) {

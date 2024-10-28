@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsCliente;
+package it.unibo.gestione_concessionario.view.panelscliente;
 
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
@@ -9,8 +9,6 @@ import it.unibo.gestione_concessionario.view.CustomButton;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class AutoFiltrate extends JPanel {
@@ -30,73 +28,54 @@ public class AutoFiltrate extends JPanel {
     private void initialize() {
         this.setLayout(new BorderLayout());
 
-        // Pannello per selezione dei criteri di filtraggio
         JPanel filtroPanel = new JPanel(new GridLayout(3,2));
 
-        // Inizializza ComboBox per Marchio e Tipologia
-        marchioComboBox = new JComboBox<Marchio>(getMarchi().stream().toArray(Marchio[]::new));
+        marchioComboBox = new JComboBox<>(getMarchi().stream().toArray(Marchio[]::new));
 
-        tipologiaComboBox = new JComboBox<Tipologia>(getTipologie().stream().toArray(Tipologia[]::new));
+        tipologiaComboBox = new JComboBox<>(getTipologie().stream().toArray(Tipologia[]::new));
 
-        // Aggiungi ComboBox al pannello
         filtroPanel.add(new JLabel("Seleziona Marchio:"));
         filtroPanel.add(marchioComboBox);
 
         filtroPanel.add(new JLabel("Seleziona Tipologia:"));
         filtroPanel.add(tipologiaComboBox);
 
-        // Bottone per applicare il filtro
         filtraButton = new CustomButton("Filtra");
         filtroPanel.add(filtraButton);
 
-        // Aggiungi il pannello di filtro nella parte superiore
         this.add(filtroPanel, BorderLayout.NORTH);
 
-        // Inizializza la tabella per visualizzare le auto filtrate
         tableModel = new TablesModel(new String[]{"Numero Telaio", "Modello", "Prezzo1", "Data Immatricolazione", "Targa"});
         autoTable = new PersTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(autoTable);
         this.add(scrollPane, BorderLayout.CENTER);
 
-        // Action Listener per il pulsante di filtraggio
-        filtraButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                filtraAuto();
-            }
-        });
+        filtraButton.addActionListener(e-> filtraAuto());
     }
 
-    // Metodo per ottenere i marchi dal controller
     private List<Marchio> getMarchi() {
         return controller.allMarchi();
     }
 
-    // Metodo per ottenere le tipologie dal controller
     private List<Tipologia> getTipologie() {
         return controller.allTipologie();
     }
 
-    // Metodo per filtrare le auto in base ai criteri selezionati
     private void filtraAuto() {
-        // Ottieni il marchio e la tipologia selezionati
         Marchio marchioSelezionato = (Marchio) marchioComboBox.getSelectedItem();
         Tipologia tipologiaSelezionata = (Tipologia) tipologiaComboBox.getSelectedItem();
 
-        // Esegui la query di filtro tramite il controller
         List<Auto> autoFiltrate = controller.visualizzaAutoxMarchioxTipologia(marchioSelezionato, tipologiaSelezionata);
 
-        // Rimuovi tutti i dati attuali dalla tabella
         tableModel.setRowCount(0);
 
-        // Aggiungi i risultati filtrati nella tabella
         for (Auto auto : autoFiltrate) {
             tableModel.addRow(new Object[]{
                 auto.getNumero_telaio(),
-                auto.getDescrizioneModello(),  // Descrizione del modello
-                auto.getPrezzo(),              // Prezzo
-                auto.getData().isPresent() ? auto.getData().get() : "",  // Data immatricolazione
-                auto.getTarga().isPresent() ? auto.getTarga().get() : "" // Targa (se presente)
+                auto.getDescrizioneModello(),  
+                auto.getPrezzo(),             
+                auto.getData().isPresent() ? auto.getData().get() : "",  
+                auto.getTarga().isPresent() ? auto.getTarga().get() : "" 
             });
         }
     }

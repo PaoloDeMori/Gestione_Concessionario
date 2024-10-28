@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsDipendente;
+package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 import javax.swing.*;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
@@ -10,6 +10,7 @@ import it.unibo.gestione_concessionario.commons.dto.Vendita;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
 import java.awt.*;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
@@ -81,9 +82,6 @@ public class AddVenditaPanel extends JPanel {
             Auto selectedAuto = (Auto) tfNumeroTelaio.getSelectedItem();
             if (selectedAuto != null) {
                 numeroTelaio = selectedAuto.getNumero_telaio();
-                System.out.println("Numero telaio selezionato: " + selectedAuto.getNumero_telaio());
-            } else {
-                System.out.println("Nessun auto selezionata");
             }
         });
         maiPanel.add(tfNumeroTelaio);
@@ -120,9 +118,7 @@ public class AddVenditaPanel extends JPanel {
 
         refreshButton = new CustomButton("Refresh");
         maiPanel.add(refreshButton);
-        refreshButton.addActionListener(e -> {
-                refresh();
-        });
+        refreshButton.addActionListener(e -> refresh());
 
     }
 
@@ -186,8 +182,12 @@ public class AddVenditaPanel extends JPanel {
 
     public void refresh(){
         if(contratto!=null){
-            controller.eliminaContratto(contratto);
-            JOptionPane.showMessageDialog(this, "Contratto eliminato ");
+            try {
+                controller.eliminaContratto(contratto);
+                JOptionPane.showMessageDialog(this, "Contratto eliminato ");
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Contratto non eliminato correttamente");
+            }
         }
         contratto=null;
         this.removeAll();

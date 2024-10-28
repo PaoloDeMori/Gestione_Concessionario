@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsDipendente;
+package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 import javax.swing.*;
 
@@ -9,10 +9,11 @@ import it.unibo.gestione_concessionario.view.CustomButton;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class ContrattoDialog extends JDialog {
-    private Contratto contratto; // Contratto che verrà creato
+    private Contratto contratto;
     private JTextField prezzoField;
     private JComboBox<String> tipologiaBox;
     private JLabel nomeBancaLabel = new JLabel("Nome Banca (opzionale):");
@@ -29,17 +30,16 @@ public class ContrattoDialog extends JDialog {
     public ContrattoDialog(Controller controller, AddVenditaPanel addVenditaPanel) {
         super();
         this.controller = controller;
-        setLayout(new GridLayout(7, 2, 5, 5)); // Layout per il dialog
+        setLayout(new GridLayout(7, 2, 5, 5)); 
 
         this.setTitle("Crea Contratto");
-        // Aggiungi i campi necessari per il contratto
         add(new JLabel("Prezzo:"));
         prezzoField = new JTextField();
         add(prezzoField);
 
         add(new JLabel("Tipologia:"));
         String[] options = { "Finanziamento", "Unica Rata" };
-        tipologiaBox = new JComboBox<String>(options);
+        tipologiaBox = new JComboBox<>(options);
         tipologiaBox.addActionListener(e -> updateAvailableFields());
         add(tipologiaBox);
 
@@ -59,7 +59,6 @@ public class ContrattoDialog extends JDialog {
         metodoDiPagamentoField = new JTextField();
         add(metodoDiPagamentoField);
 
-        // Pulsante per confermare il contratto
         JButton salvaContrattoButton = new CustomButton("Salva Contratto");
         salvaContrattoButton.addActionListener(new ActionListener() {
             @Override
@@ -74,22 +73,18 @@ public class ContrattoDialog extends JDialog {
                 }
             }
         });
-        add(new JLabel()); // Spazio vuoto per il layout
+        add(new JLabel());
         add(salvaContrattoButton);
         updateAvailableFields();
 
-        // Imposta la dimensione del dialog
         setSize(400, 300);
     }
 
-    // Metodo per salvare il contratto
     private void salvaContratto() {
         try {
-            // Validazione del prezzo
             double prezzo = Double.parseDouble(prezzoField.getText());
             String tipologia = (String) tipologiaBox.getSelectedItem();
 
-            // Ottieni i valori opzionali
             Optional<String> nomeBanca = nomeBancaField.getText().isEmpty() ? Optional.empty()
                     : Optional.of(nomeBancaField.getText());
             Optional<String> codiceFinanziamento = codiceFinanziamentoField.getText().isEmpty() ? Optional.empty()
@@ -108,7 +103,6 @@ public class ContrattoDialog extends JDialog {
                     throw new IllegalArgumentException("Configurazione del contratto non valida");
                 }
             }
-            // Creazione del contratto
             contratto = new Contratto(
                     prezzo,
                     tipologia,
@@ -116,13 +110,18 @@ public class ContrattoDialog extends JDialog {
                     codiceFinanziamento,
                     intestatario,
                     metodoDiPagamento);
-            int idContratto = controller.addContratto(contratto);
-            if (idContratto > 0) {
-                contratto.setIdContratto(idContratto);
-            }
 
-            isConfirmed = true; // Imposta che il contratto è stato confermato
-            dispose(); // Chiudi il dialog
+            int idContratto;
+            try {
+                idContratto = controller.addContratto(contratto);
+                if (idContratto > 0) {
+                    contratto.setIdContratto(idContratto);
+                }    
+            } catch (SQLException e) {
+               JOptionPane.showMessageDialog(this, e.getMessage(), "errore nella creazione del contratto", JOptionPane.ERROR_MESSAGE);
+            }
+            isConfirmed = true;
+            dispose();
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Errore nei dati inseriti: il prezzo deve essere un numero valido.");
         }
@@ -131,12 +130,10 @@ public class ContrattoDialog extends JDialog {
         }
     }
 
-    // Metodo per ottenere il contratto creato
     public Contratto getContratto() {
         return contratto;
     }
 
-    // Metodo per verificare se il contratto è stato confermato
     public boolean isConfirmed() {
         return isConfirmed;
     }

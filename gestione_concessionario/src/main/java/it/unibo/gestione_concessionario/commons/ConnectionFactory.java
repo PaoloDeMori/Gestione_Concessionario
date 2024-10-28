@@ -9,11 +9,11 @@ public final class  ConnectionFactory {
 
     private ConnectionFactory(){}
 
-    public static final Connection build(String db, String dbLocation , String name, String Password){
+    public static final Connection build(String db, String dbLocation , String name, String password){
         String dbAddress = dbLocation+db;
 
         try{
-            Connection connection= DriverManager.getConnection(dbAddress,name,Password);
+            Connection connection= DriverManager.getConnection(dbAddress,name,password);
             if(connection==null){
                 throw new SQLException();
             }

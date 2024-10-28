@@ -33,6 +33,7 @@ public class Controller {
     View view;
     Model model;
     Connection connection;
+    String standardErrorMessage = "Operazione non supportata per questo modello.";
 
     public void initCliente() {
         this.model = new ModelCliente();
@@ -57,7 +58,7 @@ public class Controller {
                 return true;
             }
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -66,15 +67,15 @@ public class Controller {
             this.view = new ClienteView(this);
             return true;
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
-    public boolean createCliente(Cliente cliente) {
+    public boolean createCliente(Cliente cliente) throws SQLException {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).creaCliente(cliente);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -98,7 +99,7 @@ public class Controller {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).visualizzaMarchi();
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -110,7 +111,7 @@ public class Controller {
         if (model instanceof ModelDipendente) {
             return ((ModelDipendente) model).visualizzaOfferte();
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -118,7 +119,7 @@ public class Controller {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).visualizzaDipendente(marchio);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -126,7 +127,7 @@ public class Controller {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).visualizzaDipendente(modello);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -134,7 +135,7 @@ public class Controller {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).visualizzaIDMarchio(name);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -142,7 +143,7 @@ public class Controller {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).visualizzaAutoxMarchioxTipologia(marchio, tipologia);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -150,7 +151,7 @@ public class Controller {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).visualizzTipologie();
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -166,11 +167,11 @@ public class Controller {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).ID_Marchio(modello);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
-    public boolean addAppuntamento(Appuntamento appuntamento) {
+    public boolean addAppuntamento(Appuntamento appuntamento) throws SQLException {
             return model.fissaAppuntamento(appuntamento);
     }
 
@@ -179,7 +180,7 @@ public class Controller {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).getCliente();
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -195,7 +196,7 @@ public class Controller {
         if (model instanceof ModelCliente) {
             return ((ModelCliente) model).visualizzaTutteLeAutoConDescrizioneModello();
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -222,24 +223,24 @@ public class Controller {
         if (model instanceof ModelDipendente) {
             return ((ModelDipendente) model).visualizzaAutoDelDipendente();
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
     
-    public int addContratto(Contratto contratto) {
+    public int addContratto(Contratto contratto) throws SQLException {
         if (model instanceof ModelDipendente) {
             return ((ModelDipendente) model).aggiungiContratto(contratto);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
-    public boolean eliminaContratto(Contratto contratto) {
+    public boolean eliminaContratto(Contratto contratto) throws SQLException {
         if (model instanceof ModelDipendente) {
             return ((ModelDipendente) model).eliminaContratto(contratto);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -248,7 +249,7 @@ public class Controller {
         if (model instanceof ModelDipendente) {
             return ((ModelDipendente) model).getDipendenteUser();
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -257,7 +258,7 @@ public class Controller {
             return ((ModelDipendente) model).getMyMarchio()
                     .orElseThrow(() -> new ProblemWithConnectionException("Marchio non trovato."));
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -265,58 +266,58 @@ public class Controller {
         if (model instanceof ModelDipendente) {
             return ((ModelDipendente) model).visualizzaTipologia();
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
-    public void addSconto(Sconto sconto) {
+    public void addSconto(Sconto sconto) throws SQLException {
         if (model instanceof ModelDipendente) {
             ((ModelDipendente) model).aggiungiSconto(sconto);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
-    public void addSconto(Modello modello) {
+    public void addSconto(Modello modello) throws SQLException {
         if (model instanceof ModelDipendente) {
             ((ModelDipendente) model).aggiungiModello(modello);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
-    public void addVendita(Vendita vendita) {
+    public void addVendita(Vendita vendita) throws SQLException {
         if (model instanceof ModelDipendente) {
             ((ModelDipendente) model).inserisciVendita(vendita);
         } else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
-    public void addOfferta(Offerta offerta){
+    public void addOfferta(Offerta offerta) throws SQLException{
         if(model instanceof ModelDipendente){
             ((ModelDipendente) model).aggiungiOfferta(offerta);
         }
         else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
-    public void addModello(Modello modello){
+    public void addModello(Modello modello) throws SQLException{
         if(model instanceof ModelDipendente){
             ((ModelDipendente) model).aggiungiModello(modello);
         }
         else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
-    public void addPersonalizzazione(Personalizzazione personalizzazione){
+    public void addPersonalizzazione(Personalizzazione personalizzazione) throws SQLException{
         if(model instanceof ModelDipendente){
             ((ModelDipendente) model).aggiungiPersonalizzazione(personalizzazione);
         }
         else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -333,7 +334,7 @@ public class Controller {
             }
         }
         else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
     }
 
@@ -350,7 +351,7 @@ public class Controller {
           return ((ModelDipendente) model).visualizzaAppuntamenti();
         }
         else {
-            throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+            throw new ProblemWithConnectionException(standardErrorMessage);
         }
 
     }
@@ -360,7 +361,7 @@ public class Controller {
             return ((ModelDipendente) model).allClienti();
           }
           else {
-              throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+              throw new ProblemWithConnectionException(standardErrorMessage);
           }
     }
 
@@ -369,7 +370,150 @@ public class Controller {
             return ((ModelDipendente) model).visualizzaVendite();
           }
           else {
-              throw new ProblemWithConnectionException("Operazione non supportata per questo modello.");
+              throw new ProblemWithConnectionException(standardErrorMessage);
           }
     }
+
+    public void addGaranzia(Garanzia garanzia) throws SQLException{
+        if(model instanceof ModelDipendente){
+            ((ModelDipendente) model).aggiungiGaranzia(garanzia);
+        }
+        else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public void addTipologia(Tipologia tipologia) throws SQLException{
+        if(model instanceof ModelDipendente){
+            ((ModelDipendente) model).aggiungiTipologia(tipologia);
+        }
+        else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public void aggiungiDipendente(Dipendente dipendente, String password) throws SQLException{
+        if(model instanceof ModelDipendente){
+            ((ModelDipendente) model).aggiungiDipendente(dipendente,password);
+        }
+        else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public List<Marchio> visualizzaMarchiSenzaDipendente() {
+        if(model instanceof ModelDipendente){
+           return ((ModelDipendente) model).visualizzaMarchiSenzaDipendente();
+        }
+        else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public List<Dipendente> visualizzaDipendenti() {
+        if(model instanceof ModelDipendente){
+           return ((ModelDipendente) model).visualizzaDipendenti();
+        }
+        else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public int visualizzaTotaleVendite() {
+        if(model instanceof ModelDipendente){
+           return ((ModelDipendente) model).visualizzaTotaleVendite();
+        }
+        else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public int visualizzaMedia() {
+        if(model instanceof ModelDipendente){
+           return ((ModelDipendente) model).visualizzaMediaVendite();
+        }
+        else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public int visualizzaGuadagniAlMese(int mese) {
+        if(model instanceof ModelDipendente){
+           return ((ModelDipendente) model).visualizzaVenditeMese(mese);
+        }
+        else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public void rimuoviDipendente(String email)  throws SQLException{
+        if(model instanceof ModelDipendente){
+           if(!((ModelDipendente) model).rimuoviDipendente(email)){
+            throw new SQLException("Errore nella rimozione");
+           }
+        }
+        else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public String nomeModelloPiuVenduto(){
+        if(model instanceof ModelDipendente){
+            return ((ModelDipendente) model).nomeModelloPiuVenduto();
+         }
+         else {
+             throw new ProblemWithConnectionException(standardErrorMessage);
+         }
+    }
+
+    public String nomeModelloMenoVenduto(){
+        if(model instanceof ModelDipendente){
+            return ((ModelDipendente) model).nomeModelloMenoVenduto();
+         }
+         else {
+             throw new ProblemWithConnectionException(standardErrorMessage);
+         }
+    }
+
+    public int numeroAcquistiConFinanziamento(){
+        if(model instanceof ModelDipendente){
+            return ((ModelDipendente) model).numeroAcquistiConFinanziamento();
+         }
+         else {
+             throw new ProblemWithConnectionException(standardErrorMessage);
+         }
+    }
+
+    
+    public int numeroAcquistiConUnicaRata(){
+        if(model instanceof ModelDipendente){
+            return ((ModelDipendente) model).numeroAcquistiConUnicaRata();
+         }
+         else {
+             throw new ProblemWithConnectionException(standardErrorMessage);
+         }
+    }
+
+    public int numeroTotaleAutoVendute(){
+        if(model instanceof ModelDipendente){
+            return ((ModelDipendente) model).numeroTotaleAutoVendute();
+         }
+         else {
+             throw new ProblemWithConnectionException(standardErrorMessage);
+         }
+    }
+
+    public int percentualeAutoVenduteConSconto(){
+        if(model instanceof ModelDipendente){
+            return ((ModelDipendente) model).percentualeAutoVenduteConSconto();
+         }
+         else {
+             throw new ProblemWithConnectionException(standardErrorMessage);
+         }
+    }
+
+    public void stop() throws SQLException{
+        connection.close();
+    }
+
 }

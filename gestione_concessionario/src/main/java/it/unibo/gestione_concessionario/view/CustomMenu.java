@@ -8,17 +8,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class CustomMenu extends JMenu {
- public CustomMenu(){
+    public CustomMenu() {
         super();
         this.create();
     }
 
-    public CustomMenu(String arg0){
+    public CustomMenu(String arg0) {
         super(arg0);
         this.create();
     }
-    //metodo che crea un menu della corretta grafica
-    private void create(){
+
+    private void create() {
         this.setHorizontalTextPosition(SwingConstants.LEFT);
         this.setBorderPainted(false);
         this.setFocusPainted(false);
@@ -26,16 +26,17 @@ public class CustomMenu extends JMenu {
         this.setForeground(new Color(255, 140, 0));
         this.setOpaque(true);
         addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent event){
+            @Override
+            public void mouseEntered(MouseEvent event) {
                 setBackground(new Color(255, 140, 0));
                 setForeground(Color.BLACK);
             }
-            public void mouseExited(MouseEvent e){
+
+            @Override
+            public void mouseExited(MouseEvent e) {
                 setBackground(Color.BLACK);
                 setForeground(new Color(255, 140, 0));
             }
         });
     }
 }
-    
-

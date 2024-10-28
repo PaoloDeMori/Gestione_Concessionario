@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsCliente;
+package it.unibo.gestione_concessionario.view.panelscliente;
 
  import javax.swing.*;
 import java.awt.*;
@@ -18,7 +18,7 @@ public class GaranziaPanel extends JPanel {
 
 
         JLabel idGaranziaLabel = new JLabel(String.valueOf(garanzia.idGaranzia()));
-        JLabel scadenzaLabel = new JLabel(garanzia.scadenza());
+        JLabel scadenzaLabel = new JLabel(garanzia.scadenza().toString());
         JLabel coperturaLabel = new JLabel(garanzia.copertura());
 
         add(idGaranziaTextLabel);

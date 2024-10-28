@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsCliente;
+package it.unibo.gestione_concessionario.view.panelscliente;
 
 
 import it.unibo.gestione_concessionario.commons.dto.Auto;
@@ -26,11 +26,9 @@ public class AllAutoPanel extends JPanel {
     private CustomButton garanziaButton;
     private CustomButton optionalButton;
 
-    // Costruttore che configura il layout generale
     public AllAutoPanel() {
         this.setLayout(new BorderLayout());
 
-        // Pannello del titolo
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel title = new JLabel("Le auto del nostro concessionario");
         title.setFont(View.titleFont);
@@ -39,7 +37,6 @@ public class AllAutoPanel extends JPanel {
 
         buttonPanel=new JPanel(new GridLayout(1,2));
 
-        // Aggiungi il pannello del titolo alla parte superiore del layout
         this.add(titlePanel, BorderLayout.NORTH);
 
         garanziaButton=new CustomButton("Garanzia Selezionato");
@@ -47,16 +44,13 @@ public class AllAutoPanel extends JPanel {
 
         optionalButton=new CustomButton("Optional Selezionato");
         buttonPanel.add(optionalButton);
-        // Inizializza la tabella senza dati (i dati saranno impostati dal metodo setMarchi)
         table = new PersTable();
         JScrollPane scrollPane = new JScrollPane(table);
         this.add(buttonPanel,BorderLayout.SOUTH);
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
-    // Metodo per impostare i marchi nella tabella
     public void setAuto(List<Auto> auto) {
-        // Crea i dati per la tabella
         data = new Object[auto.size()][6];
         for (int i = 0; i < auto.size(); i++) {
             data[i][0] = auto.get(i).getNumero_telaio();
@@ -64,10 +58,8 @@ public class AllAutoPanel extends JPanel {
             data[i][2] = auto.get(i).getImmatricolazione();
         }
 
-        // Crea un modello di tabella personalizzato non modificabile con i dati aggiornati
         DefaultTableModel tableModel = new TablesModel(data, columnNames);
 
-        // Imposta il modello sulla tabella
         table.setModel(tableModel);
     }
 

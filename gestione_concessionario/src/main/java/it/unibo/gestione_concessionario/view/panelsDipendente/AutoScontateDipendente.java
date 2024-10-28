@@ -1,10 +1,11 @@
-package it.unibo.gestione_concessionario.view.panelsDipendente;
+package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 import it.unibo.gestione_concessionario.commons.dto.Auto;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.controller.Controller;
-import it.unibo.gestione_concessionario.view.panelsCliente.PersTable;
-import it.unibo.gestione_concessionario.view.panelsCliente.TablesModel;
+import it.unibo.gestione_concessionario.view.View;
+import it.unibo.gestione_concessionario.view.panelscliente.PersTable;
+import it.unibo.gestione_concessionario.view.panelscliente.TablesModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -24,33 +25,31 @@ public class AutoScontateDipendente extends JPanel {
 
     private void initialize() {
         this.setLayout(new BorderLayout());
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel title = new JLabel("Tutte le auto con sconti o offerte");
+        title.setFont(View.titleFont);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(title);
+        this.add(titlePanel,BorderLayout.NORTH);
         
-        // Inizializza la tabella per visualizzare le auto filtrate
-        tableModel = new TablesModel(new String[]{"Numero Telaio", "Modello", "Prezzo Scontato", "Data Immatricolazione", "Targa"});
+        tableModel = new TablesModel(new String[]{"Numero Telaio", "Modello", "Prezzo Scontato"});
         autoTable = new PersTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(autoTable);
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
-    // Metodo per filtrare le auto in base ai criteri selezionati
     public void filtraAuto() {
-        // Ottieni il marchio e la tipologia selezionati
         Marchio marchioSelezionato = this.controller.getUserMarchio();
 
-        // Esegui la query di filtro tramite il controller
         List<Auto> autoFiltrate = controller.visualizzaAutoScontate(marchioSelezionato);
 
-        // Rimuovi tutti i dati attuali dalla tabella
         tableModel.setRowCount(0);
 
-        // Aggiungi i risultati filtrati nella tabella
         for (Auto auto : autoFiltrate) {
             tableModel.addRow(new Object[]{
                 auto.getNumero_telaio(),
-                auto.getDescrizioneModello(),  // Descrizione del modello
-                auto.getPrezzo(),              // Prezzo
-                auto.getData().isPresent() ? auto.getData().get() : "",  // Data immatricolazione
-                auto.getTarga().isPresent() ? auto.getTarga().get() : "" // Targa (se presente)
+                auto.getDescrizioneModello(),  
+                auto.getPrezzo()
             });
         }
     }

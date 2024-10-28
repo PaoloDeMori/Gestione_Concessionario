@@ -6,6 +6,7 @@ import it.unibo.gestione_concessionario.controller.Controller;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class LoginView implements View {
 
@@ -22,7 +23,6 @@ public class LoginView implements View {
         initializeStartPanel();
     }
 
-    // Frame Initialization
     private void initializeFrame() {
         loginFrame = new JFrame("Login");
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,7 +32,6 @@ public class LoginView implements View {
         loginFrame.setLayout(new FlowLayout());
     }
 
-    // Panel with Client/Employee selection buttons
     private void initializeStartPanel() {
         JPanel panel = new JPanel();
 
@@ -55,16 +54,13 @@ public class LoginView implements View {
         panel.add(clienteButton);
         panel.add(dipendenteButton);
 
-        loginFrame.getContentPane().removeAll();  // Clear the content pane before switching
+        loginFrame.getContentPane().removeAll(); 
         loginFrame.add(panel);
-        loginFrame.setVisible(true);
     }
 
-    // Show Login Panel based on user type (Client or Employee)
     private void showLoginPanel(boolean isEmployee) {
-        loginFrame.getContentPane().removeAll();  // Clear the content pane
+        loginFrame.getContentPane().removeAll();
 
-        // Create email and password panels
         JPanel emailPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
@@ -74,14 +70,12 @@ public class LoginView implements View {
         emailField = new JTextField(25);
         passwordField = new JPasswordField(25);
 
-        // Login and account creation buttons
         loginButton = new CustomButton("Accedi");
         loginButton.addActionListener(isEmployee ? getEmployeeLoginListener() : getClientLoginListener());
         if(!isEmployee){
         createAccountButton = new CustomButton("Crea Account");
         createAccountButton.addActionListener(e -> showCreateAccountPanel());
         }
-        // Assemble login panel
         JPanel loginPanel = new JPanel(new GridLayout(2, 1, 20, 20));
         emailPanel.add(emailLabel);
         emailPanel.add(emailField);
@@ -99,14 +93,12 @@ public class LoginView implements View {
         refreshGui();
     }
 
-    // Show Create Account Panel
     private void showCreateAccountPanel() {
-        loginFrame.getContentPane().removeAll();  // Clear the content pane
+        loginFrame.getContentPane().removeAll();  
         loginFrame.setSize(700, 450);
 
         JPanel createAccountPanel = new JPanel(new GridLayout(6, 2, 10, 10));
 
-        // Form fields for account creation
         JLabel firstNameLabel = new JLabel("Nome:");
         JTextField firstNameField = new JTextField(25);
         JLabel lastNameLabel = new JLabel("Cognome:");
@@ -114,11 +106,10 @@ public class LoginView implements View {
         JLabel telefonoLabel = new JLabel("Telefono:");
         JTextField telefonoField = new JTextField(25);
         JLabel emailLabel = new JLabel("Email:");
-        JTextField emailField = new JTextField(25);
+        emailField = new JTextField(25);
         JLabel passwordLabel = new JLabel("Password:");
-        JPasswordField passwordField = new JPasswordField(25);
+        passwordField = new JPasswordField(25);
 
-        // Submit button for account creation
         CustomButton createAccountSubmitButton = new CustomButton("Crea Account");
         createAccountSubmitButton.addActionListener(e -> handleCreateAccount(
             firstNameField.getText(),
@@ -128,7 +119,6 @@ public class LoginView implements View {
             new String(passwordField.getPassword())
         ));
 
-        // Add form components to the panel
         createAccountPanel.add(firstNameLabel);
         createAccountPanel.add(firstNameField);
         createAccountPanel.add(lastNameLabel);
@@ -139,32 +129,32 @@ public class LoginView implements View {
         createAccountPanel.add(emailField);
         createAccountPanel.add(passwordLabel);
         createAccountPanel.add(passwordField);
-        createAccountPanel.add(new JLabel());  // Placeholder for layout alignment
+        createAccountPanel.add(new JLabel());
         createAccountPanel.add(createAccountSubmitButton);
 
         loginFrame.add(createAccountPanel);
         refreshGui();
     }
 
-    // Handle Account Creation
     private void handleCreateAccount(String firstName, String lastName, String telefono, String email, String password) {
-        // Create Cliente and check if the account creation is successful
-        if (controller.createCliente(new Cliente(firstName, lastName, telefono, email, password))) {
-            JOptionPane.showMessageDialog(loginFrame, "Account creato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            if (controller.createCliente(new Cliente(firstName, lastName, telefono, email, password))) {
+                JOptionPane.showMessageDialog(loginFrame, "Account creato con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
 
-            // Automatically login after account creation
-            if (controller.checkLoginCliente(email, password)) {
-                this.stop();
-                controller.startCliente();
+                if (controller.checkLoginCliente(email, password)) {
+                    this.stop();
+                    controller.startCliente();
+                } else {
+                    showLoginPanel(false);
+                }
             } else {
-                showLoginPanel(false);
+                error("Impossibile creare account", "Errore creazione account");
             }
-        } else {
+        } catch (SQLException e) {
             error("Impossibile creare account", "Errore creazione account");
         }
     }
 
-    // Client Login Action Listener
     private ActionListener getClientLoginListener() {
         return e -> {
             String email = emailField.getText();
@@ -179,7 +169,6 @@ public class LoginView implements View {
         };
     }
 
-    // Employee Login Action Listener
     private ActionListener getEmployeeLoginListener() {
         return e -> {
             String email = emailField.getText();
@@ -197,7 +186,7 @@ public class LoginView implements View {
 
     @Override
     public void start() {
-        System.out.println("Application started");
+        loginFrame.setVisible(true);
     }
 
     @Override
@@ -217,8 +206,5 @@ public class LoginView implements View {
         loginFrame.repaint();
     }
 
-    public static void main(String[] args) {
-        LoginView lv = new LoginView(new Controller());
-        lv.start();
-    }
+
 }

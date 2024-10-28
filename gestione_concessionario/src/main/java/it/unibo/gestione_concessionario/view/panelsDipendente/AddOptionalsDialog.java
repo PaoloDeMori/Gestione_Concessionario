@@ -1,8 +1,7 @@
-package it.unibo.gestione_concessionario.view.panelsDipendente;
+package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 import java.awt.BorderLayout;
-import java.awt.Checkbox;
-import java.awt.FlowLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -14,10 +13,8 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 
 import it.unibo.gestione_concessionario.commons.dto.Optionals;
 import it.unibo.gestione_concessionario.controller.Controller;
@@ -27,14 +24,16 @@ public class AddOptionalsDialog extends JDialog {
     Map<JCheckBox,Optionals> tfoptionalsList;
     JPanel maiPanel;
     CustomButton saveButton;
+    AddAutoDipendente panel;
 
     AddOptionalsDialog(AddAutoDipendente panel, Controller controller) {
         super();
+        this.panel=panel;
         setLayout(new BorderLayout(0, 5));
         this.add(new JLabel("Seleziona gli optionals della macchina:"),BorderLayout.NORTH);
 
 
-        maiPanel=new JPanel(new FlowLayout());
+        maiPanel=new JPanel(new BorderLayout());
         maiPanel.add(new JLabel("Optionals:"));
         Optionals [] optionals = panel.getOptional().toArray(new Optionals[0]);
         JPanel checkBoxPanel = new JPanel(new GridLayout(optionals.length, 1));
@@ -45,7 +44,7 @@ public class AddOptionalsDialog extends JDialog {
             checkBoxPanel.add(checkBox);
         }
         JScrollPane scrollPane = new JScrollPane(checkBoxPanel);
-        maiPanel.add(scrollPane);
+        maiPanel.add(scrollPane,BorderLayout.CENTER);
         this.add(maiPanel,BorderLayout.CENTER);
 
         saveButton=new CustomButton("Aggiungi gli optional");
@@ -66,6 +65,13 @@ public class AddOptionalsDialog extends JDialog {
         });
         this.add(saveButton,BorderLayout.SOUTH);
 
+    }
+
+    public void start(){
+        this.maiPanel.setPreferredSize(new Dimension(panel.getWidth()/4, panel.getHeight()/4));
+        this.maiPanel.setMinimumSize(new Dimension(panel.getWidth()/4, panel.getHeight()/4));
+        this.pack();
+        this.setVisible(true);
     }
 
 }

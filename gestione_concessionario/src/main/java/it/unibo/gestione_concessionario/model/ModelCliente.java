@@ -20,22 +20,15 @@ public class ModelCliente extends Model {
 
     private Cliente cliente;
 
-    public ModelCliente() {
-    }
-
     public void init(Connection connection) {
         this.connection = connection;
     }
 
-    public void stop() {
-        try {
+    public void stop() throws SQLException {
             connection.close();
-        } catch (SQLException e) {
-
-        }
     }
 
-    public boolean creaCliente(Cliente cliente) {
+    public boolean creaCliente(Cliente cliente) throws SQLException{
         PreparedStatement ps = null;
         final String creaCliente = "INSERT INTO CLIENTE (nome, cognome, telefono, e_mail, password) VALUES ( ?, ?, ?, ?, ?)";
         try {
@@ -53,6 +46,7 @@ public class ModelCliente extends Model {
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                throw e;
             } catch (SQLException e1) {
                 e1.printStackTrace();
             }
@@ -96,9 +90,6 @@ public class ModelCliente extends Model {
             while (set.next()) {
                 marchi.add(new Marchio(set.getInt(1), set.getString(2)));
             }
-            for (var m : marchi) {
-                System.out.println(m.toString());
-            }
             ps.close();
             return marchi;
         } catch (SQLException e) {
@@ -109,16 +100,13 @@ public class ModelCliente extends Model {
     public List<Tipologia> visualizzTipologie() {
         PreparedStatement ps;
         List<Tipologia> tipologie = new ArrayList<>();
-        final String vediMarchi = "SELECT ID_TIPOLOGIA, Nome, caratteristiche " +
+        final String vediMarchi = "SELECT Nome, caratteristiche " +
                 "FROM TIPOLOGIA;";
         try {
             ps = connection.prepareStatement(vediMarchi);
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                tipologie.add(new Tipologia(set.getInt(1), set.getString(2), set.getString(3)));
-            }
-            for (var m : tipologie) {
-                System.out.println(m.toString());
+                tipologie.add(new Tipologia(set.getString(1), set.getString(2)));
             }
             ps.close();
             return tipologie;
@@ -156,9 +144,6 @@ public class ModelCliente extends Model {
                     auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of("non immatricolata"),
                         Optional.empty(), set.getString(6), "", ""));
                 }
-            }
-            for (var a : auto) {
-                System.out.println(a.toString());
             }
             ps.close();
             return auto;
@@ -199,20 +184,18 @@ public class ModelCliente extends Model {
         try {
             ps = connection.prepareStatement(vediDipendente);
             
-            // Ottenere l'ID del marchio associato al modello
             int ID_MARCHIO_MODELLO = ID_Marchio(modello); 
-            ps.setInt(1, ID_MARCHIO_MODELLO); // Impostiamo l'ID marchio nella query
+            ps.setInt(1, ID_MARCHIO_MODELLO);
     
             ResultSet set = ps.executeQuery();
             if (set.next()) {
-                // Crea il Dipendente mappando i campi correttamente
                 dipendente = new Dipendente(
-                    set.getInt(1),    // ID_MARCHIO
-                    set.getString(2), // Nome
-                    set.getString(3), // Cognome
-                    set.getString(4), // Telefono
+                    set.getInt(1),    
+                    set.getString(2), 
+                    set.getString(3), 
+                    set.getString(4), 
                     set.getBoolean(5),
-                    set.getString(6)  // E-mail
+                    set.getString(6)
                 );
             }
             ps.close();

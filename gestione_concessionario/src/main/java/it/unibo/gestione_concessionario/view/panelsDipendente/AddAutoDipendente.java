@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsDipendente;
+package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 import javax.swing.*;
 import it.unibo.gestione_concessionario.commons.dto.Auto;
@@ -8,6 +8,8 @@ import it.unibo.gestione_concessionario.commons.dto.Optionals;
 import it.unibo.gestione_concessionario.commons.dto.Personalizzazione;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
+import it.unibo.gestione_concessionario.view.View;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,8 +44,10 @@ public class AddAutoDipendente extends JPanel {
     private List<Optionals> optionals;
 
     private Controller controller;
+
     private CustomButton saveAuto;
     private CustomButton addOptionalButton;
+
 
     private CreaModelloDialog creaModelloDialog;
     private AddOptionalsDialog addOptionalsDialog;
@@ -54,14 +58,22 @@ public class AddAutoDipendente extends JPanel {
 
     public AddAutoDipendente(Controller controller) {
         creaModelloDialog = new CreaModelloDialog(controller, this);
-        setLayout(new GridLayout(1, 1));
+        setLayout(new BorderLayout());
+        
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel title = new JLabel("Aggiungi Un Auto");
+        title.setFont(View.titleFont);
+        title.setHorizontalAlignment(JLabel.CENTER);
+        titlePanel.add(title);
+        this.add(titlePanel,BorderLayout.NORTH);
+
         this.controller = controller;
         addOptionalsDialog = new AddOptionalsDialog(this,controller);
 
 
         this.setMainPanel();
 
-        this.add(maiPanel);
+        this.add(maiPanel,BorderLayout.CENTER);
     }
 
     private void setMainPanel() {
@@ -71,7 +83,6 @@ public class AddAutoDipendente extends JPanel {
         maiPanel.add(creaModelloLabel);
         creaModelloButton = new CustomButton("Crea Modello");
         maiPanel.add(creaModelloButton);
-        // contrattoDialog = new ContrattoDialog(controller, this);
         creaModelloButton.addActionListener(e -> creaModelloDialog.setVisible(true));
 
         maiPanel.add(new JLabel("Numero Telaio:"));
@@ -92,12 +103,9 @@ public class AddAutoDipendente extends JPanel {
 
 
         maiPanel.add(new JLabel("Optionals:"));
-        addOptionalButton = new CustomButton("Aggiungi otpionals");
+        addOptionalButton = new CustomButton("Aggiungi optionals");
         maiPanel.add(addOptionalButton);
-        // contrattoDialog = new ContrattoDialog(controller, this);
-        addOptionalButton.addActionListener(e -> addOptionalsDialog.setVisible(true));
-
-     
+        addOptionalButton.addActionListener(e -> addOptionalsDialog.start());
 
 
         maiPanel.add(new JLabel("Prezzo:"));
@@ -106,7 +114,7 @@ public class AddAutoDipendente extends JPanel {
 
         Boolean[] options = { true, false };
         maiPanel.add(new JLabel("Immatricolazione:"));
-        immatricolazioneBox = new JComboBox<Boolean>(options);
+        immatricolazioneBox = new JComboBox<>(options);
         immatricolazioneBox.addActionListener(e -> updateAvailableFields());
         maiPanel.add(immatricolazioneBox);
 
@@ -145,12 +153,19 @@ public class AddAutoDipendente extends JPanel {
 
                 if (auto != null && configurazione != null) {
                     controller.createAutoEConfig(auto, configurazione);
+                    List<Personalizzazione> pers = getPersonalizzazioni();
+                    if(!pers.isEmpty()){
                     for (Personalizzazione p : getPersonalizzazioni()) {
                         controller.addPersonalizzazione(p);
                     }
-                    JOptionPane.showMessageDialog(this, "Auto creata:\n" + auto);
+                }
+                    if(JOptionPane.showConfirmDialog(this, "Auto Creata, è presente una garanzia?","Auto creata con successo",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null)==JOptionPane.YES_OPTION){
+                        new AddGaranziaDialog(controller, auto.getNumero_telaio()).start();
+                    }
                     this.removeAll();
                     setMainPanel();
+                    optionals=null;
+                    addOptionalsDialog=new AddOptionalsDialog(this, controller);
                     this.add(maiPanel);
                     this.revalidate();
                     this.repaint();
@@ -187,9 +202,10 @@ public class AddAutoDipendente extends JPanel {
     }
 
     public List<Personalizzazione> getPersonalizzazioni() {
-        if (auto != null && this.optionals != null) {
-            List<Optionals> selectedOptionals = optionals;
-            if (!selectedOptionals.isEmpty()) {
+        if (auto != null) {
+            if (optionals!=null) {
+                List<Optionals> selectedOptionals = optionals;
+
                 List<Personalizzazione> personalizzazioni = new ArrayList<>();
                 for (Optionals optional : selectedOptionals) {
                     personalizzazioni.add(new Personalizzazione(optional, auto));
@@ -229,12 +245,12 @@ public class AddAutoDipendente extends JPanel {
     }
 
     public void addModello() {
-        this.removeAll(); // Rimuove tutti i componenti dal pannello
-        this.setMainPanel(); // Ricostruisce il pannello principale
-        this.add(maiPanel); // Aggiunge nuovamente il pannello aggiornato
+        this.removeAll(); 
+        this.setMainPanel();
+        this.add(maiPanel);
         tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
-        this.revalidate(); // Aggiorna il layout del pannello
-        this.repaint(); // Ridisegna il pannello
+        this.revalidate();
+        this.repaint();
     }
 
     public void updateAvailableFields() {

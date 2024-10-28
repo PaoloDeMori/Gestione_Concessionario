@@ -1,4 +1,4 @@
-package it.unibo.gestione_concessionario.view.panelsDipendente;
+package it.unibo.gestione_concessionario.view.panelsdipendente;
 
 
 
@@ -13,8 +13,6 @@ import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -36,7 +34,7 @@ public class AppuntamentiSetterDipendente extends JPanel {
 
 
     public AppuntamentiSetterDipendente(Controller controller) {
-        setLayout(new GridLayout(9, 2, 5, 5)); // 8 righe, 2 colonne con spazi di 5px tra le celle
+        setLayout(new GridLayout(9, 2, 5, 5));
         this.controller = controller;
 
         add(new JLabel("Data:"));
@@ -52,16 +50,13 @@ public class AppuntamentiSetterDipendente extends JPanel {
         add(spOra);
 
         add(new JLabel("Modello:"));
-        tfmodello = new JComboBox<Modello>(getModelli().stream().toArray(Modello[]::new));
-        tfmodello.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
+        tfmodello.addActionListener(e-> {
                 updateAuto();
                 updateDipendente();
             }
             
-        });
+        );
         add(tfmodello);
 
         add(new JLabel("Durata:"));
@@ -71,7 +66,7 @@ public class AppuntamentiSetterDipendente extends JPanel {
         add(spDurata);
 
         add(new JLabel("Numero Telaio:"));
-        tfNumeroTelaio = new JComboBox<Auto>(getAuto((Modello)tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
+        tfNumeroTelaio = new JComboBox<>(getAuto((Modello)tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
         add(tfNumeroTelaio);
 
         add(new JLabel("Nome Dipendente:"));
@@ -80,7 +75,7 @@ public class AppuntamentiSetterDipendente extends JPanel {
         add(tfNomeDipendente);
 
         add(new JLabel("Nome Cliente:"));
-        tfNomeCliente = new JComboBox<Cliente>(controller.allClienti().stream().toArray(Cliente[]::new));;
+        tfNomeCliente = new JComboBox<>(controller.allClienti().stream().toArray(Cliente[]::new));
         add(tfNomeCliente);
 
         saveAppuntamentoTestDrive=new CustomButton("Inserisci Test-Drive");
@@ -110,7 +105,6 @@ public class AppuntamentiSetterDipendente extends JPanel {
 
     }
 
-    // Metodo per ottenere i dati dall'interfaccia
     public Appuntamento getAppuntamento(boolean isTestDrive) {
         String tipologia;
         if(isTestDrive){
@@ -123,7 +117,7 @@ public class AppuntamentiSetterDipendente extends JPanel {
         LocalDate data = ((java.util.Date) spData.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
         LocalTime ora = ((java.util.Date) spOra.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalTime();
         LocalTime durata =((java.util.Date) spDurata.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault())
-        .toLocalTime();;
+        .toLocalTime();
         String email = dipendente.eMail();
         
         return new Appuntamento(
@@ -141,9 +135,10 @@ public class AppuntamentiSetterDipendente extends JPanel {
         return controller.allModelli();
     }
     private List<Auto> getAuto(Modello modello){
-        return controller.allAutoFromModelli(modello);
+        return  controller.allAutoNonVenduteFromModelli(modello);
     }
-    private void updateAuto(){
+    
+    public void updateAuto(){
         tfNumeroTelaio.removeAllItems();
         Auto[] auto = getAuto((Modello)tfmodello.getSelectedItem()).stream().toArray(Auto[]::new);
         for(Auto auto1 : auto){
