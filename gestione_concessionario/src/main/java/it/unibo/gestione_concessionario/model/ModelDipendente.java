@@ -824,7 +824,7 @@ public class ModelDipendente extends Model {
         final String vediNome = "SELECT (COUNT(S.ID_SCONTO) / COUNT(V.ID_Vendita)) * 100 AS percentuale_auto_scontate "+
                                  "FROM VENDITA V "+
                                  "LEFT JOIN SCONTO S ON V.Numero_Telaio = S.Numero_Telaio "+
-                                 "WHERE V.ID_DIPENDENTE = 1;";
+                                 "WHERE V.ID_DIPENDENTE = ?;";
 
         try {
             ps = connection.prepareStatement(vediNome);

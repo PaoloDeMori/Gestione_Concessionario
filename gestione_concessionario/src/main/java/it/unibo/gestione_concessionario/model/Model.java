@@ -45,7 +45,7 @@ public abstract class Model {
                 "AND CURRENT_DATE BETWEEN O.Data_Inizio AND O.Data_Fine " +
                 "LEFT JOIN SCONTO S ON A.Numero_Telaio = S.Numero_Telaio " +
                 "AND CURRENT_DATE BETWEEN S.Data_Inizio AND S.Data_Fine " +
-                "LEFT JOIN VENDITA V ON A.Numero_Telaio = V.Numero_Telaio " + // Aggiungiamo il LEFT JOIN con VENDITA
+                "LEFT JOIN VENDITA V ON A.Numero_Telaio = V.Numero_Telaio " +
                 "WHERE " +
                 "MR.ID_MARCHIO = ? " +
                 "AND V.Numero_Telaio IS NULL";
@@ -159,7 +159,7 @@ public abstract class Model {
             ps.setString(1, email);
             ResultSet set = ps.executeQuery();
             if (set.next()) {
-                return set.getInt(1); // Restituisce l'ID del dipendente
+                return set.getInt(1);
             } else {
                 throw new SQLException("Nessun dipendente trovato con l'email fornita.");
             }
@@ -231,7 +231,7 @@ public abstract class Model {
             ps.setString(1, email);
             ResultSet set = ps.executeQuery();
             if (set.next()) {
-                return set.getInt(1); // Restituisce l'ID del cliente
+                return set.getInt(1);
             } else {
                 throw new SQLException("Nessun cliente trovato con l'email fornita.");
             }
