@@ -520,6 +520,26 @@ public class ModelDipendente extends Model {
         }
     }
 
+    public List<Configurazione> visualizzaConfigurazioni(Modello modello) {
+        PreparedStatement ps;
+        List<Configurazione> configurazioni = new ArrayList<>();
+        final String vediModello = "select C.ID_Configurazione,C.ID_Modello , C.Motore,C.alimentazione, C.cc, C.horse_power "+
+                                    "from configurazione C "+ 
+                                    "where C.ID_MODELLO=?;";
+        try {
+            ps = connection.prepareStatement(vediModello);
+            ps.setInt(1, modello.idModello());
+            ResultSet set = ps.executeQuery();
+            while (set.next()) {
+                configurazioni.add(new Configurazione(set.getInt(1),set.getString(3),set.getString(4),set.getInt(5),set.getInt(6),set.getInt(2)));
+            }
+            ps.close();
+            return configurazioni;
+        } catch (SQLException e) {
+            throw new ProblemWithConnectionException(e);
+        }
+    }
+
     public List<Vendita> visualizzaVendite() {
         PreparedStatement ps;
         List<Vendita> vendite = new ArrayList<>();

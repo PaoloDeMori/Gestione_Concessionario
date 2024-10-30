@@ -62,9 +62,13 @@ public class Controller {
     }
 
     public boolean checkLoginCliente(String email, String password) {
-        if (model instanceof ModelCliente && ((ModelCliente) model).checkLoginCliente(email, password)) {
-            this.view = new ClienteView(this);
-            return true;
+        if (model instanceof ModelCliente) {
+            if (!((ModelCliente) model).checkLoginCliente(email, password)) {
+                return false;
+            } else {
+                this.view = new ClienteView(this);
+                return true;
+            }
         } else {
             throw new ProblemWithConnectionException(standardErrorMessage);
         }
@@ -224,6 +228,14 @@ public class Controller {
         }
     }
 
+    public List<Configurazione> visualizzaConfigurazioni(Modello modello)  throws SQLException{
+        if (model instanceof ModelDipendente) {
+            return ((ModelDipendente) model).visualizzaConfigurazioni(modello);
+        } else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
     public boolean eliminaContratto(Contratto contratto) throws SQLException {
         if (model instanceof ModelDipendente) {
             return ((ModelDipendente) model).eliminaContratto(contratto);
@@ -309,6 +321,19 @@ public class Controller {
         if (model instanceof ModelDipendente) {
             try {
                 auto.setIdConfigurazione(((ModelDipendente) model).aggiungiConfigurazione(config));
+                ((ModelDipendente) model).aggiungiAuto(auto);
+            } catch (SQLException e) {
+                throw new SQLException("errore nella creazione dell'auto");
+
+            }
+        } else {
+            throw new ProblemWithConnectionException(standardErrorMessage);
+        }
+    }
+
+    public void createAuto(Auto auto) throws SQLException {
+        if (model instanceof ModelDipendente) {
+            try {
                 ((ModelDipendente) model).aggiungiAuto(auto);
             } catch (SQLException e) {
                 throw new SQLException("errore nella creazione dell'auto");
