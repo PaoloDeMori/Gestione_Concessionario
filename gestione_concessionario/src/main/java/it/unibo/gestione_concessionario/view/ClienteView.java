@@ -93,7 +93,7 @@ public class ClienteView extends JFrame implements View {
         CustomButton marchiButton = new CustomButton("Visualizza Marchi");
         CustomButton modelliButton = new CustomButton("Visualizza Modelli");
         CustomButton autoFiltrateButton = new CustomButton("Auto");
-        CustomButton createAppuntamentoButton = new CustomButton("Create appuntamento");
+        CustomButton createAppuntamentoButton = new CustomButton("Crea appuntamento");
         CustomButton allAutoButton = new CustomButton("Tutte le auto");
         CustomButton autoScontateButton = new CustomButton("Auto Scontate");
         ExitButton esciButton = new ExitButton("Esci");
