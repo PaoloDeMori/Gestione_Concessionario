@@ -12,6 +12,8 @@ import it.unibo.gestione_concessionario.commons.dto.Modello;
 import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
 import it.unibo.gestione_concessionario.view.View;
+import java.util.Calendar;
+import java.util.Date;
 
 import java.awt.*;
 import java.time.LocalDate;
@@ -74,6 +76,16 @@ public class AppuntamentiSetterDipendente extends JPanel {
         spDurata = new JSpinner(new SpinnerDateModel());
         timeEditor = new JSpinner.DateEditor(spDurata, "HH:mm");
         spDurata.setEditor(timeEditor);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Date zeroTime = calendar.getTime();
+        spDurata.setValue(zeroTime);
+
         maiPanel.add(spDurata);
 
         maiPanel.add(new JLabel("Numero Telaio:"));

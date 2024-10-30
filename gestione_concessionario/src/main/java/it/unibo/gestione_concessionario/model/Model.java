@@ -170,7 +170,7 @@ public abstract class Model {
                 if (ps != null)
                     ps.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new ProblemWithConnectionException(e);
             }
         }
     }
@@ -194,7 +194,7 @@ public abstract class Model {
                 if (ps != null)
                     ps.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new ProblemWithConnectionException(e);
             }
         }
     }
@@ -218,7 +218,7 @@ public abstract class Model {
                 if (ps != null)
                     ps.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new ProblemWithConnectionException(e);
             }
         }
     }
@@ -242,7 +242,7 @@ public abstract class Model {
                 if (ps != null)
                     ps.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new ProblemWithConnectionException(e);
             }
         }
     }
@@ -269,8 +269,7 @@ public abstract class Model {
                 connection.rollback();
                 throw e;
             } catch (SQLException e1) {
-                e1.printStackTrace();
-                throw new ProblemWithConnectionException(e1);
+                throw new SQLException(e1);
             }
         }
     }

@@ -2,6 +2,7 @@ package it.unibo.gestione_concessionario.view;
 
 import javax.swing.*;
 
+import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Garanzia;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.commons.dto.Optionals;
@@ -29,6 +30,7 @@ public class ClienteView extends JFrame implements View {
     private GaranziaPanel garanziaPanel;
     private OptionalPanel optionalPanel;
     private AutoScontate autoScontate;
+    Optional<Integer> idMarchioSelezionato = Optional.empty();
 
     public ClienteView(Controller controller) {
         this.controller = controller;
@@ -46,23 +48,23 @@ public class ClienteView extends JFrame implements View {
 
     private void initialize() {
         setTitle("Menu and CardLayout Example");
-        setSize(800, 600);
+        setMinimumSize(new Dimension(1150, 600));
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        
+
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
                     controller.stop();
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(cardPanel, ex.getMessage(), "Impossibile chiudere la connessione", ABORT);
+                    JOptionPane.showMessageDialog(cardPanel, ex.getMessage(), "Impossibile chiudere la connessione",
+                            ABORT);
                 }
                 setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 dispose();
                 System.exit(0);
             }
         });
-        
 
         setLayout(new BorderLayout());
 
@@ -104,8 +106,7 @@ public class ClienteView extends JFrame implements View {
         menuBar.add(autoScontateButton);
         menuBar.add(esciButton);
 
-
-          esciButton.addActionListener(e->{
+        esciButton.addActionListener(e -> {
             try {
                 controller.stop();
             } catch (SQLException ex) {
@@ -190,19 +191,30 @@ public class ClienteView extends JFrame implements View {
     private void setUpMarchiPanel() {
         marchiPanel.setMarchi(controller.allMarchi());
 
-        marchiPanel.setButtonActionListener(e-> {
-                JTable table = marchiPanel.getTable();
-                int selectedRow = table.getSelectedRow();
+        marchiPanel.setButtonActionListener(e -> {
+            JTable table = marchiPanel.getTable();
+            int selectedRow = table.getSelectedRow();
 
-                if (selectedRow >= 0) {
-                    String nome = (String) table.getValueAt(selectedRow, 0);
-                    int id = controller.idFromNameMarchio(nome);
+            if (selectedRow >= 0) {
+                String nome = (String) table.getValueAt(selectedRow, 0);
 
-                    dipendentePanel.removeAll();
-                    dipendentePanel
-                            .add(new SingoloDipendentePanel(controller.dipendenteFromMarchio(new Marchio(id, nome))));
-                    cardLayout.show(cardPanel, "Dipendente");
+                int pos = table.getSelectedRow();
+                idMarchioSelezionato = Optional.of(marchiPanel.getgMarchi().get(pos).idMarchio());
+                dipendentePanel.removeAll();
+                try {
+                    if (idMarchioSelezionato.isPresent()) {
+                        Dipendente dip = controller
+                                .dipendenteFromMarchio(new Marchio(idMarchioSelezionato.get().intValue(), nome));
+                        dipendentePanel.add(new SingoloDipendentePanel(dip));
+                        cardLayout.show(cardPanel, "Dipendente");
+                    } else {
+                        throw new IllegalArgumentException("Impossibile risalire all'id marchio");
+                    }
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(marchiPanel, ex.getMessage(), "Impossibile visualizzare dipendente",
+                            JOptionPane.ERROR_MESSAGE);
                 }
+            }
         });
         marchiPanel.revalidate();
         marchiPanel.repaint();
@@ -239,12 +251,5 @@ public class ClienteView extends JFrame implements View {
     @Override
     public void start() {
         setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        Controller controller = new Controller();
-        controller.initCliente();
-        ClienteView clienteView = new ClienteView(controller);
-        clienteView.start();
     }
 }

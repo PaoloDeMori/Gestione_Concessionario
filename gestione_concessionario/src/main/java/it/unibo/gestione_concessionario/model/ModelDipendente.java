@@ -575,7 +575,7 @@ public class ModelDipendente extends Model {
                     ps.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new ProblemWithConnectionException(e);
             }
         }
     }
@@ -604,7 +604,7 @@ public class ModelDipendente extends Model {
                     ps.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new ProblemWithConnectionException(e);
             }
         }
 

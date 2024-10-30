@@ -13,7 +13,6 @@ import it.unibo.gestione_concessionario.commons.dto.Cliente;
 import it.unibo.gestione_concessionario.commons.dto.Dipendente;
 import it.unibo.gestione_concessionario.commons.dto.Marchio;
 import it.unibo.gestione_concessionario.commons.dto.Modello;
-import it.unibo.gestione_concessionario.commons.dto.Optionals;
 import it.unibo.gestione_concessionario.commons.dto.Tipologia;
 
 public class ModelCliente extends Model {
@@ -25,10 +24,10 @@ public class ModelCliente extends Model {
     }
 
     public void stop() throws SQLException {
-            connection.close();
+        connection.close();
     }
 
-    public boolean creaCliente(Cliente cliente) throws SQLException{
+    public boolean creaCliente(Cliente cliente) throws SQLException {
         PreparedStatement ps = null;
         final String creaCliente = "INSERT INTO CLIENTE (nome, cognome, telefono, e_mail, password) VALUES ( ?, ?, ?, ?, ?)";
         try {
@@ -48,33 +47,8 @@ public class ModelCliente extends Model {
                 connection.rollback();
                 throw e;
             } catch (SQLException e1) {
-                e1.printStackTrace();
+                throw e;
             }
-            return false;
-        }
-
-    }
-
-    public List<Optionals> visualizzaOptional(Modello modello) {
-        PreparedStatement ps;
-        List<Optionals> optionals = new ArrayList<>();
-        final String vediDipendente = "SELECT O.ID_Optional, O.descrizione, O.prezzo " +
-                "FROM OPTIONAL O " +
-                "JOIN Supporto S ON O.ID_Optional = S.ID_Optional " +
-                "JOIN MODELLO M ON S.ID_MODELLO = M.ID_MODELLO " +
-                "WHERE M.ID_MODELLO = ? ;";
-        try {
-            ps = connection.prepareStatement(vediDipendente);
-            ps.setString(1, modello.descrizione());
-            ResultSet set = ps.executeQuery();
-            while (set.next()) {
-                optionals.add(new Optionals(set.getInt(1), set.getString(2), set.getDouble(3)));
-            }
-            ps.close();
-            return optionals;
-        } catch (SQLException e) {
-            throw new ProblemWithConnectionException(e);
-
         }
 
     }
@@ -116,8 +90,6 @@ public class ModelCliente extends Model {
 
     }
 
-
-
     public List<Auto> visualizzaAutoxMarchioxTipologia(Marchio marchio, Tipologia tipologia) {
         PreparedStatement ps;
         List<Auto> auto = new ArrayList<>();
@@ -136,13 +108,14 @@ public class ModelCliente extends Model {
             ps.setString(2, tipologia.nome());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                if(set.getBoolean(3)){
-                auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of(set.getString(4)),
-                        Optional.of(set.getDate(5).toLocalDate()), set.getString(6), "", ""));
-                }
-                else{
-                    auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3), Optional.of("non immatricolata"),
-                        Optional.empty(), set.getString(6), "", ""));
+                if (set.getBoolean(3)) {
+                    auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3),
+                            Optional.of(set.getString(4)),
+                            Optional.of(set.getDate(5).toLocalDate()), set.getString(6), "", ""));
+                } else {
+                    auto.add(new Auto(set.getString(1), set.getDouble(2), set.getBoolean(3),
+                            Optional.of("non immatricolata"),
+                            Optional.empty(), set.getString(6), "", ""));
                 }
             }
             ps.close();
@@ -152,7 +125,7 @@ public class ModelCliente extends Model {
         }
     }
 
-    public Dipendente visualizzaDipendente(Marchio marchio) {
+    public Dipendente visualizzaDipendente(Marchio marchio) throws IllegalArgumentException {
         PreparedStatement ps;
         Dipendente dipendente = null;
         final String vediDipendente = "SELECT  M.ID_MARCHIO , D.nome, D.cognome, D.telefono,D.responsabile, D.e_mail, M.Nome  AS Marchio "
@@ -165,11 +138,16 @@ public class ModelCliente extends Model {
             ps.setInt(1, marchio.idMarchio());
             ResultSet set = ps.executeQuery();
             while (set.next()) {
-                dipendente = new Dipendente(set.getInt(1), set.getString(2), set.getString(3), set.getString(4),set.getBoolean(5),
+                dipendente = new Dipendente(set.getInt(1), set.getString(2), set.getString(3), set.getString(4),
+                        set.getBoolean(5),
                         set.getString(6));
             }
             ps.close();
-            return dipendente;
+            if (dipendente != null) {
+                return dipendente;
+            } else {
+                throw new IllegalArgumentException("Nessun dipendente associato a questo marchio");
+            }
         } catch (SQLException e) {
             throw new ProblemWithConnectionException(e);
         }
@@ -183,20 +161,19 @@ public class ModelCliente extends Model {
                 "WHERE ID_MARCHIO = ? ";
         try {
             ps = connection.prepareStatement(vediDipendente);
-            
-            int ID_MARCHIO_MODELLO = ID_Marchio(modello); 
+
+            int ID_MARCHIO_MODELLO = ID_Marchio(modello);
             ps.setInt(1, ID_MARCHIO_MODELLO);
-    
+
             ResultSet set = ps.executeQuery();
             if (set.next()) {
                 dipendente = new Dipendente(
-                    set.getInt(1),    
-                    set.getString(2), 
-                    set.getString(3), 
-                    set.getString(4), 
-                    set.getBoolean(5),
-                    set.getString(6)
-                );
+                        set.getInt(1),
+                        set.getString(2),
+                        set.getString(3),
+                        set.getString(4),
+                        set.getBoolean(5),
+                        set.getString(6));
             }
             ps.close();
             return dipendente;
@@ -204,7 +181,6 @@ public class ModelCliente extends Model {
             throw new ProblemWithConnectionException(e);
         }
     }
-    
 
     public int ID_Marchio(Modello modello) {
         PreparedStatement ps;
@@ -224,8 +200,6 @@ public class ModelCliente extends Model {
             throw new ProblemWithConnectionException(e);
         }
     }
-
-   
 
     public boolean checkLoginCliente(String email, String password) {
         PreparedStatement ps = null;
@@ -252,26 +226,6 @@ public class ModelCliente extends Model {
 
     public Cliente getCliente() {
         return this.cliente;
-    }
-
-    public int visualizzaIDMarchio(String nomeMarchio) {
-        PreparedStatement ps;
-        int marchioID = 0;
-        final String vediDipendente = "SELECT ID_MARCHIO " +
-                "FROM MARCHIO " +
-                "WHERE Nome = ?;";
-        try {
-            ps = connection.prepareStatement(vediDipendente);
-            ps.setString(1, nomeMarchio);
-            ResultSet set = ps.executeQuery();
-            while (set.next()) {
-                marchioID = set.getInt(1);
-            }
-            ps.close();
-            return marchioID;
-        } catch (SQLException e) {
-            throw new ProblemWithConnectionException(e);
-        }
     }
 
     public List<Auto> visualizzaTutteLeAutoConDescrizioneModello() {

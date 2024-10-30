@@ -12,6 +12,8 @@ import it.unibo.gestione_concessionario.view.CustomButton;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class AppuntamentoSetter extends JPanel {
@@ -56,6 +58,16 @@ public class AppuntamentoSetter extends JPanel {
         spDurata = new JSpinner(new SpinnerDateModel());
         timeEditor = new JSpinner.DateEditor(spDurata, "HH:mm");
         spDurata.setEditor(timeEditor);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        Date zeroTime = calendar.getTime();
+        spDurata.setValue(zeroTime);
+
         add(spDurata);
 
         add(new JLabel("Numero Telaio:"));

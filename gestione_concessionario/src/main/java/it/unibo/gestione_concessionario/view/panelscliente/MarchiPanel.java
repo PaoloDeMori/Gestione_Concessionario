@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -21,6 +22,11 @@ public class MarchiPanel extends JPanel {
     private String[] columnNames = {"Nome"};
     private Object[][] data;
     private CustomButton dipendenteButton;
+    private List<Marchio> gMarchi = new ArrayList<>();
+
+    public List<Marchio> getgMarchi() {
+        return gMarchi;
+    }
 
     public MarchiPanel() {
         this.setLayout(new BorderLayout());
@@ -43,6 +49,7 @@ public class MarchiPanel extends JPanel {
     public void setMarchi(List<Marchio> marchi) {
         data = new Object[marchi.size()][2];
         for (int i = 0; i < marchi.size(); i++) {
+            this.gMarchi=marchi;
             data[i][0] = marchi.get(i).nome();
         }
 
