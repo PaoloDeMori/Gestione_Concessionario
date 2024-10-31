@@ -200,6 +200,7 @@ public class AddAutoDipendente extends JPanel {
                     optionals = null;
                     addOptionalsDialog = new AddOptionalsDialog(this, controller);
                     this.add(maiPanel);
+                    this.switchConfigurations();
                     this.revalidate();
                     this.repaint();
                 } else {
@@ -302,6 +303,10 @@ public class AddAutoDipendente extends JPanel {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Impossibile visualizzare configurazioni",
                     JOptionPane.ERROR_MESSAGE);
         }
+        configurazioneList.revalidate();
+        configurazioneList.repaint();
+        this.revalidate();
+        this.repaint();
     }
 
     protected List<Optionals> getOptional() {
@@ -331,6 +336,8 @@ public class AddAutoDipendente extends JPanel {
             spData.setVisible(false);
             immatricolazioneLabel.setVisible(false);
         }
+        this.revalidate();
+        this.repaint();
     }
 
     public void setOptionals(List<Optionals> optionals) {
@@ -363,5 +370,7 @@ public class AddAutoDipendente extends JPanel {
             alimentaioneLabel.setVisible(false);
             alimentazioneField.setVisible(false);
         }
+        this.revalidate();
+        this.repaint();
     }
 }
