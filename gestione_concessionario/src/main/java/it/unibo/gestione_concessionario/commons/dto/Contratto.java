@@ -97,7 +97,7 @@ public class Contratto {
     @Override
     public String toString() {
         if (tipologia.equals("Finanziamento")) {
-            return "Finanziamento :" + " Prezzo " + Double.toString(prezzo) + " Nome Banca: "
+            return "Finanziamento :" + " Prezzo: " + Double.toString(prezzo) + " Nome Banca: "
                     + (nomeBanca.isPresent() ? nomeBanca.get() : "null") + " Codice Finanziamento: "
                     + (codiceFinanziamento.isPresent() ? codiceFinanziamento.get() : "null")
                     + " Intestatario " + (intestatario.isPresent() ? intestatario.get() : "null");

@@ -174,6 +174,7 @@ public class DipendenteView extends JFrame implements View {
 
         esciButton.addActionListener(e -> {
             try {
+                addVenditaPanel.refresh();
                 controller.stop();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(cardPanel, ex.getMessage(), "Impossibile chiudere la connessione", ABORT);
