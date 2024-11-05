@@ -116,6 +116,9 @@ public class AddAutoDipendente extends JPanel {
 
         });
         maiPanel.add(combomodello);
+        combomodello.setSelectedIndex(0);
+        descrizioneModello = ((Modello) combomodello.getSelectedItem()).descrizione();
+        updateConfigurazioniList();
 
         maiPanel.add(new JLabel("Optionals:"));
         addOptionalButton = new CustomButton("Aggiungi optionals");
@@ -146,6 +149,8 @@ public class AddAutoDipendente extends JPanel {
             }
 
         });
+        configurazioneList.setSelectedIndex(0);
+        selectedConf=(Configurazione) configurazioneList.getSelectedItem();
         maiPanel.add(configurazioneList);
 
         maiPanel.add(motoreLabel);
