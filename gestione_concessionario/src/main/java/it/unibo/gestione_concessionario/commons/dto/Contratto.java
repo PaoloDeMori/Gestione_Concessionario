@@ -96,14 +96,20 @@ public class Contratto {
 
     @Override
     public String toString() {
-        return "Contratto{" +
-                "idContratto=" + idContratto +
-                ", prezzo=" + prezzo +
-                ", tipologia='" + tipologia + '\'' +
-                ", nomeBanca=" + nomeBanca +
-                ", codiceFinanziamento=" + codiceFinanziamento +
-                ", intestatario=" + intestatario +
-                ", metodoDiPagamento=" + metodoDiPagamento +
-                '}';
+        if (tipologia.equals("Finanziamento")) {
+            return "Finanziamento :" + " Prezzo " + Double.toString(prezzo) + " Nome Banca: "
+                    + (nomeBanca.isPresent() ? nomeBanca.get() : "null") + " Codice Finanziamento: "
+                    + (codiceFinanziamento.isPresent() ? codiceFinanziamento.get() : "null")
+                    + " Intestatario " + (intestatario.isPresent() ? intestatario.get() : "null");
+        } else if (tipologia.equals("Unica Rata")) {
+            return "Unica Rata :" + " Prezzo " + Double.toString(prezzo) + " Metodo di Pagamento "
+                    + (metodoDiPagamento.isPresent() ? metodoDiPagamento.get() : "null");
+        } else {
+            return tipologia.toString() + " Prezzo " + Double.toString(prezzo) + " Nome Banca: "
+                    + (nomeBanca.isPresent() ? nomeBanca.get() : "null") + " Codice Finanziamento: "
+                    + (codiceFinanziamento.isPresent() ? codiceFinanziamento.get() : "null")
+                    + " Intestatario " + (intestatario.isPresent() ? intestatario.get() : "null")+ " Metodo di Pagamento "
+                    + (metodoDiPagamento.isPresent() ? metodoDiPagamento.get() : "null");
+        }
     }
 }
