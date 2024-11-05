@@ -133,4 +133,6 @@ public class Auto{
         this.idConfigurazione = idConfigurazione;
     }
 
+    
+
 }

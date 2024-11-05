@@ -28,7 +28,7 @@ public class AddVenditaPanel extends JPanel {
     private Contratto contratto;
 
 
-    private JComboBox<Modello> tfmodello;
+    private JComboBox<Modello>comboModello;
     private JComboBox<Auto> tfNumeroTelaio;
     private JLabel tfNomeDipendente;
     private JComboBox<Cliente> tfNomeCliente;

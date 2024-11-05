@@ -21,8 +21,8 @@ public class AddScontoPanel extends JPanel {
     private JSpinner spData;
     private JSpinner spData2;
     private JSpinner spNumero;
-    private JComboBox<Modello> tfmodello;
-    private JComboBox<Auto> tfNumeroTelaio;
+    private JComboBox<Modello>comboModello;
+    private JComboBox<Auto> comboNumeroTelaio;
     private Controller controller;
     CustomButton saveSconto;
 
@@ -55,20 +55,20 @@ public class AddScontoPanel extends JPanel {
         maiPanel.add(spNumero);
 
         maiPanel.add(new JLabel("Modello:"));
-        tfmodello = new JComboBox<Modello>(getModelli().stream().toArray(Modello[]::new));
-        tfmodello.addActionListener(new ActionListener() {
+        comboModello = new JComboBox<Modello>(getModelli().stream().toArray(Modello[]::new));
+        comboModello.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 updateAuto();
             }
 
         });
-        maiPanel.add(tfmodello);
+        maiPanel.add(comboModello);
 
         maiPanel.add(new JLabel("Numero Telaio:"));
-        tfNumeroTelaio = new JComboBox<Auto>(
-                getAuto((Modello) tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
-                maiPanel.add(tfNumeroTelaio);
+        comboNumeroTelaio = new JComboBox<Auto>(
+                getAuto((Modello) comboModello.getSelectedItem()).stream().toArray(Auto[]::new));
+                maiPanel.add(comboNumeroTelaio);
 
         saveSconto = new CustomButton("Inserisci");
         maiPanel.add(saveSconto);
@@ -97,7 +97,7 @@ public class AddScontoPanel extends JPanel {
                 percentuale,
                 dataInizio,
                 dataFine,
-                ((Auto) tfNumeroTelaio.getSelectedItem()).getNumero_telaio());
+                ((Auto) comboNumeroTelaio.getSelectedItem()).getNumero_telaio());
     }
 
     private List<Modello> getModelli() {
@@ -109,13 +109,13 @@ public class AddScontoPanel extends JPanel {
     }
 
     private void updateAuto() {
-        tfNumeroTelaio.removeAllItems();
-        Auto[] auto = getAuto((Modello) tfmodello.getSelectedItem()).stream().toArray(Auto[]::new);
+        comboNumeroTelaio.removeAllItems();
+        Auto[] auto = getAuto((Modello) comboModello.getSelectedItem()).stream().toArray(Auto[]::new);
         for (Auto auto1 : auto) {
-            tfNumeroTelaio.addItem(auto1);
+            comboNumeroTelaio.addItem(auto1);
         }
-        tfNumeroTelaio.revalidate();
-        tfNumeroTelaio.repaint();
+        comboNumeroTelaio.revalidate();
+        comboNumeroTelaio.repaint();
     }
 
 }

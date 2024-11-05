@@ -11,7 +11,6 @@ public class Modello {
 
     private String marchio;
 
-    // Costruttore completo (con idModello)
     public Modello(int idModello, String descrizione, Integer anno, String tipologia, String marchio) {
         this.idModello = idModello;
         this.descrizione = descrizione;
@@ -20,7 +19,6 @@ public class Modello {
         this.marchio = marchio;
     }
 
-    // Costruttore senza idModello
     public Modello(String descrizione, Integer anno, String tipologia, String marchio) {
         this.descrizione = descrizione;
         this.anno = anno;
@@ -36,7 +34,6 @@ public class Modello {
         this.id_tipologia=id_tipologia;
     }
 
-    // Getter simili a quelli dei record
     public int idModello() {
         return idModello;
     }
@@ -61,7 +58,6 @@ public class Modello {
         return marchio;
     }
 
-    // Setter opzionali
     public void setIdModello(int idModello) {
         this.idModello = idModello;
     }
@@ -82,7 +78,6 @@ public class Modello {
         this.marchio = marchio;
     }
 
-    // Override del metodo toString() per restituire la descrizione
     @Override
     public String toString() {
         return this.descrizione;

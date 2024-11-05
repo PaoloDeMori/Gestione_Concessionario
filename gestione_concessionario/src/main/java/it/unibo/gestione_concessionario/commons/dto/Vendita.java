@@ -11,4 +11,9 @@ public record Vendita(
     
 ) {
 
+    @Override
+    public String toString() {
+        return nuremo_telaio + contratto.toString()+ " il" + data.toString() + " " + ora.toString(); 
+    }
+
 }

@@ -6,4 +6,9 @@ public record Optionals(
     double prezzo
 ) {
 
+    @Override
+    public String toString() {
+        return descrizione + " "+ Double.toString(prezzo);
+    }
+
 }

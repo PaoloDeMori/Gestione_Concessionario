@@ -79,7 +79,7 @@ public class DipendenteView extends JFrame implements View {
     }
 
     private void initialize() {
-        setTitle("Menu and CardLayout Example");
+        setTitle("Gestione Concessionario");
         setMinimumSize(new Dimension(1150,600));
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
@@ -203,6 +203,7 @@ public class DipendenteView extends JFrame implements View {
 
         statsButton.addActionListener(e -> {
             visualizzaStatisticheDipendente.refreshMainPanel();
+            visualizzaStatisticheDipendente.updateMese();
             cardLayout.show(cardPanel, "stats");
         });
 

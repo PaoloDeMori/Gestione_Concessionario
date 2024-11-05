@@ -21,7 +21,7 @@ import it.unibo.gestione_concessionario.controller.Controller;
 import it.unibo.gestione_concessionario.view.CustomButton;
 
 public class AddOptionalsDialog extends JDialog {
-    Map<JCheckBox,Optionals> tfoptionalsList;
+    Map<JCheckBox,Optionals> mapOptionalsList;
     JPanel maiPanel;
     CustomButton saveButton;
     AddAutoDipendente panel;
@@ -37,10 +37,10 @@ public class AddOptionalsDialog extends JDialog {
         maiPanel.add(new JLabel("Optionals:"));
         Optionals [] optionals = panel.getOptional().toArray(new Optionals[0]);
         JPanel checkBoxPanel = new JPanel(new GridLayout(optionals.length, 1));
-        tfoptionalsList = new HashMap<>();
+        mapOptionalsList = new HashMap<>();
         for(Optionals o : optionals ){
             JCheckBox checkBox = new JCheckBox(o.descrizione());
-            tfoptionalsList.put(checkBox, o);
+            mapOptionalsList.put(checkBox, o);
             checkBoxPanel.add(checkBox);
         }
         JScrollPane scrollPane = new JScrollPane(checkBoxPanel);
@@ -53,9 +53,9 @@ public class AddOptionalsDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 List<Optionals> opt = new ArrayList<>();
-                for(JCheckBox o : tfoptionalsList.keySet()){
+                for(JCheckBox o : mapOptionalsList.keySet()){
                     if(o.isSelected()){
-                        opt.add(tfoptionalsList.get(o));
+                        opt.add(mapOptionalsList.get(o));
                     }
                 }
                 panel.setOptionals(opt);

@@ -78,7 +78,7 @@ public class VisualizzaStatisticheDipendente extends JPanel {
         maiPanel.add(totAutoVendute);
 
         maiPanel.add(new JLabel("Percentuale Auto Vendute Con Sconto:"));
-        percConSconto = new JLabel(Integer.toString(controller.numeroTotaleAutoVendute()) + " %");
+        percConSconto = new JLabel(Integer.toString(controller.percentualeAutoVenduteConSconto()) + " %");
         maiPanel.add(percConSconto);
 
         JPanel mesiPanel = new JPanel(new GridLayout(1, 2, 3, 3));
@@ -106,7 +106,7 @@ public class VisualizzaStatisticheDipendente extends JPanel {
         this.repaint();
     }
 
-    private void updateMese() {
+    public void updateMese() {
         meseSelezionato = ((Months) tfMese.getSelectedItem()).getNumeroMese();
         VenditaPerMese.setText(Integer.toString(controller.visualizzaGuadagniAlMese(meseSelezionato)));
     }

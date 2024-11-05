@@ -43,7 +43,7 @@ public class AddAutoDipendente extends JPanel {
 
     private JLabel immatricolazioneLabel = new JLabel("Immatricolazione:");
 
-    private JComboBox<Modello> tfmodello;
+    private JComboBox<Modello>combomodello;
     private List<Optionals> optionals;
 
     private Controller controller;
@@ -105,17 +105,17 @@ public class AddAutoDipendente extends JPanel {
         maiPanel.add(numeroTelaioField);
 
         maiPanel.add(new JLabel("Modello:"));
-        tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
-        tfmodello.addActionListener(new ActionListener() {
+        combomodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
+        combomodello.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                descrizioneModello = ((Modello) tfmodello.getSelectedItem()).descrizione();
+                descrizioneModello = ((Modello) combomodello.getSelectedItem()).descrizione();
                 updateConfigurazioniList();
             }
 
         });
-        maiPanel.add(tfmodello);
+        maiPanel.add(combomodello);
 
         maiPanel.add(new JLabel("Optionals:"));
         addOptionalButton = new CustomButton("Aggiungi optionals");
@@ -227,7 +227,7 @@ public class AddAutoDipendente extends JPanel {
             double prezzo = Double.parseDouble(prezzoField.getText());
             LocalDate data = ((Date) spData.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             if (descrizioneModello == null) {
-                descrizioneModello = ((Modello) tfmodello.getSelectedItem()).descrizione();
+                descrizioneModello = ((Modello) combomodello.getSelectedItem()).descrizione();
             }
             return new Auto(
                     numeroTelaioField.getText(),
@@ -272,7 +272,7 @@ public class AddAutoDipendente extends JPanel {
                         alimentazioneField.getText(),
                         cc,
                         hp,
-                        ((Modello) tfmodello.getSelectedItem()).idModello());
+                        ((Modello) combomodello.getSelectedItem()).idModello());
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this,
                         "Errore nei dati inseriti: il campo cc e HP devono essere numeri validi.");
@@ -291,11 +291,11 @@ public class AddAutoDipendente extends JPanel {
         try {
             if (configurazioneList == null) {
                 configurazioneList = new JComboBox<>(
-                        controller.visualizzaConfigurazioni((Modello) tfmodello.getSelectedItem()).stream()
+                        controller.visualizzaConfigurazioni((Modello) combomodello.getSelectedItem()).stream()
                                 .toArray(Configurazione[]::new));
             } else {
                 configurazioneList.removeAllItems();
-                for (Configurazione c : controller.visualizzaConfigurazioni((Modello) tfmodello.getSelectedItem())) {
+                for (Configurazione c : controller.visualizzaConfigurazioni((Modello) combomodello.getSelectedItem())) {
                     configurazioneList.addItem(c);
                 }
             }
@@ -317,7 +317,7 @@ public class AddAutoDipendente extends JPanel {
         this.removeAll();
         this.setMainPanel();
         this.add(maiPanel);
-        tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
+        combomodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
         this.revalidate();
         this.repaint();
     }

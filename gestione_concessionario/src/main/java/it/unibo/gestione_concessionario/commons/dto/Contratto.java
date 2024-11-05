@@ -11,7 +11,6 @@ public class Contratto {
     private Optional<String> intestatario;
     private Optional<String> metodoDiPagamento;
 
-    // Costruttore completo
     public Contratto(int idContratto, double prezzo, String tipologia, Optional<String> nomeBanca,
             Optional<String> codiceFinanziamento, Optional<String> intestatario,
             Optional<String> metodoDiPagamento) {
@@ -24,7 +23,6 @@ public class Contratto {
         this.metodoDiPagamento = metodoDiPagamento != null ? metodoDiPagamento : Optional.empty();
     }
 
-    // Costruttore parziale (solo campi obbligatori)
     public Contratto(int idContratto, double prezzo, String tipologia) {
         this(idContratto, prezzo, tipologia, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
     }
@@ -40,7 +38,6 @@ public class Contratto {
         this.metodoDiPagamento = metodoDiPagamento != null ? metodoDiPagamento : Optional.empty();
     }
 
-    // Getter e Setter
     public int getIdContratto() {
         return idContratto;
     }

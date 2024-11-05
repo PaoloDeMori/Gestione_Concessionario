@@ -8,4 +8,9 @@ public record Offerta(
     int ID_Dipendente
 ) {
 
+    @Override
+    public String toString() {
+        return Integer.toString(percentuale) + "% da " + dataInizio.toString()+ " a " + dataFine.toString(); 
+    }
+
 }

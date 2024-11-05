@@ -210,8 +210,6 @@ public class Controller {
         return model.visualizzaAutoScontate(marchio);
     }
 
-    // Dipendente
-
     public List<Auto> allAutoDipendente() {
         if (model instanceof ModelDipendente) {
             return ((ModelDipendente) model).visualizzaAutoDelDipendente();

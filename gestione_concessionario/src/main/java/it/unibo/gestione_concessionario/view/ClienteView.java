@@ -47,7 +47,7 @@ public class ClienteView extends JFrame implements View {
     }
 
     private void initialize() {
-        setTitle("Menu and CardLayout Example");
+        setTitle("Gestione Concessionario");
         setMinimumSize(new Dimension(1150, 600));
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 

@@ -20,9 +20,9 @@ public class AppuntamentoSetter extends JPanel {
 
     private JSpinner spData;
     private JSpinner spOra;
-    private JComboBox<Modello> tfmodello;
+    private JComboBox<Modello> combomodello;
     private JSpinner spDurata;
-    private JComboBox<Auto> tfNumeroTelaio;
+    private JComboBox<Auto> comboNumeroTelaio;
     private JLabel tfNomeDipendente;
     private JLabel tfNomeCliente;
     private Controller controller;
@@ -47,12 +47,12 @@ public class AppuntamentoSetter extends JPanel {
         add(spOra);
 
         add(new JLabel("Modello:"));
-        tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
-        tfmodello.addActionListener(e -> {
+        combomodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
+        combomodello.addActionListener(e -> {
             updateAuto();
             updateDipendente();
         });
-        add(tfmodello);
+        add(combomodello);
 
         add(new JLabel("Durata:"));
         spDurata = new JSpinner(new SpinnerDateModel());
@@ -71,9 +71,9 @@ public class AppuntamentoSetter extends JPanel {
         add(spDurata);
 
         add(new JLabel("Numero Telaio:"));
-        tfNumeroTelaio = new JComboBox<>(
-                getAuto((Modello) tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
-        add(tfNumeroTelaio);
+        comboNumeroTelaio = new JComboBox<>(
+                getAuto((Modello) combomodello.getSelectedItem()).stream().toArray(Auto[]::new));
+        add(comboNumeroTelaio);
 
         add(new JLabel("Nome Dipendente:"));
         tfNomeDipendente = new JLabel();
@@ -125,7 +125,7 @@ public class AppuntamentoSetter extends JPanel {
                 .toLocalTime();
         LocalTime durata = ((java.util.Date) spDurata.getValue()).toInstant().atZone(java.time.ZoneId.systemDefault())
                 .toLocalTime();
-        String numeroTelaio = ((Auto) tfNumeroTelaio.getSelectedItem()).getNumero_telaio();
+        String numeroTelaio = ((Auto) comboNumeroTelaio.getSelectedItem()).getNumero_telaio();
 
         String email = dipendente.eMail();
         updateAuto();
@@ -149,22 +149,22 @@ public class AppuntamentoSetter extends JPanel {
     }
 
     private void updateAuto() {
-        tfNumeroTelaio.removeAllItems();
-        Auto[] auto = getAuto((Modello) tfmodello.getSelectedItem()).stream().toArray(Auto[]::new);
+        comboNumeroTelaio.removeAllItems();
+        Auto[] auto = getAuto((Modello) combomodello.getSelectedItem()).stream().toArray(Auto[]::new);
         for (Auto auto1 : auto) {
-            tfNumeroTelaio.addItem(auto1);
+            comboNumeroTelaio.addItem(auto1);
         }
 
         if (auto.length > 0) {
-            tfNumeroTelaio.setSelectedItem(auto[0]);
+            comboNumeroTelaio.setSelectedItem(auto[0]);
         }
 
-        tfNumeroTelaio.revalidate();
-        tfNumeroTelaio.repaint();
+        comboNumeroTelaio.revalidate();
+        comboNumeroTelaio.repaint();
     }
 
     private void updateDipendente() {
-        this.dipendente = this.controller.dipendeteFromModello((Modello) tfmodello.getSelectedItem());
+        this.dipendente = this.controller.dipendeteFromModello((Modello) combomodello.getSelectedItem());
         this.tfNomeDipendente.setText(dipendente.toString());
     }
 
