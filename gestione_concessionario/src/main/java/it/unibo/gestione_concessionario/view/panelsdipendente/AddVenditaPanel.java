@@ -82,12 +82,12 @@ public class AddVenditaPanel extends JPanel {
         maiPanel.add(spOra);
 
         maiPanel.add(new JLabel("Modello:"));
-        tfmodello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
-        tfmodello.addActionListener(e -> updateAuto());
-        maiPanel.add(tfmodello);
+        comboModello = new JComboBox<>(getModelli().stream().toArray(Modello[]::new));
+        comboModello.addActionListener(e -> updateAuto());
+        maiPanel.add(comboModello);
 
         maiPanel.add(new JLabel("Numero Telaio:"));
-        tfNumeroTelaio = new JComboBox<>(getAuto((Modello) tfmodello.getSelectedItem()).stream().toArray(Auto[]::new));
+        tfNumeroTelaio = new JComboBox<>(getAuto((Modello) comboModello.getSelectedItem()).stream().toArray(Auto[]::new));
         tfNumeroTelaio.addActionListener(e -> {
             Auto selectedAuto = (Auto) tfNumeroTelaio.getSelectedItem();
             if (selectedAuto != null) {
@@ -173,7 +173,7 @@ public class AddVenditaPanel extends JPanel {
     }
 
     private void updateAuto() {
-        Modello selectedModello = (Modello) tfmodello.getSelectedItem();
+        Modello selectedModello = (Modello) comboModello.getSelectedItem();
         if (selectedModello != null) {
             tfNumeroTelaio.removeAllItems();
             List<Auto> autoList = getAuto(selectedModello);
