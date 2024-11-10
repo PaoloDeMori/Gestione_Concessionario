@@ -12,12 +12,9 @@
 -- Database Section
 -- ________________ 
 
-create database Gestione_Concessionario_prova;
+create database Gestione_Concessionario;
 
-
--- DBSpace Section
--- _______________
-
+use Gestione_Concessionario;
 
 -- Tables Section
 -- _____________ 
@@ -271,7 +268,7 @@ FOR EACH ROW
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM MODELLO WHERE MODELLO.ID_MARCHIO = NEW.ID_MARCHIO) THEN
         SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Errore: Il marchio deve avere almeno un modello o un dipendente associato.';
+        SET MESSAGE_TEXT = 'Errore: Il marchio deve avere almeno un modello associato.';
     END IF;
 END$$
 
@@ -297,6 +294,10 @@ DELIMITER ;
 -- __________________________________________________________________________
 
 DELIMITER $$
+
+-- Trigger that activates before inserting a new row into the appuntamento table. It ensures
+-- that the tipologia of the appuntamento is valid
+-- and that the employee doesn't have another "appuntamento" scheduled within the same time range as the one being added.
 
 CREATE TRIGGER check_employee_appointment
 BEFORE INSERT ON APPUNTAMENTO
@@ -324,30 +325,12 @@ END$$
 
 DELIMITER ;
 
-
-DELIMITER $$
-
-CREATE TRIGGER check_responsabile_insert
-BEFORE INSERT ON DIPENDENTE
-FOR EACH ROW
-BEGIN
-    DECLARE is_responsabile BOOLEAN;
-
-    -- Check if the current user inserting the new dipendente is a responsabile
-    SELECT responsabile INTO is_responsabile 
-    FROM DIPENDENTE
-    WHERE ID_DIPENDENTE = NEW.ID_DIPENDENTE;
-
-    IF is_responsabile = FALSE THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Only a responsible employee can add a new employee.';
-    END IF;
-END$$
-
-DELIMITER ;
-
-
 -- ______________________________________________________________________________________________________________________________________________________________________________________
+
+-- Trigger to ensure correct associations between "personalizzazione" and "supporto", 
+-- if a "personalizzazione"  is being added and if the "optional" being added is 
+-- not linked to the "modello" of the auto in the "personalizzazione" being added, this 
+-- trigger add a "supporto" that links the "optional" and the "modello"
 DELIMITER $$
 
 CREATE TRIGGER update_support_on_personalization

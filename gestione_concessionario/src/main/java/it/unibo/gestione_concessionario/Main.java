@@ -25,7 +25,7 @@ public class Main {
                     String password = buffer.readLine();
                     System.out.println("Inserisci location db-> jdbc:");
                     String location = "jdbc:" + buffer.readLine();
-                    connection = ConnectionFactory.build("gestione_concessionario_prova", location, name, password);
+                    connection = ConnectionFactory.build("gestione_concessionario", location, name, password);
                     controller = new Controller(connection);
                     LoginView lv = new LoginView(controller);
                     lv.start();
@@ -40,7 +40,7 @@ public class Main {
             }
         } else {
             try {
-                connection = ConnectionFactory.build("gestione_concessionario_prova",
+                connection = ConnectionFactory.build("gestione_concessionario",
                         "jdbc:mysql://localhost:3306/", "root", "cadmio");
                         controller = new Controller(connection);
                         LoginView lv = new LoginView(controller);

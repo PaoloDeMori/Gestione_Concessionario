@@ -87,6 +87,7 @@ public class DipendenteView extends JFrame implements View {
             public void windowClosing(WindowEvent e) {
                 try {
                     controller.stop();
+                    addVenditaPanel.refresh();
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(cardPanel, ex.getMessage(), "Impossibile chiudere la connessione",
                             ABORT);
